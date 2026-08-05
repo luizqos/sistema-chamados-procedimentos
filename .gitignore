@@ -1,0 +1,25 @@
+# Arquivos de upload e mídias
+uploads/
+/uploads/*
+!uploads/.gitkeep
+
+# Banco de Dados Local / Dados Persistidos
+pgdata/
+*.sqlite
+*.sqlite-journal
+
+# Variáveis de ambiente
+.env
+.env.local
+.env.*.local
+
+# Node / Next.js / Build artifacts
+node_modules/
+.next/
+dist/
+build/
+*.log
+
+# Docker / IDEs
+.vscode/
+.idea/

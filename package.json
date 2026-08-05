@@ -1,0 +1,12 @@
+{
+  "name": "tickets-root",
+  "version": "1.0.0",
+  "scripts": {
+    "dev:bff": "npm --prefix bff-chamados run dev",
+    "dev:front": "npm --prefix frontend-chamados run dev",
+    "dev": "concurrently -n \"BFF,FRONT\" -c \"cyan,magenta\" \"npm run dev:bff\" \"npm run dev:front\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
