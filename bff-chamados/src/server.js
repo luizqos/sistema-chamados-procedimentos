@@ -27,7 +27,7 @@ app.use('/api/procedimentos', procedimentosRoutes);
 
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`BFF rodando na porta ${PORT}`);
-  console.log(`Swagger disponível em http://192.168.3.50:${PORT}/api-docs`);
+  console.log(`Swagger disponível em http://localhost:${PORT}/api-docs`);
 });
 
 server.timeout = 300000;
