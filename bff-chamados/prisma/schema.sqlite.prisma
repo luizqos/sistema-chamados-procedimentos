@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id         Int      @id @default(autoincrement())
+  nome       String
+  email      String   @unique
+  senha      String
+  created_at DateTime @default(now())
+}
+
+model Procedimento {
+  id                   Int                 @id @default(autoincrement())
+  titulo               String
+  descricao            String?
+  script_passo_a_passo String
+  created_at           DateTime            @default(now())
+  updated_at           DateTime            @updatedAt
+  anexos               ProcedimentoAnexo[]
+
+  @@map("procedimentos")
+}
+
+model ProcedimentoAnexo {
+  id              Int          @id @default(autoincrement())
+  procedimento_id Int
+  tipo            String
+  caminho_arquivo String
+  nome_original   String
+  mime_type       String
+  tamanho_bytes   Int
+  created_at      DateTime     @default(now())
+  procedimento    Procedimento @relation(fields: [procedimento_id], references: [id], onDelete: Cascade)
+
+  @@map("procedimento_anexos")
+}
