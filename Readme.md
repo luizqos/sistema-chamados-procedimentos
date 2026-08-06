@@ -76,3 +76,99 @@ CORS_ORIGIN=http://localhost:3000
 FRONTEND_PORT=3000
 NEXT_PUBLIC_API_URL=http://localhost:3001
 
+```
+
+## 🚀 Como Executar o Projeto
+
+### **A. Via Docker Compose**
+
+Sobe todo o ambiente containerizado (PostgreSQL, BFF e Frontend) de forma integrada e realiza as migrações automaticamente:
+
+1. Inicie os containers com rebuild:
+```ini
+docker compose up -d --build
+```
+
+2. Acesse os serviços:
+   - Frontend: http://localhost:3000
+   - BFF API: http://localhost:3001
+   - Documentação Swagger: http://localhost:3001/api-docs
+
+### **B. Execução Local para Desenvolvimento (Sem Docker)**
+
+Para rodar a aplicação localmente utilizando scripts do package.json:
+
+1. Instale as dependências da raiz e dos subprojetos:
+```ini
+    npm install
+    cd bff-chamados && npm install
+    cd ../frontend-chamados && npm install
+    cd ..
+```
+
+2. Sincronize o banco de dados (SQLite ou Postgres):
+
+- Opção SQLite:
+ 
+ ```ini
+    cd bff-chamados
+    npm run db:push:sqlite
+    cd ..
+```
+- Opção PostgreSQL:
+
+ ```ini
+    cd bff-chamados
+    npm run db:push:pg
+    cd ..
+```
+
+3. Inicie o projeto em modo dev concorrente:
+
+ ```ini
+    npm run dev
+```
+
+## 🗄️ Gerenciamento de Migrações do Banco de Dados
+
+Sempre que alterar os modelos no arquivo bff-chamados/prisma/schema.prisma durante o desenvolvimento com PostgreSQL, crie e versione uma nova migração:
+
+ ```ini
+    cd bff-chamados
+    npx prisma migrate dev --name <nome_da_alteracao>
+```
+
+Em ambiente de produção ou durante a inicialização dos containers via Docker, as migrações aplicadas no banco de dados utilizam estritamente o comando:
+
+ ```ini
+    npx prisma migrate deploy
+```
+
+## 💾 Persistência e Backup de Dados
+
+O banco de dados PostgreSQL utiliza um Named Volume gerenciado pelo Docker (postgres_data), garantindo que a remoção ou rebuild de imagens e containers não apague os registros armazenados.
+
+### Backup dos Dados
+
+Para exportar o banco de dados antes de migrar de ambiente:
+
+ ```ini
+    docker exec -t bff_postgres pg_dump -U postgres -d chamados_db > backup_chamados.sql
+```
+
+### Restauração dos Dados
+
+Para importar um arquivo de backup para um novo container:
+
+ ```ini
+    docker exec -i bff_postgres psql -U postgres -d chamados_db < backup_chamados.sql
+```
+
+## 📌 Principais Funcionalidades
+
+- Busca em Tempo Real: Filtro rápido de procedimentos por palavra-chave no título, descrição ou passos do script.
+- Leitor de Script em Markdown: Renderização rica com suporte a formatação de texto, tabelas, listas e blocos de código.
+- Cópia Rápida de Script: Botão de um clique para enviar o script técnico para a área de transferência.
+- Galeria de Anexos Mídia: Upload e exibição integrada de imagens (PNG, JPG, WEBP) e vídeos explicativos (MP4, WEBM).
+- Scroll Infinito Operacional: Paginação do lado do servidor integrada com sentinela de rolagem na barra lateral.
+- Confirmações de Segurança: Dialogs customizados para ações de exclusão destrutivas.
