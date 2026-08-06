@@ -1,15 +1,14 @@
-FROM node:20-alpine
+FROM node:22-slim
 
 WORKDIR /app
 
-# Copia manifestos e instala dependências
 COPY package*.json ./
-RUN npm ci
 
-# Copia o código-fonte e o schema do Prisma
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
+
 COPY . .
 
-# Gera o cliente do Prisma
 RUN npx prisma generate
 
 EXPOSE 3001

@@ -10,7 +10,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3001',
+        url: 'http://192.168.3.50:3001',
         description: 'Servidor Local (BFF)',
       },
     ],
