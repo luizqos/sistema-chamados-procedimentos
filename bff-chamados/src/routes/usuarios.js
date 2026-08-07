@@ -6,7 +6,7 @@ const { autenticar, autorizar } = require('../middlewares/authMiddleware');
  * @swagger
  * /api/usuarios:
  *   post:
- *     summary: Cadastra um novo usuário ou operador (Apenas ADMIN)
+ *     summary: Cadastra um novo usuário ou operador
  *     tags: [Usuários]
  *     security:
  *       - bearerAuth: []

@@ -1,3 +1,4 @@
+const path = require('path');
 const swaggerJSDoc = require('swagger-jsdoc');
 
 const options = {
@@ -6,7 +7,7 @@ const options = {
     info: {
       title: 'API Sistema de Chamados',
       version: '1.0.0',
-      description: 'Documentação da API com autenticação JWT',
+      description: 'Documentação gerada automaticamente',
     },
     servers: [
       {
@@ -20,7 +21,6 @@ const options = {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
-          description: 'Insira o token JWT retornado pelo login',
         },
       },
     },
@@ -30,7 +30,10 @@ const options = {
       },
     ],
   },
-  apis: ['./src/routes/*.js'],
+  apis: [
+    path.join(__dirname, '../routes/**/*.js'),
+    path.join(__dirname, '../controllers/**/*.js'),
+  ],
 };
 
 const swaggerSpec = swaggerJSDoc(options);

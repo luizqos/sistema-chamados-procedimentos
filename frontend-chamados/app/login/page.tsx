@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAuth } from '../../src/contexts/AuthContext';
+import { useAuth } from '@/src/contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { Lock, Mail, Loader2, ShieldCheck, ArrowRight, Building2, CheckCircle2 } from 'lucide-react';
 
@@ -50,7 +50,7 @@ export default function LoginPage() {
             Base do Conhecimento Operacional & Procedimentos Técnicos
           </h1>
           <p className="text-sm text-slate-400 leading-relaxed">
-            Plataforma centralizada para consulta rápida de scripts de atendimento e normativas internas com gestão de acesso corporativo.
+            Centralizador para consulta rápida de scripts de atendimento e normativas internas com gestão de acesso corporativo.
           </p>
         </div>
 
@@ -122,7 +122,7 @@ export default function LoginPage() {
                 </>
               ) : (
                 <>
-                  <span>Acessar Plataforma</span>
+                  <span>Acessar</span>
                   <ArrowRight size={18} />
                 </>
               )}

@@ -4,7 +4,23 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '../services/api';
 
-const AuthContext = createContext({});
+/**
+ * @typedef {Object} Usuario
+ * @property {number} id
+ * @property {string} nome
+ * @property {string} email
+ * @property {'ADMIN' | 'OPERADOR'} role
+ *
+ * @typedef {Object} AuthContextData
+ * @property {Usuario | null} user
+ * @property {boolean} signed
+ * @property {boolean} loading
+ * @property {(email: string, senha: string) => Promise<void>} login
+ * @property {() => void} logout
+ */
+
+/** @type {React.Context<AuthContextData>} */
+const AuthContext = createContext(/** @type {AuthContextData} */ ({}));
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -17,11 +33,9 @@ export function AuthProvider({ children }) {
 
       if (token) {
         try {
-          // Valida o token e busca os dados atualizados do usuário no BFF
           const { data } = await api.get('/api/auth/me');
           setUser(data);
         } catch (error) {
-          // Se o token expirou ou é inválido, limpa a sessão
           localStorage.removeItem('@chamados:token');
           localStorage.removeItem('@chamados:user');
           setUser(null);
@@ -57,4 +71,5 @@ export function AuthProvider({ children }) {
   );
 }
 
+/** @returns {AuthContextData} */
 export const useAuth = () => useContext(AuthContext);
