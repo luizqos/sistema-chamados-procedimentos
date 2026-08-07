@@ -20,15 +20,15 @@ export default function Home() {
   const [copiado, setCopiado] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const { 
-    procedimentos, 
-    selecionado, 
-    loading, 
-    hasMore, 
-    page, 
-    carregarProcedimentos, 
-    obterDetalhes, 
-    excluirProcedimento 
+  const {
+    procedimentos,
+    selecionado,
+    loading,
+    hasMore,
+    page,
+    carregarProcedimentos,
+    obterDetalhes,
+    excluirProcedimento
   } = useProcedimentos();
 
   // Redireciona para /login se não houver usuário autenticado
@@ -87,9 +87,16 @@ export default function Home() {
     );
   }
 
+  const procedimentoComAutor = selecionado
+    ? {
+      ...selecionado,
+      usuario: selecionado.usuario || procedimentos.find((p) => p.id === selecionado.id)?.usuario,
+    }
+    : null;
+
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 font-sans antialiased overflow-hidden">
-      <Sidebar 
+      <Sidebar
         busca={busca}
         setBusca={setBusca}
         procedimentos={procedimentos}
@@ -104,9 +111,9 @@ export default function Home() {
       />
 
       <main className="flex-1 p-8 overflow-y-auto bg-white">
-        {selecionado ? (
-          <PainelProcedimento 
-            selecionado={selecionado}
+        {procedimentoComAutor ? (
+          <PainelProcedimento
+            selecionado={procedimentoComAutor}
             copiado={copiado}
             onCopiar={handleCopiarTexto}
             onDeletar={handleDeletar}
@@ -117,10 +124,10 @@ export default function Home() {
         )}
       </main>
 
-      <ModalNovoProcedimento 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onSuccess={() => carregarProcedimentos({ busca, page: 1, limit: 15 }, true)} 
+      <ModalNovoProcedimento
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={() => carregarProcedimentos({ busca, page: 1, limit: 15 }, true)}
       />
     </div>
   );
