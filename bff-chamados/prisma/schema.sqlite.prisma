@@ -8,14 +8,45 @@ datasource db {
 }
 
 model Usuario {
-  id         Int      @id @default(autoincrement())
-  nome       String
-  email      String   @unique
-  senha      String
-  role       String   @default("OPERADOR")
-  created_at DateTime @default(now())
+  id            Int            @id @default(autoincrement())
+  nome          String
+  email         String         @unique
+  senha         String?
+  ssoId         String?        @unique
+  roleId        Int
+  role          Role           @relation(fields: [roleId], references: [id])
+  procedimentos Procedimento[]
+  created_at    DateTime       @default(now())
 
   @@map("usuarios")
+}
+
+model Role {
+  id         Int              @id @default(autoincrement())
+  nome       String           @unique
+  usuarios   Usuario[]
+  permissoes RolePermission[]
+
+  @@map("roles")
+}
+
+model Permissao {
+  id        Int              @id @default(autoincrement())
+  chave     String           @unique
+  descricao String
+  roles     RolePermission[]
+
+  @@map("permissoes")
+}
+
+model RolePermission {
+  roleId      Int
+  permissaoId Int
+  role        Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissao   Permissao @relation(fields: [permissaoId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissaoId])
+  @@map("role_permissions")
 }
 
 model Procedimento {
@@ -24,6 +55,7 @@ model Procedimento {
   descricao            String?
   script_passo_a_passo String
   usuario_id           Int?
+  usuario              Usuario?            @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
   created_at           DateTime            @default(now())
   updated_at           DateTime            @updatedAt
   anexos               ProcedimentoAnexo[]

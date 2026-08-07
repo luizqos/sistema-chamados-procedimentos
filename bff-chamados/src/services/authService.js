@@ -47,6 +47,27 @@ class AuthService {
     };
   }
 
+  async login(email, senha) {
+    const usuario = await usuarioRepository.buscarPorEmailComPermissoes(email);
+
+    if (!usuario || !(await bcrypt.compare(senha, usuario.senha))) {
+      const error = new Error('Credenciais inválidas.');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const token = jwt.sign(
+      { id: usuario.id, role: usuario.role.nome },
+      process.env.JWT_SECRET || 'secret_key',
+      { expiresIn: '8h' }
+    );
+
+    return {
+      token,
+      usuario: this._formatarRetornoUsuario(usuario),
+    };
+  }
+
   async me(usuarioId) {
     const usuario = await usuarioRepository.buscarPorId(usuarioId);
     if (!usuario) {
@@ -55,6 +76,35 @@ class AuthService {
       throw error;
     }
     return usuario;
+  }
+
+  async obterSessao(usuarioId) {
+    const usuario = await usuarioRepository.buscarPorIdComPermissoes(usuarioId);
+
+    if (!usuario) {
+      const error = new Error('Usuário não encontrado.');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    return this._formatarRetornoUsuario(usuario);
+  }
+
+  _formatarRetornoUsuario(usuario) {
+    const permissoesArray = usuario.role?.permissoes
+      ? usuario.role.permissoes.map((item) => item.permissao.chave)
+      : [];
+
+    return {
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      role: {
+        id: usuario.role.id,
+        nome: usuario.role.nome,
+      },
+      permissoes: permissoesArray,
+    };
   }
 }
 

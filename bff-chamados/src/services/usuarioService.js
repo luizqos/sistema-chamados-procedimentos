@@ -2,9 +2,9 @@ const bcrypt = require('bcryptjs');
 const usuarioRepository = require('../repositories/usuarioRepository');
 
 class UsuarioService {
-  async criarUsuario({ nome, email, senha, role }) {
-    if (!nome || !email || !senha) {
-      const error = new Error('Nome, e-mail e senha são obrigatórios.');
+  async criarUsuario({ nome, email, senha, roleId, ssoId }) {
+    if (!nome || !email || (!senha && !ssoId)) {
+      const error = new Error('Nome, e-mail e uma forma de autenticação (senha ou ssoId) são obrigatórios.');
       error.statusCode = 400;
       throw error;
     }
@@ -16,15 +16,26 @@ class UsuarioService {
       throw error;
     }
 
-    const roleFinal = role === 'ADMIN' ? 'ADMIN' : 'OPERADOR';
+    let roleIdFinal = roleId;
 
-    const senhaHash = await bcrypt.hash(senha, 10);
+    if (!roleIdFinal) {
+      const rolePadrao = await usuarioRepository.buscarRolePorNome('OPERADOR');
+      if (!rolePadrao) {
+        const error = new Error('Role padrão OPERADOR não foi encontrada no banco de dados.');
+        error.statusCode = 500;
+        throw error;
+      }
+      roleIdFinal = rolePadrao.id;
+    }
+
+    const senhaHash = senha ? await bcrypt.hash(senha, 10) : null;
 
     return await usuarioRepository.criar({
       nome,
       email,
       senha: senhaHash,
-      role: roleFinal,
+      ssoId: ssoId || null,
+      roleId: Number(roleIdFinal),
     });
   }
 }

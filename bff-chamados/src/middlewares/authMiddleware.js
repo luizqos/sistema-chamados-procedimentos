@@ -24,4 +24,38 @@ function autorizar(rolesPermitidas = []) {
   };
 }
 
-module.exports = { autenticar, autorizar };
+function verificarPermissao(permissaoRequerida) {
+  return async (req, res, next) => {
+    try {
+      const usuarioId = req.usuario.id;
+
+      const usuario = await prisma.usuario.findUnique({
+        where: { id: usuarioId },
+        include: {
+          role: {
+            include: {
+              permissoes: {
+                include: { permissao: true }
+              }
+            }
+          }
+        }
+      });
+
+      const temPermissao = usuario?.role?.permissoes.some(
+        (p) => p.permissao.chave === permissaoRequerida
+      );
+
+      if (!temPermissao && usuario?.role?.nome !== 'ADMIN') {
+        return res.status(403).json({ error: 'Acesso negado: permissão insuficiente.' });
+      }
+
+      next();
+    } catch (error) {
+      return res.status(500).json({ error: 'Erro ao verificar permissões.' });
+    }
+  };
+}
+
+
+module.exports = { autenticar, autorizar, verificarPermissao };

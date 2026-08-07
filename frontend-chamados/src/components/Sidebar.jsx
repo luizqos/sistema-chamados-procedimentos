@@ -31,8 +31,9 @@ export default function Sidebar({
     return () => observer.disconnect();
   }, [hasMore, loadingMore, onLoadMore]);
 
-  const isAdmin = user?.role === 'ADMIN';
-  const isOperador = user?.role === 'OPERADOR';
+  const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
+  const isAdmin = roleNome === 'ADMIN';
+  const isOperador = roleNome === 'OPERADOR';
 
   return (
     <aside className="w-80 md:w-96 bg-white border-r border-slate-200 p-5 flex flex-col h-full">
@@ -43,7 +44,7 @@ export default function Sidebar({
           <p className="text-xs text-slate-500">Scripts e Procedimentos</p>
         </div>
         
-        {/* Botão Novo visível apenas para ADMIN */}
+        {/* Botão Novo visível para ADMIN e OPERADOR */}
         {(isAdmin || isOperador) && (
           <button 
             onClick={onOpenModal}
@@ -111,7 +112,8 @@ export default function Sidebar({
               <p className="text-xs font-bold text-slate-800 truncate">{user.nome}</p>
               <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded mt-0.5">
                 {isAdmin && <Shield size={10} className="text-amber-600" />}
-                {user.role}
+                {/* ✅ CORREÇÃO 2: Renderiza a string do nome da role */}
+                {roleNome}
               </span>
             </div>
           </div>

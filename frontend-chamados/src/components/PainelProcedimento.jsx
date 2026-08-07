@@ -3,7 +3,9 @@ import { Copy, Check, Trash2 } from 'lucide-react';
 import GaleriaAnexos from './GaleriaAnexos';
 
 export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user }) {
-  const isAdmin = user?.role === 'ADMIN';
+  const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
+  const isAdmin = roleNome === 'ADMIN';
+
   const isCriador = selecionado?.usuario_id && user?.id ? selecionado.usuario_id === user.id : false;
   const podeExcluir = isAdmin || isCriador;
 

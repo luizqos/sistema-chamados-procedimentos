@@ -1,11 +1,12 @@
 #!/bin/sh
 set -e
 
-echo "Aguardando o PostgreSQL inicializar..."
-
-# Tenta aplicar as migrações (se falhar em dev por falta de pasta de migration, usa o db push)
-echo "Executando migrações do banco de dados..."
+echo "🔄 Atualizando o esquema do banco de dados..."
+# Aplica as migrations existentes ou atualiza o banco se estiver em dev
 npx prisma migrate deploy || npx prisma db push
 
-echo "Iniciando a aplicação..."
+echo "🌱 Executando seed das Roles..."
+npx prisma db seed
+
+echo "🚀 Iniciando a aplicação..."
 exec "$@"

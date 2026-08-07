@@ -1,49 +1,46 @@
+const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
-const prisma = require('../config/prisma');
 
-async function main() {
-  const [comando, ...args] = process.argv.slice(2);
+const prisma = new PrismaClient();
 
-  switch (comando?.toLowerCase()) {
-    case 'add':
-      await adicionarUsuario(args);
-      break;
+async function buscarOuCriarRole(nome) {
+  let role = await prisma.role.findUnique({
+    where: { nome },
+  });
 
-    case 'list':
-      await listarUsuarios();
-      break;
-
-    case 'remove':
-      await removerUsuario(args[0]);
-      break;
-
-    default:
-      exibirAjuda();
-      break;
+  if (!role) {
+    role = await prisma.role.create({
+      data: { nome },
+    });
+    console.log(`➕ Role '${nome}' criada com ID ${role.id}`);
   }
+
+  return role;
 }
 
-async function adicionarUsuario([nome, email, senha, roleInput]) {
-  if (!nome || !email || !senha) {
-    console.error('\n❌ Parâmetros obrigatórios ausentes.');
-    console.log('  Exemplo: node src/scripts/seedUsers.js add "Carlos" carlos@empresa.com "senha123" OPERADOR\n');
-    process.exit(1);
-  }
-
-  const role = roleInput && roleInput.toUpperCase() === 'ADMIN' ? 'ADMIN' : 'OPERADOR';
+async function criarAdmin({ nome, email, senha }) {
+  const role = await buscarOuCriarRole('ADMIN');
   const senhaHash = await bcrypt.hash(senha, 10);
 
   const usuario = await prisma.usuario.upsert({
     where: { email },
-    update: { nome, senha: senhaHash, role },
-    create: { nome, email, senha: senhaHash, role },
+    update: {
+      nome,
+      roleId: role.id,
+      senha: senhaHash,
+    },
+    create: {
+      nome,
+      email,
+      senha: senhaHash,
+      roleId: role.id,
+    },
+    include: {
+      role: true,
+    },
   });
 
-  console.log('\n✅ Usuário salvo com sucesso:');
-  console.log(`   ID:    ${usuario.id}`);
-  console.log(`   Nome:  ${usuario.nome}`);
-  console.log(`   Email: ${usuario.email}`);
-  console.log(`   Role:  ${usuario.role}\n`);
+  console.log(`✅ Usuário '${usuario.nome}' (${usuario.email}) salvo como ADMIN.`);
 }
 
 async function listarUsuarios() {
@@ -52,49 +49,62 @@ async function listarUsuarios() {
       id: true,
       nome: true,
       email: true,
-      role: true,
+      ssoId: true,
       created_at: true,
+      role: {
+        select: {
+          id: true,
+          nome: true,
+        },
+      },
     },
-    orderBy: { id: 'asc' },
   });
 
-  if (usuarios.length === 0) {
-    console.log('\nℹ️ Nenhum usuário encontrado no banco de dados.\n');
+  console.log('\n📋 Lista de Usuários Cadastrados:');
+  console.table(
+    usuarios.map((u) => ({
+      ID: u.id,
+      Nome: u.nome,
+      Email: u.email,
+      Perfil: u.role ? u.role.nome : 'Sem Role',
+      CriadoEm: u.created_at.toISOString(),
+    }))
+  );
+}
+
+async function main() {
+  const args = process.argv.slice(2);
+  const comando = args[0];
+
+  if (comando === 'list') {
+    await listarUsuarios();
     return;
   }
 
-  console.log('\n📋 Usuários Cadastrados:');
-  console.table(usuarios);
-}
+  const [nome, email, senha] = args;
 
-async function removerUsuario(identificador) {
-  if (!identificador) {
-    console.error('\n❌ Informe o ID ou E-mail do usuário para remover.');
-    console.log('  Exemplo: node src/scripts/seedUsers.js remove carlos@empresa.com\n');
+  if (!nome || !email || !senha) {
+    console.error('\n❌ Erro: Parâmetros insuficientes.');
+    console.log('\nModo de uso:');
+    console.log('  node src/scripts/seedUsers.js <NOME> <EMAIL> <SENHA>');
+    console.log('  node src/scripts/seedUsers.js list');
+    console.log('\nExemplo:');
+    console.log('  node src/scripts/seedUsers.js "Luiz Silva" admin@empresa.com "SenhaForte123!"\n');
     process.exit(1);
   }
 
-  const isId = !isNaN(Number(identificador));
-  const where = isId ? { id: Number(identificador) } : { email: identificador };
+  console.log('🌱 Criando/atualizando usuário Administrador...');
+  await criarAdmin({ nome, email, senha });
 
-  try {
-    const deletado = await prisma.usuario.delete({ where });
-    console.log(`\n🗑️ Usuário "${deletado.email}" (ID: ${deletado.id}) foi removido com sucesso.\n`);
-  } catch (error) {
-    console.error(`\n❌ Usuário "${identificador}" não foi encontrado.\n`);
-  }
-}
-
-function exibirAjuda() {
-  console.log('\n📌 Uso do Script seedUsers.js:\n');
-  console.log('  1. Adicionar/Atualizar usuário:');
-  console.log('     node src/scripts/seedUsers.js add "<NOME>" "<EMAIL>" "<SENHA>" [ADMIN|OPERADOR]\n');
-  console.log('  2. Listar todos os usuários:');
-  console.log('     node src/scripts/seedUsers.js list\n');
-  console.log('  3. Remover usuário (por ID ou Email):');
-  console.log('     node src/scripts/seedUsers.js remove <EMAIL_OU_ID>\n');
+  console.log('\n--- Status final ---');
+  await listarUsuarios();
 }
 
 main()
-  .catch((e) => console.error('❌ Erro no script:', e))
-  .finally(async () => await prisma.$disconnect());
+  .catch((e) => {
+    console.error('❌ Erro no script:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
