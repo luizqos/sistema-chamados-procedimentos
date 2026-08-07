@@ -12,6 +12,7 @@ model Usuario {
   nome          String
   email         String         @unique
   senha         String?
+  ativo         Boolean        @default(true)
   ssoId         String?        @unique
   roleId        Int
   role          Role           @relation(fields: [roleId], references: [id])

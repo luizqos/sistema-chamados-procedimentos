@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { Search, Plus, Loader2, LogOut, User, Shield } from 'lucide-react';
+import Link from 'next/link';
+import { Search, Plus, Loader2, LogOut, User, Shield, Users } from 'lucide-react';
 
 export default function Sidebar({ 
   busca, 
@@ -44,7 +45,6 @@ export default function Sidebar({
           <p className="text-xs text-slate-500">Scripts e Procedimentos</p>
         </div>
         
-        {/* Botão Novo visível para ADMIN e OPERADOR */}
         {(isAdmin || isOperador) && (
           <button 
             onClick={onOpenModal}
@@ -54,6 +54,19 @@ export default function Sidebar({
           </button>
         )}
       </div>
+
+      {/* Botão de Gestão de Usuários (Apenas para ADMIN) */}
+      {isAdmin && (
+        <div className="mb-4">
+          <Link
+            href="/usuarios"
+            className="flex items-center gap-2 w-full px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-semibold transition border border-slate-200"
+          >
+            <Users size={16} className="text-sky-600" />
+            <span>Gestão de Usuários</span>
+          </Link>
+        </div>
+      )}
 
       {/* Input de Busca */}
       <div className="relative mb-4">
@@ -91,7 +104,6 @@ export default function Sidebar({
           );
         })}
 
-        {/* Sentinela de Scroll Infinito */}
         <div ref={observerRef} className="py-2 text-center">
           {loadingMore && (
             <div className="flex justify-center items-center gap-2 text-slate-500 text-xs">
@@ -112,7 +124,6 @@ export default function Sidebar({
               <p className="text-xs font-bold text-slate-800 truncate">{user.nome}</p>
               <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded mt-0.5">
                 {isAdmin && <Shield size={10} className="text-amber-600" />}
-                {/* ✅ CORREÇÃO 2: Renderiza a string do nome da role */}
                 {roleNome}
               </span>
             </div>

@@ -81,6 +81,56 @@ class UsuarioRepository {
       },
     });
   }
+
+  async listarTodos() {
+    return await prisma.usuario.findMany({
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        ativo: true,
+        created_at: true,
+        role: {
+          select: { id: true, nome: true }
+        }
+      },
+      orderBy: { id: 'asc' }
+    });
+  }
+
+  async alternarStatus(id, ativo) {
+    return await prisma.usuario.update({
+      where: { id: Number(id) },
+      data: { ativo: Boolean(ativo) },
+      select: {
+        id: true,
+        nome: true,
+        ativo: true,
+        role: { select: { id: true, nome: true } }
+      }
+    });
+  }
+
+  async buscarPorId(id) {
+    return await prisma.usuario.findUnique({
+      where: { id: Number(id) }
+    });
+  }
+
+  async atualizarRole(usuarioId, roleId) {
+    return await prisma.usuario.update({
+      where: { id: Number(usuarioId) },
+      data: { roleId: Number(roleId) },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        role: {
+          select: { id: true, nome: true }
+        }
+      }
+    });
+  }
 }
 
 module.exports = new UsuarioRepository();
