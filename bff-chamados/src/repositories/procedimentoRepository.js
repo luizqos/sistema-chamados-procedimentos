@@ -22,7 +22,8 @@ class ProcedimentoRepository {
           id: true,
           titulo: true,
           descricao: true,
-          updated_at: true
+          updated_at: true,
+          usuario_id: true // <--- Incluído para a listagem saber quem criou
         }
       }),
       prisma.procedimento.count({ where })

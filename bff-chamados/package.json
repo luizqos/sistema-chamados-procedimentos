@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node src/server.js",
+    "dev2": "node src/server.js",
+    "dev": "npx prisma generate --schema=prisma/schema.sqlite.prisma && nodemon src/server.js",
     "prisma:generate:pg": "prisma generate --schema=prisma/schema.prisma",
     "prisma:generate:sqlite": "prisma generate --schema=prisma/schema.sqlite.prisma",
     "db:push:sqlite": "prisma db push --schema=prisma/schema.sqlite.prisma",

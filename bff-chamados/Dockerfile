@@ -11,7 +11,10 @@ RUN --mount=type=cache,target=/root/.npm \
 
 COPY . .
 
-RUN chmod +x entrypoint.sh
+COPY entrypoint.sh /app/entrypoint.sh
+
+RUN chmod +x /app/entrypoint.sh && \
+    sed -i 's/\r$//' /app/entrypoint.sh
 
 RUN npx prisma generate
 

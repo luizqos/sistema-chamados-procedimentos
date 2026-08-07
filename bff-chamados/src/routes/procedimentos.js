@@ -6,6 +6,7 @@ const router = express.Router();
 const controller = require('../controllers/procedimentoController');
 const authMiddleware = require('../middlewares/auth');
 const upload = require('../middlewares/upload');
+const { autenticar, autorizar } = require('../middlewares/authMiddleware');
 
 /**
  * @openapi
@@ -45,8 +46,8 @@ const upload = require('../middlewares/upload');
  *       201:
  *         description: Procedimento criado
  */
-router.get('/', controller.listar);
-router.post('/', controller.criar);
+router.get('/', autenticar, controller.listar);
+router.post('/', autenticar, controller.criar);
 
 /**
  * @openapi
@@ -78,8 +79,8 @@ router.post('/', controller.criar);
  *       200:
  *         description: Procedimento excluído com sucesso
  */
-router.get('/:id', controller.obterPorId);
-router.delete('/:id', controller.deletar);
+router.get('/:id', autenticar, controller.obterPorId);
+router.delete('/:id', autenticar, (req, res) => controller.deletar(req, res));
 
 /**
  * @openapi
@@ -107,6 +108,6 @@ router.delete('/:id', controller.deletar);
  *       201:
  *         description: Anexo enviado com sucesso
  */
-router.post('/:id/anexos', upload.single('arquivo'), controller.adicionarAnexo);
+router.post('/:id/anexos', autenticar, upload.single('arquivo'), controller.adicionarAnexo);
 
 module.exports = router;

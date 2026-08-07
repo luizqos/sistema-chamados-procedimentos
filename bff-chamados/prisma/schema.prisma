@@ -5,7 +5,11 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  
+}
+
+enum Role {
+  ADMIN
+  OPERADOR
 }
 
 model Usuario {
@@ -13,7 +17,10 @@ model Usuario {
   nome       String
   email      String   @unique
   senha      String
+  role       Role     @default(OPERADOR)
   created_at DateTime @default(now())
+
+  @@map("usuarios")
 }
 
 model Procedimento {
@@ -21,6 +28,7 @@ model Procedimento {
   titulo               String
   descricao            String?
   script_passo_a_passo String
+  usuario_id           Int?
   created_at           DateTime            @default(now())
   updated_at           DateTime            @updatedAt
   anexos               ProcedimentoAnexo[]

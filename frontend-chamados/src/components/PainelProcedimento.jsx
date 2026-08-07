@@ -1,9 +1,12 @@
-import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Copy, Check, Trash2 } from 'lucide-react';
 import GaleriaAnexos from './GaleriaAnexos';
 
-export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar }) {
+export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user }) {
+  const isAdmin = user?.role === 'ADMIN';
+  const isCriador = selecionado?.usuario_id && user?.id ? selecionado.usuario_id === user.id : false;
+  const podeExcluir = isAdmin || isCriador;
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* Cabeçalho */}
@@ -23,13 +26,16 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             {copiado ? <><Check size={18} /> Copiado!</> : <><Copy size={18} /> Copiar Script</>}
           </button>
 
-          <button 
-            onClick={() => onDeletar(selecionado.id)}
-            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-red-500 text-red-500 hover:bg-red-50 font-semibold text-sm transition"
-            title="Excluir procedimento"
-          >
-            <Trash2 size={18} /> Excluir
-          </button>
+          {/* Exibido para ADMIN ou para o Criador do Procedimento */}
+          {podeExcluir && (
+            <button 
+              onClick={() => onDeletar(selecionado.id)}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-red-500 text-red-500 hover:bg-red-50 font-semibold text-sm transition"
+              title="Excluir procedimento"
+            >
+              <Trash2 size={18} /> Excluir
+            </button>
+          )}
         </div>
       </div>
 
@@ -39,7 +45,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           Passo a Passo / Script
         </h3>
         
-        {/* whitespace-pre-wrap garante a manutenção de todos os espaços e tabulações */}
         <div className="h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 text-slate-50 p-5 rounded-xl text-sm leading-relaxed font-mono border border-slate-800">
           <ReactMarkdown>{selecionado.script_passo_a_passo}</ReactMarkdown>
         </div>
