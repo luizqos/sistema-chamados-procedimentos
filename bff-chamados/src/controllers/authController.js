@@ -19,6 +19,25 @@ class AuthController {
       return res.status(error.statusCode || 500).json({ error: error.message });
     }
   }
+
+  async verificarSetup(req, res) {
+    try {
+      const status = await authService.verificarStatusSistema();
+      return res.json(status);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  async setupInicial(req, res) {
+    try {
+      const { nome, email, senha } = req.body;
+      const admin = await authService.cadastrarAdminInicial({ nome, email, senha });
+      return res.status(201).json(admin);
+    } catch (error) {
+      return res.status(error.statusCode || 500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new AuthController();

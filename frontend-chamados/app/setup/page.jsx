@@ -1,34 +1,67 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useAuth } from '@/src/contexts/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import api from '../../src/services/api';
 import toast from 'react-hot-toast';
-import { Lock, Mail, Loader2, ShieldCheck, ArrowRight, Building2, CheckCircle2 } from 'lucide-react';
+import { ShieldAlert, User, Mail, Lock, ArrowRight, Loader2, Building2 } from 'lucide-react';
 
-export default function LoginPage() {
+export default function SetupPage() {
+  const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [verificandoSetup, setVerificandoSetup] = useState(true);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const router = useRouter();
+
+  // ✅ Proteção da rota /setup: redireciona para /login se já existirem usuários
+  useEffect(() => {
+    async function checarPermissaoSetup() {
+      try {
+        const { data } = await api.get('/api/auth/setup-status');
+        if (!data?.precisaSetupInicial) {
+          toast.error('O sistema já possui usuários cadastrados.');
+          router.push('/login');
+          return;
+        }
+      } catch (error) {
+        console.error('Erro ao verificar status de setup:', error);
+      } finally {
+        setVerificandoSetup(false);
+      }
+    }
+    checarPermissaoSetup();
+  }, [router]);
+
+  const handleSetup = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      await login(email, senha);
-      toast.success('Autenticado com sucesso.');
-    } catch (err: any) {
-      const mensagem = err.response?.data?.error || 'Falha na autenticação. Verifique suas credenciais.';
-      toast.error(mensagem);
+      await api.post('/api/auth/setup-inicial', { nome, email, senha });
+      toast.success('Administrador cadastrado com sucesso! Faça login.');
+      router.push('/login');
+    } catch (err) {
+      const msg = err.response?.data?.error || 'Erro ao realizar a configuração inicial.';
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   };
 
+  if (verificandoSetup) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 text-slate-400 gap-3">
+        <Loader2 size={24} className="animate-spin text-sky-500" />
+        <span className="text-xs">Verificando permissão de acesso...</span>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen w-full flex bg-slate-950 text-slate-100 font-sans antialiased">
-      {/* Painel Esquerdo - Banner Institucional Corporativo */}
+      {/* Painel Esquerdo - Banner de Setup */}
       <div className="hidden lg:flex lg:w-1/2 bg-slate-900 border-r border-slate-800/80 p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
 
@@ -43,14 +76,14 @@ export default function LoginPage() {
         </div>
 
         <div className="relative z-10 space-y-6 max-w-lg">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-950/60 border border-sky-500/30 text-sky-300 text-xs font-semibold">
-            <ShieldCheck size={14} /> Ambiente Controlado
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/60 border border-amber-500/30 text-amber-300 text-xs font-semibold">
+            <ShieldAlert size={14} /> Configuração Inicial do Sistema
           </div>
           <h1 className="text-3xl font-extrabold text-white leading-tight">
-            Base do Conhecimento Operacional & Procedimentos Técnicos
+            Bem-vindo ao Setup da Base de Conhecimento
           </h1>
           <p className="text-sm text-slate-400 leading-relaxed">
-            Centralizador para consulta rápida de scripts de atendimento e normativas internas com gestão de acesso corporativo.
+            Identificamos que o banco de dados não possui usuários. Crie o perfil de **Administrador Geral** para ter acesso total ao gerenciamento de operadores e scripts técnicos.
           </p>
         </div>
 
@@ -59,7 +92,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Painel Direito - Formulário de Autenticação */}
+      {/* Painel Direito - Formulário do Primeiro Admin */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-slate-900 lg:bg-slate-950">
         <div className="w-full max-w-md space-y-8 bg-slate-900 p-8 sm:p-10 rounded-2xl border border-slate-800 shadow-2xl">
           <div>
@@ -69,16 +102,33 @@ export default function LoginPage() {
               </div>
               <span className="text-sm font-bold text-white tracking-wider uppercase">SCP Enterprise</span>
             </div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Autenticação</h2>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Primeiro Acesso</h2>
             <p className="text-xs text-slate-400 mt-1">
-              Informe suas credenciais corporativas para prosseguir.
+              Preencha os dados do Administrador Principal para liberar o sistema.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSetup} className="space-y-4">
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                E-mail Corporativo
+                Nome do Administrador *
+              </label>
+              <div className="relative">
+                <User size={18} className="absolute left-3.5 top-3 text-slate-500" />
+                <input
+                  type="text"
+                  required
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  placeholder="Ex: Administrador Geral"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                E-mail Corporativo *
               </label>
               <div className="relative">
                 <Mail size={18} className="absolute left-3.5 top-3 text-slate-500" />
@@ -87,7 +137,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="usuario@empresa.com"
+                  placeholder="admin@empresa.com"
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition"
                 />
               </div>
@@ -95,7 +145,7 @@ export default function LoginPage() {
 
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                Senha de Acesso
+                Senha Master *
               </label>
               <div className="relative">
                 <Lock size={18} className="absolute left-3.5 top-3 text-slate-500" />
@@ -118,11 +168,11 @@ export default function LoginPage() {
               {loading ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
-                  <span>Autenticando...</span>
+                  <span>Criando Administrador...</span>
                 </>
               ) : (
                 <>
-                  <span>Acessar</span>
+                  <span>Cadastrar</span>
                   <ArrowRight size={18} />
                 </>
               )}
@@ -131,7 +181,7 @@ export default function LoginPage() {
 
           <div className="pt-4 border-t border-slate-800/80 text-center">
             <p className="text-[11px] text-slate-500">
-              Acesso monitorado. Em caso de dúvidas, acione a equipe de Service Desk ou TI.
+              Esta ação criará a conta máster com perfil ADMIN.
             </p>
           </div>
         </div>

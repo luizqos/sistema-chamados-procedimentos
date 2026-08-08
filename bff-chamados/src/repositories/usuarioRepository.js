@@ -35,7 +35,7 @@ class UsuarioRepository {
 
   async buscarPorId(id) {
     return await prisma.usuario.findUnique({
-      where: { id },
+      where: { id: Number(id) },
       select: {
         id: true,
         nome: true,
@@ -43,6 +43,20 @@ class UsuarioRepository {
         role: true,
         created_at: true,
       },
+    });
+  }
+
+  async contarUsuarios() {
+    return await prisma.usuario.count();
+  }
+
+  async contarAdmins() {
+    return await prisma.usuario.count({
+      where: {
+        role: {
+          nome: 'ADMIN'
+        }
+      }
     });
   }
 
@@ -108,12 +122,6 @@ class UsuarioRepository {
         ativo: true,
         role: { select: { id: true, nome: true } }
       }
-    });
-  }
-
-  async buscarPorId(id) {
-    return await prisma.usuario.findUnique({
-      where: { id: Number(id) }
     });
   }
 

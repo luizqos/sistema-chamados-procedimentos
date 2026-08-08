@@ -46,7 +46,12 @@ class ProcedimentoRepository {
   async obterPorId(id) {
     return await prisma.procedimento.findUnique({
       where: { id: Number(id) },
-      include: { anexos: true }
+      include: {
+        usuario: {
+          select: { id: true, nome: true, email: true }
+        },
+        anexos: true
+      }
     });
   }
 

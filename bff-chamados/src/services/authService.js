@@ -90,6 +90,44 @@ class AuthService {
     return this._formatarRetornoUsuario(usuario);
   }
 
+  async verificarStatusSistema() {
+    const totalAdmins = await usuarioRepository.contarAdmins();
+    return {
+      precisaSetupInicial: totalAdmins === 0
+    };
+  }
+
+  async cadastrarAdminInicial({ nome, email, senha }) {
+    if (!nome || !email || !senha) {
+      const error = new Error('Nome, e-mail e senha são obrigatórios.');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const totalAdmins = await usuarioRepository.contarAdmins();
+    if (totalAdmins > 0) {
+      const error = new Error('Acesso negado: O sistema já possui um administrador cadastrado.');
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const roleAdmin = await usuarioRepository.buscarRolePorNome('ADMIN');
+    if (!roleAdmin) {
+      const error = new Error('Role ADMIN não encontrada no banco de dados. Execute a seed de roles.');
+      error.statusCode = 500;
+      throw error;
+    }
+
+    const senhaHash = await bcrypt.hash(senha, 10);
+
+    return await usuarioRepository.criar({
+      nome,
+      email,
+      senha: senhaHash,
+      roleId: roleAdmin.id
+    });
+  }
+
   _formatarRetornoUsuario(usuario) {
     const permissoesArray = usuario.role?.permissoes
       ? usuario.role.permissoes.map((item) => item.permissao.chave)

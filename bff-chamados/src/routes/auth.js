@@ -46,4 +46,7 @@ router.post('/login', (req, res) => authController.login(req, res));
  */
 router.get('/me', autenticar, (req, res) => authController.me(req, res));
 
+router.get('/setup-status', (req, res) => authController.verificarSetup(req, res));
+router.post('/setup-inicial', (req, res) => authController.setupInicial(req, res));
+
 module.exports = router;
