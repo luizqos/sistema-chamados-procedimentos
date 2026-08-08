@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { WithPermission } from '../../src/components/WithPermission';
-import { usuarioService } from '../../src/services/usuarioService';
-import { useAuth } from '../../src/contexts/AuthContext';
-import ModalNovoUsuario from '../../src/components/ModalNovoUsuario';
+import { WithPermission } from '../components/WithPermission';
+import { usuarioService } from '../services/usuarioService';
+import { useAuth } from '../contexts/AuthContext';
+import ModalNovoUsuario from '../components/ModalNovoUsuario';
 import toast from 'react-hot-toast';
 import {
   Users,

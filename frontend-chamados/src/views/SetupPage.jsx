@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '../../src/services/api';
+import api from '../services/api';
 import toast from 'react-hot-toast';
 import { ShieldAlert, User, Mail, Lock, ArrowRight, Loader2, Building2 } from 'lucide-react';
 

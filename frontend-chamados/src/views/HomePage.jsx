@@ -4,21 +4,21 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
-import { useAuth } from '../src/contexts/AuthContext';
-import { useProcedimentos } from '../src/hooks/useProcedimentos';
-import Sidebar from '../src/components/Sidebar';
-import ModalNovoProcedimento from '../src/components/ModalNovoProcedimento';
-import PainelProcedimento from '../src/components/PainelProcedimento';
-import EmptyState from '../src/components/EmptyState';
-import { dialog } from '../src/utils/dialogs';
+import { useAuth } from '../contexts/AuthContext';
+import { useProcedimentos } from '../hooks/useProcedimentos';
+import Sidebar from '../components/Sidebar';
+import ModalNovoProcedimento from '../components/ModalNovoProcedimento';
+import PainelProcedimento from '../components/PainelProcedimento';
+import EmptyState from '../components/EmptyState';
+import { dialog } from '../utils/dialogs';
 
-export default function Home() {
+export default function HomePage() {
   const router = useRouter();
   const { user, signed, loading: authLoading, logout } = useAuth();
 
-  const [busca, setBusca] = useState<string>('');
-  const [copiado, setCopiado] = useState<boolean>(false);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [busca, setBusca] = useState('');
+  const [copiado, setCopiado] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {
     procedimentos,
@@ -49,7 +49,7 @@ export default function Home() {
     }
   }, [busca, carregarProcedimentos, signed]);
 
-  const handleCopiarTexto = (): void => {
+  const handleCopiarTexto = () => {
     if (!selecionado) return;
     navigator.clipboard.writeText(selecionado.script_passo_a_passo);
     setCopiado(true);
@@ -57,7 +57,7 @@ export default function Home() {
     setTimeout(() => setCopiado(false), 2000);
   };
 
-  const handleDeletar = async (id: number): Promise<void> => {
+  const handleDeletar = async (id) => {
     const confirmado = await dialog.confirmarExclusao({
       titulo: 'Excluir Procedimento?',
       texto: 'Esta ação removerá o procedimento e todos os seus anexos do servidor.',
@@ -68,8 +68,8 @@ export default function Home() {
         await excluirProcedimento(id);
         toast.success('Procedimento excluído com sucesso!');
         carregarProcedimentos({ busca, page: 1, limit: 15 }, true);
-      } catch (err: unknown) {
-        const mensagemErro = err instanceof Error ? err.message : 'Erro ao excluir procedimento';
+      } catch (err) {
+        const mensagemErro = err?.message || 'Erro ao excluir procedimento';
         toast.error(mensagemErro);
       }
     }
@@ -89,9 +89,9 @@ export default function Home() {
 
   const procedimentoComAutor = selecionado
     ? {
-      ...selecionado,
-      usuario: selecionado.usuario || procedimentos.find((p) => p.id === selecionado.id)?.usuario,
-    }
+        ...selecionado,
+        usuario: selecionado.usuario || procedimentos.find((p) => p.id === selecionado.id)?.usuario,
+      }
     : null;
 
   return (

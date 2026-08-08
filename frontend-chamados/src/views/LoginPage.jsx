@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../src/contexts/AuthContext';
-import api from '../../src/services/api';
+import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
 import toast from 'react-hot-toast';
 import { Lock, Mail, Loader2, ShieldCheck, ArrowRight, Building2 } from 'lucide-react';
 
