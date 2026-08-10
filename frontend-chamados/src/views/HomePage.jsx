@@ -31,14 +31,12 @@ export default function HomePage() {
     excluirProcedimento
   } = useProcedimentos();
 
-  // Redireciona para /login se não houver usuário autenticado
   useEffect(() => {
     if (!authLoading && !signed) {
       router.push('/login');
     }
   }, [signed, authLoading, router]);
 
-  // Carrega a lista de procedimentos somente após validar a autenticação
   useEffect(() => {
     if (signed) {
       const timer = setTimeout(() => {
@@ -75,7 +73,6 @@ export default function HomePage() {
     }
   };
 
-  // Tela de carregamento enquanto valida a sessão local
   if (authLoading || !signed) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-slate-100 text-slate-600">

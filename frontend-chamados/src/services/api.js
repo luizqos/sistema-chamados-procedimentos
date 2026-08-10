@@ -20,8 +20,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401 && typeof window !== 'undefined') {
       const urlRequisicao = error.config?.url || '';
-      const ehRotaDeLogin = urlRequisicao.includes('/auth/login');
-
+      const ehRotaDeLogin = urlRequisicao.includes('/auth/login') || urlRequisicao.includes('/auth/sso/microsoft');
       if (!ehRotaDeLogin && window.location.pathname !== '/login') {
         localStorage.removeItem('@chamados:token');
         localStorage.removeItem('@chamados:user');

@@ -30,6 +30,9 @@ services:
       PORT: 3001
       JWT_SECRET: ${JWT_SECRET}
       CORS_ORIGIN: ${CORS_ORIGIN}
+      MS_CLIENT_ID: ${MS_CLIENT_ID}
+      MS_TENANT_ID: ${MS_TENANT_ID}
+      MS_URL: ${MS_URL}
     volumes:
       - ./bff-chamados/uploads:/app/uploads
     depends_on:
@@ -42,12 +45,16 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_MS_CLIENT_ID: ${NEXT_PUBLIC_MS_CLIENT_ID}
+        NEXT_PUBLIC_MS_TENANT_ID: ${NEXT_PUBLIC_MS_TENANT_ID}
     container_name: frontend_app
     restart: always
     ports:
       - "${FRONTEND_PORT}:3000"
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_MS_CLIENT_ID: ${NEXT_PUBLIC_MS_CLIENT_ID}
+      NEXT_PUBLIC_MS_TENANT_ID: ${NEXT_PUBLIC_MS_TENANT_ID}
     depends_on:
       - bff
 

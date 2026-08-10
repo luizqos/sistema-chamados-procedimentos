@@ -13,10 +13,16 @@ class AuthController {
 
   async me(req, res) {
     try {
-      const usuario = await authService.obterSessao(req.usuario.id);
+      const usuarioId = req.user.id;
+      const usuario = await usuarioRepository.buscarPorId(usuarioId);
+
+      if (!usuario || !usuario.ativo) {
+        return res.status(401).json({ error: 'Sessão inválida ou usuário inativo.' });
+      }
+
       return res.json(usuario);
     } catch (error) {
-      return res.status(error.statusCode || 500).json({ error: error.message });
+      return res.status(500).json({ error: 'Erro ao buscar dados do usuário.' });
     }
   }
 

@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const authController = require('../controllers/authController');
+const ssoController = require('../controllers/ssoController');
 const { autenticar } = require('../middlewares/authMiddleware');
 
 /**
@@ -48,5 +49,6 @@ router.get('/me', autenticar, (req, res) => authController.me(req, res));
 
 router.get('/setup-status', (req, res) => authController.verificarSetup(req, res));
 router.post('/setup-inicial', (req, res) => authController.setupInicial(req, res));
+router.post('/sso/microsoft', (req, res) => ssoController.loginMicrosoft(req, res));
 
 module.exports = router;

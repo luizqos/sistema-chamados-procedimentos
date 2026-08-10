@@ -9,7 +9,7 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }) {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [roleId, setRoleId] = useState(2); // 2 = OPERADOR por padrão
+  const [roleId, setRoleId] = useState(2);
   const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
@@ -29,8 +29,6 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }) {
       toast.success('Usuário cadastrado com sucesso!');
       onSuccess();
       onClose();
-
-      // Limpa formulário
       setNome('');
       setEmail('');
       setSenha('');

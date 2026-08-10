@@ -15,7 +15,6 @@ export default function SetupPage() {
 
   const router = useRouter();
 
-  // ✅ Proteção da rota /setup: redireciona para /login se já existirem usuários
   useEffect(() => {
     async function checarPermissaoSetup() {
       try {

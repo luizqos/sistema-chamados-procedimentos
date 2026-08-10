@@ -128,6 +128,21 @@ class AuthService {
     });
   }
 
+  gerarTokenInterno(usuario) {
+    const payload = {
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      role: usuario.role?.nome || usuario.role || 'OPERADOR',
+    };
+
+    const secret = process.env.JWT_SECRET || 'sua_chave_secreta';
+
+    return jwt.sign(payload, secret, {
+      expiresIn: '8h',
+    });
+  }
+
   _formatarRetornoUsuario(usuario) {
     const permissoesArray = usuario.role?.permissoes
       ? usuario.role.permissoes.map((item) => item.permissao.chave)

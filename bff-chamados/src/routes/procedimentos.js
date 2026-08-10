@@ -1,6 +1,3 @@
-
-// Exemplo: Para proteger rotas com autenticação futuramente, adicione 'authMiddleware':
-// router.post('/', authMiddleware, controller.criar);
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/procedimentoController');
