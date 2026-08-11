@@ -1,5 +1,6 @@
 /** @type {import('next').NextStyle}.NextConfig */
 const nextConfig = {
+  basePath: '/scp',
   typescript: {
      ignoreBuildErrors: true,
   },
