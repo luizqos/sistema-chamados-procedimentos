@@ -40,6 +40,7 @@ class UsuarioRepository {
         id: true,
         nome: true,
         email: true,
+        ativo: true,
         role: true,
         created_at: true,
       },

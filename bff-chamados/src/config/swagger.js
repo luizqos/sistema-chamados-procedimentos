@@ -1,6 +1,10 @@
 const path = require('path');
 const swaggerJSDoc = require('swagger-jsdoc');
 
+const getAbsolutePath = (relativePath) => {
+  return path.join(__dirname, relativePath).replace(/\\/g, '/');
+};
+
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -31,8 +35,8 @@ const options = {
     ],
   },
   apis: [
-    path.join(__dirname, '../routes/**/*.js'),
-    path.join(__dirname, '../controllers/**/*.js'),
+    getAbsolutePath('../routes/*.js'),
+    getAbsolutePath('../controllers/*.js'),
   ],
 };
 

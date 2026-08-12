@@ -4,7 +4,7 @@ const prisma = require('../config/prisma');
 
 /**
  * @openapi
- * /health:
+ * /api/health:
  *   get:
  *     summary: Verifica a saúde da aplicação e conexão com o banco de dados
  *     tags: [Sistema]
@@ -47,7 +47,6 @@ const prisma = require('../config/prisma');
 router.get('/', async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
-
     res.status(200).json({
       status: 'OK',
       uptime: `${Math.floor(process.uptime())}s`,

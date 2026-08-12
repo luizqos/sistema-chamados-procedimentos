@@ -77,3 +77,26 @@ model ProcedimentoAnexo {
 
   @@map("procedimento_anexos")
 }
+
+enum TipoRegraSso {
+  EMAIL
+  DOMINIO
+}
+
+enum AcaoRegraSso {
+  PERMITIR
+  BLOQUEAR
+}
+
+model SsoRegra {
+  id        Int          @id @default(autoincrement())
+  tipo      TipoRegraSso
+  valor     String
+  acao      AcaoRegraSso
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  
+  @@unique([tipo, valor])
+  
+  @@map("sso_regras")
+}

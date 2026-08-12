@@ -5,8 +5,8 @@ const { autenticar, autorizar } = require('../middlewares/authMiddleware');
 /**
  * @swagger
  * tags:
- *   name: Usuários
- *   description: Endpoints para gestão de usuários e atribuição de papéis (Roles)
+ *   - name: Usuários
+ *     description: Endpoints para gestão de usuários e atribuição de papéis (Roles)
  */
 
 /**
@@ -55,7 +55,6 @@ const { autenticar, autorizar } = require('../middlewares/authMiddleware');
  *         description: Acesso negado (requer perfil ADMIN)
  *       500:
  *         description: Erro interno no servidor
- *
  *   post:
  *     summary: Cadastra um novo usuário ou operador
  *     tags: [Usuários]

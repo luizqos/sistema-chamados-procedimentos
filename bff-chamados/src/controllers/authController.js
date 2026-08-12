@@ -1,4 +1,5 @@
 const authService = require('../services/authService');
+const usuarioRepository = require('../repositories/usuarioRepository');
 
 class AuthController {
   async login(req, res) {
@@ -13,13 +14,16 @@ class AuthController {
 
   async me(req, res) {
     try {
-      const usuarioId = req.user.id;
-      const usuario = await usuarioRepository.buscarPorId(usuarioId);
+      const usuarioId = req.usuario?.id || req.usuarioId || req.user?.id;
 
+      if (!usuarioId) {
+        return res.status(401).json({ error: 'Sessão inválida ou usuário não autenticado.' });
+      }
+
+      const usuario = await usuarioRepository.buscarPorId(usuarioId);
       if (!usuario || !usuario.ativo) {
         return res.status(401).json({ error: 'Sessão inválida ou usuário inativo.' });
       }
-
       return res.json(usuario);
     } catch (error) {
       return res.status(500).json({ error: 'Erro ao buscar dados do usuário.' });

@@ -55,6 +55,46 @@ class SsoRepository {
       where: { nome },
     });
   }
+  
+  async buscarRegrasAplicaveis(email, dominio) {
+    return await prisma.ssoRegra.findMany({
+      where: {
+        OR: [
+          { tipo: 'EMAIL', valor: email.toLowerCase() },
+          { tipo: 'DOMINIO', valor: dominio.toLowerCase() }
+        ]
+      }
+    });
+  }
+
+  async oSistemaExigePermissaoExplicita() {
+    const total = await prisma.ssoRegra.count({
+      where: { acao: 'PERMITIR' }
+    });
+    return total > 0;
+  }
+
+  async listarRegras() {
+    return await prisma.ssoRegra.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+  }
+
+  async criarRegra(dados) {
+    return await prisma.ssoRegra.create({
+      data: {
+        tipo: dados.tipo,
+        valor: dados.valor.toLowerCase(),
+        acao: dados.acao
+      }
+    });
+  }
+
+  async deletarRegra(id) {
+    return await prisma.ssoRegra.delete({
+      where: { id: Number(id) }
+    });
+  }
 }
 
 module.exports = new SsoRepository();
