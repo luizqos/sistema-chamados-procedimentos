@@ -123,7 +123,7 @@ export default function LoginPage() {
           </p>
         </div>
         <div className="relative z-10 text-xs text-slate-500">
-          © {new Date().getFullYear()} SCP Enterprise. Todos os direitos reservados.
+          © {new Date().getFullYear()} SPC. Todos os direitos reservados.
         </div>
       </div>
 
