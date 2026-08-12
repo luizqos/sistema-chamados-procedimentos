@@ -69,8 +69,8 @@ export default function SetupPage() {
             <Building2 size={24} />
           </div>
           <div>
-            <h2 className="text-base font-bold text-white tracking-wide uppercase">SCP Enterprise</h2>
-            <p className="text-xs text-slate-400">Sistema de Chamados & Procedimentos</p>
+            <h2 className="text-base font-bold text-white tracking-wide uppercase">SPC</h2>
+            <p className="text-xs text-slate-400">Sistema de Procedimentos de Chamados</p>
           </div>
         </div>
 
