@@ -10,7 +10,8 @@ fs.readdirSync(routesPath).forEach((file) => {
 
   const routeName = file.replace('.js', '');
   const routeModule = require(path.join(routesPath, file));
-  const routePath = routeName === 'health' ? '/health' : `/api/${routeName}`;
+  
+  const routePath = `/api/${routeName}`;
 
   router.use(routePath, routeModule);
   console.log(`🚀 Rota registrada: ${routePath} -> routes/${file}`);
