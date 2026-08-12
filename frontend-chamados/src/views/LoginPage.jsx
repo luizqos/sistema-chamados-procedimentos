@@ -71,6 +71,7 @@ export default function LoginPage() {
       await msalInstance.initialize();
       await instance.loginRedirect(loginRequest);
     } catch (err) {
+      console.log('erro>',err);
       console.error('Erro ao redirecionar SSO:', err);
       toast.error('Erro ao conectar com a Microsoft.');
       setLoading(false);
