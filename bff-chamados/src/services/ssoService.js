@@ -26,7 +26,7 @@ class SsoService {
 
     if (usuario) {
       if (usuario.ativo === false) {
-        throw new Error('Usuário inativado. Entre em contato com o administrador do sistema.');
+        throw new Error('Acesso restrito. Entre em contato com o administrador do sistema.');
       }
       return usuario;
     }
