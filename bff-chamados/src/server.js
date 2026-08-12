@@ -9,8 +9,19 @@ const routes = require('./routes');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : [];
+
 app.use(cors({
-  origin: '*',
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`A origem ${origin} foi bloqueada pela política de CORS.`));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
