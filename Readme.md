@@ -66,6 +66,7 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgrespassword
 POSTGRES_DB=chamados_db
 POSTGRES_PORT=5432
+DATABASE_URL=postgresql://postgres:postgrespassword@localhost:5432/chamados_db?schema=public
 
 # --- BFF BACKEND ---
 BFF_PORT=3001
@@ -75,6 +76,12 @@ CORS_ORIGIN=http://localhost:3000
 # --- FRONTEND NEXT.JS ---
 FRONTEND_PORT=3000
 NEXT_PUBLIC_API_URL=http://localhost:3001
+ALLOWED_DEV_ORIGINS=localhost,127.0.0.1
+
+# --- MICROSOFT SSO (AZURE ENTRA ID) ---
+MS_URL="[https://login.microsoftonline.com](https://login.microsoftonline.com)"
+MS_CLIENT_ID="seu-client-id"
+MS_TENANT_ID="seu-tenant-id"
 
 ```
 

@@ -1,11 +1,14 @@
 import { PublicClientApplication } from '@azure/msal-browser';
 
+const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_URI || 
+  (typeof window !== 'undefined' ? `${window.location.origin}/login` : 'http://localhost:3000/login');
+
 export const msalConfig = {
   auth: {
     clientId: process.env.NEXT_PUBLIC_MS_CLIENT_ID || '',
-    authority: `https://login.microsoftonline.com/${process.env.NEXT_PUBLIC_MS_TENANT_ID || 'common'}`,
-    redirectUri: typeof window !== 'undefined' ? `${window.location.origin}/login` : 'http://localhost:3000/login',
-    postLogoutRedirectUri: typeof window !== 'undefined' ? `${window.location.origin}/login` : 'http://localhost:3000/login',
+    authority: `${process.env.NEXT_PUBLIC_MS_URL}/${process.env.NEXT_PUBLIC_MS_TENANT_ID || 'common'}`,
+    redirectUri,
+    postLogoutRedirectUri: redirectUri,
     navigateToLoginRequestUrl: false,
   },
   cache: {

@@ -27,7 +27,7 @@ services:
       - "${BFF_PORT}:3001"
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public"
-      PORT: 3001
+      PORT: ${BFF_PORT}
       JWT_SECRET: ${JWT_SECRET}
       CORS_ORIGIN: ${CORS_ORIGIN}
       MS_CLIENT_ID: ${MS_CLIENT_ID}
@@ -45,18 +45,23 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-        NEXT_PUBLIC_MS_CLIENT_ID: ${NEXT_PUBLIC_MS_CLIENT_ID}
-        NEXT_PUBLIC_MS_TENANT_ID: ${NEXT_PUBLIC_MS_TENANT_ID}
+        NEXT_PUBLIC_MS_CLIENT_ID: ${MS_CLIENT_ID}
+        NEXT_PUBLIC_MS_TENANT_ID: ${MS_TENANT_ID}
+        NEXT_PUBLIC_MS_URL: ${MS_URL}
+        NEXT_PUBLIC_REDIRECT_URI: ${REDIRECT_URI}
+        ALLOWED_DEV_ORIGINS: ${ALLOWED_DEV_ORIGINS}
     container_name: frontend_app
     restart: always
     ports:
       - "${FRONTEND_PORT}:3000"
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-      NEXT_PUBLIC_MS_CLIENT_ID: ${NEXT_PUBLIC_MS_CLIENT_ID}
-      NEXT_PUBLIC_MS_TENANT_ID: ${NEXT_PUBLIC_MS_TENANT_ID}
+      NEXT_PUBLIC_MS_CLIENT_ID: ${MS_CLIENT_ID}
+      NEXT_PUBLIC_MS_TENANT_ID: ${MS_TENANT_ID}
+      NEXT_PUBLIC_MS_URL: ${MS_URL}
+      NEXT_PUBLIC_REDIRECT_URI: ${REDIRECT_URI}
+      ALLOWED_DEV_ORIGINS: ${ALLOWED_DEV_ORIGINS}
     depends_on:
       - bff
-
 volumes:
   postgres_data:
