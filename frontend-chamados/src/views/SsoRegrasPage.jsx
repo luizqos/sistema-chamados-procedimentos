@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import { WithPermission } from '../components/WithPermission';
 import { ssoRegrasService } from '../services/ssoRegrasService';
 import { dialog } from '../utils/dialogs';
-import ModalNovaRegraSso from '../components/ModalNovaRegraSso';
+import ModalNovaRegraSso from '../components/modal/ModalNovaRegraSso';
 
 export default function SsoRegrasPage() {
   const [regras, setRegras] = useState([]);

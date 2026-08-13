@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { usuarioService } from '../services/usuarioService';
+import { usuarioService } from '../../services/usuarioService';
 import toast from 'react-hot-toast';
 import { X, Loader2, UserPlus } from 'lucide-react';
 

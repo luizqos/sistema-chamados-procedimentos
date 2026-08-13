@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Search, Plus, Loader2, User, Shield, Users, Settings, LogOut } from 'lucide-react';
-import BotaoTema from './BotaoTema'; // <-- Importando o botão de tema
+import BotaoTema from './button/BotaoTema'; // <-- Importando o botão de tema
 
 export default function Sidebar({
   busca,

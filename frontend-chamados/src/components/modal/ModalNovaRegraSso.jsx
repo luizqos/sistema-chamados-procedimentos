@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { X, Loader2, ShieldPlus } from 'lucide-react';
-import { ssoRegrasService } from '../services/ssoRegrasService';
+import { ssoRegrasService } from '../../services/ssoRegrasService';
 
 export default function ModalNovaRegraSso({ isOpen, onClose, onSuccess }) {
   const [tipo, setTipo] = useState('DOMINIO');

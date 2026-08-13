@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { WithPermission } from '../components/WithPermission';
 import { usuarioService } from '../services/usuarioService';
 import { useAuth } from '../contexts/AuthContext';
-import ModalNovoUsuario from '../components/ModalNovoUsuario';
+import ModalNovoUsuario from '../components/modal/ModalNovoUsuario';
 import toast from 'react-hot-toast';
 import {
   Users,
