@@ -17,10 +17,10 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
   const [progressoAtual, setProgressoAtual] = useState(0);
   const [statusTexto, setStatusTexto] = useState('');
-  
+
   const uploadEmAndamentoRef = useRef(false);
   const modalFechadaForcadaRef = useRef(false);
-  
+
   const { registrarOuAtualizarUpload, removerUpload } = useUpload();
 
   const formatBytes = (bytes) => {
@@ -58,10 +58,12 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   const handleCloseModal = () => {
     if (uploadEmAndamentoRef.current) {
       modalFechadaForcadaRef.current = true;
-      toast('O upload continuará no card em segundo plano de onde parou.', { icon: 'ℹ️' });
+      toast('O upload continuará em segundo plano pelo card flutuante.', { icon: 'ℹ️' });
+      onClose();
+    } else {
+      limparFormulario();
+      onClose();
     }
-    limparFormulario();
-    onClose();
   };
 
   const handleSubmit = async (e) => {
@@ -73,6 +75,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
     try {
       setStatusTexto('Criando procedimento...');
+
       const novoProcedimento = await procedimentoService.criar({
         titulo,
         descricao,
@@ -95,7 +98,6 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
                 `Enviando (${i + 1}/${arquivos.length}): ${formatBytes(progressData.loaded)} de ${formatBytes(progressData.total)} (${progressData.percent}%)`
               );
 
-              // Se o usuário fechar o modal no meio, o card flutuante assume exatamente da porcentagem atual
               if (modalFechadaForcadaRef.current) {
                 registrarOuAtualizarUpload(cardId, {
                   nome: file.name,
@@ -105,7 +107,6 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               }
             });
 
-            // Se terminou com o modal fechado, atualiza o card para sucesso e remove depois
             if (modalFechadaForcadaRef.current) {
               registrarOuAtualizarUpload(cardId, { nome: file.name, progresso: 100, status: 'concluido' });
               setTimeout(() => removerUpload(cardId), 5000);
@@ -127,7 +128,11 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
           onSuccess();
           onClose();
           limparFormulario();
+        } else {
+          onSuccess();
+          limparFormulario();
         }
+
       } else {
         toast.success('Procedimento cadastrado com sucesso!');
         onSuccess();
@@ -160,15 +165,15 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   return (
     <div className="fixed inset-0 bg-slate-900/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 text-slate-900">
-        
+
         <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 bg-slate-50">
           <div>
             <h3 className="text-lg font-bold text-slate-900">Novo Procedimento</h3>
             <p className="text-xs text-slate-500 mt-0.5">Cadastre a tratativa padrão e anexe mídias.</p>
           </div>
-          <button 
+          <button
             type="button"
-            onClick={handleCloseModal} 
+            onClick={handleCloseModal}
             className="text-slate-400 hover:text-slate-600 transition p-1 rounded-lg hover:bg-slate-200/50"
           >
             <X size={20} />
@@ -178,10 +183,10 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
         <form onSubmit={handleSubmit} className="p-6">
           <div className="mb-4">
             <label className="block font-semibold text-xs text-slate-700 mb-1.5">Título do Procedimento *</label>
-            <input 
-              type="text" 
-              required 
-              value={titulo} 
+            <input
+              type="text"
+              required
+              value={titulo}
               onChange={e => setTitulo(e.target.value)}
               disabled={loading}
               placeholder="Ex: Reset de Senha do Roteador Wi-Fi"
@@ -191,9 +196,9 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
           <div className="mb-4">
             <label className="block font-semibold text-xs text-slate-700 mb-1.5">Descrição Curta</label>
-            <input 
-              type="text" 
-              value={descricao} 
+            <input
+              type="text"
+              value={descricao}
               onChange={e => setDescricao(e.target.value)}
               disabled={loading}
               placeholder="Ex: Utilizado para clientes em conexão de Fibra Óptica"
@@ -203,10 +208,10 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
           <div className="mb-4">
             <label className="block font-semibold text-xs text-slate-700 mb-1.5">Passo a Passo / Script *</label>
-            <textarea 
-              required 
-              rows={6} 
-              value={script} 
+            <textarea
+              required
+              rows={6}
+              value={script}
               onChange={e => setScript(e.target.value)}
               disabled={loading}
               placeholder="Digite as instruções..."
@@ -224,9 +229,9 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
             <div className="border-2 border-dashed border-slate-300 hover:border-sky-500 rounded-lg p-4 text-center bg-slate-50 transition cursor-pointer">
               <Upload size={24} className="mx-auto mb-2 text-sky-600" />
-              <input 
-                type="file" 
-                multiple 
+              <input
+                type="file"
+                multiple
                 accept="image/*,video/*"
                 onChange={handleFileChange}
                 disabled={loading}
@@ -260,19 +265,18 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
-            <button 
-              type="button" 
-              onClick={handleCloseModal} 
+            <button
+              type="button"
+              onClick={handleCloseModal}
               className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition"
             >
               {loading ? 'Fechar (Ir para card flutuante)' : 'Cancelar'}
             </button>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={loading || !!erroValidacao}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white text-xs font-semibold transition ${
-                loading || !!erroValidacao ? 'bg-slate-400 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-700'
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white text-xs font-semibold transition ${loading || !!erroValidacao ? 'bg-slate-400 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-700'
+                }`}
             >
               {loading && <Loader2 size={14} className="animate-spin" />}
               {loading ? 'Enviando Anexos...' : 'Salvar Procedimento'}
