@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Providers from "@/src/components/Providers";
+import { UploadProvider } from '@/src/contexts/UploadContext';
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -15,9 +16,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
-        <Providers>
-          {children}
-        </Providers>
+        <UploadProvider>
+          <Providers>
+            {children}
+          </Providers>
+        </UploadProvider>
       </body>
     </html>
   );

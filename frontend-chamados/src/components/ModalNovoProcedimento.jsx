@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { procedimentoService } from '../services/procedimentoService';
+import { useUpload } from '../context/UploadContext';
 import { X, Upload, AlertCircle, Loader2 } from 'lucide-react';
 import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../utils/constants';
 
@@ -14,15 +15,9 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   const [erroValidacao, setErroValidacao] = useState('');
   const [loading, setLoading] = useState(false);
 
-  if (!isOpen) return null;
+  const { iniciarUploadBackground } = useUpload();
 
-  const formatBytes = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+  if (!isOpen) return null;
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -55,7 +50,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
     setLoading(true);
 
     try {
-      // 1. Cria o procedimento imediatamente
+      // 1. Cria o procedimento imediatamente no banco
       const novoProcedimento = await procedimentoService.criar({
         titulo,
         descricao,
@@ -64,81 +59,22 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
       toast.success('Procedimento cadastrado com sucesso!');
       
-      // Fecha a modal e limpa os campos instantaneamente para liberar o usuário
+      // 2. Fecha a modal imediatamente para liberar o usuário
       onSuccess();
       onClose();
+      
+      // Limpa os campos da modal
       setTitulo('');
       setDescricao('');
       setScript('');
       setArquivos([]);
       setErroValidacao('');
 
-      // 2. Dispara o upload de cada arquivo de forma assíncrona (Background)
+      // 3. Se houver arquivos, dispara o upload para o contexto global em segundo plano
       if (arquivos.length > 0) {
-        (async () => {
-          for (let file of arquivos) {
-            // ID único para atualizar o mesmo toast dinamicamente
-            const toastId = `upload-${file.name}`;
-
-            // Exibe o toast inicial com barra em 0%
-            toast.custom(
-              (t) => (
-                <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-slate-900 text-white shadow-lg rounded-xl pointer-events-auto flex p-4 border border-slate-800`}>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="text-xs font-bold text-sky-400 truncate max-w-[220px]">
-                        Enviando: {file.name}
-                      </p>
-                      <span className="text-xs font-semibold text-slate-300">0%</span>
-                    </div>
-                    <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-                      <div className="bg-sky-500 h-full transition-all duration-150" style={{ width: '0%' }}></div>
-                    </div>
-                    <p className="text-[10px] text-slate-400 mt-1">Aguarde o progresso...</p>
-                  </div>
-                </div>
-              ),
-              { id: toastId, duration: Infinity }
-            );
-
-            try {
-              await procedimentoService.enviarAnexo(novoProcedimento.id, file, (progressData) => {
-                // Atualiza o toast em tempo real com a porcentagem e bytes carregados
-                toast.custom(
-                  (t) => (
-                    <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-slate-900 text-white shadow-lg rounded-xl pointer-events-auto flex p-4 border border-slate-800`}>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <p className="text-xs font-bold text-sky-400 truncate max-w-[220px]" title={file.name}>
-                            Enviando: {file.name}
-                          </p>
-                          <span className="text-xs font-semibold text-slate-300">{progressData.percent}%</span>
-                        </div>
-                        <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-                          <div 
-                            className="bg-sky-500 h-full transition-all duration-150 ease-out" 
-                            style={{ width: `${progressData.percent}%` }}
-                          ></div>
-                        </div>
-                        <div className="flex justify-between items-center text-[10px] text-slate-400 mt-1">
-                          <span>{formatBytes(progressData.loaded)} de {formatBytes(progressData.total)}</span>
-                          <span>Segundo plano</span>
-                        </div>
-                      </div>
-                    </div>
-                  ),
-                  { id: toastId, duration: Infinity }
-                );
-              });
-
-              // Sucesso ao finalizar o upload deste arquivo
-              toast.success(`Anexo "${file.name}" enviado com sucesso!`, { id: toastId, duration: 4000 });
-            } catch (err) {
-              console.error(`Erro ao enviar anexo ${file.name}:`, err);
-              toast.error(`Falha ao enviar o anexo "${file.name}".`, { id: toastId, duration: 5000 });
-            }
-          }
-        })();
+        arquivos.forEach((file) => {
+          iniciarUploadBackground(novoProcedimento.id, file);
+        });
       }
 
     } catch (err) {
@@ -156,9 +92,10 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
         <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 bg-slate-50">
           <div>
             <h3 className="text-lg font-bold text-slate-900">Novo Procedimento</h3>
-            <p className="text-xs text-slate-500 mt-0.5">Cadastre a tratativa padrão e anexe mídias pesadas em background.</p>
+            <p className="text-xs text-slate-500 mt-0.5">Cadastre o procedimento. Os anexos pesados irão para segundo plano ao salvar.</p>
           </div>
           <button 
+            type="button"
             onClick={onClose} 
             disabled={loading}
             className="text-slate-400 hover:text-slate-600 transition p-1 rounded-lg hover:bg-slate-200/50"
@@ -208,7 +145,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               value={script} 
               onChange={e => setScript(e.target.value)}
               disabled={loading}
-              placeholder="Digite as instruções. Suporta Markdown, listas e blocos de código..."
+              placeholder="Digite as instruções..."
               className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-slate-900 text-slate-100 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
@@ -220,7 +157,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
             </label>
 
             <div className="bg-slate-100 p-3 rounded-lg text-xs text-slate-600 mb-3 space-y-0.5 border border-slate-200">
-              <div><strong>Formatos aceitos:</strong> Imagens (PNG, JPG, WEBP, GIF) e Vídeos (MP4, WEBM, MKV, MOV, AVI)</div>
+              <div><strong>Formatos aceitos:</strong> Imagens e Vídeos</div>
               <div><strong>Tamanho máximo:</strong> Até {MAX_FILE_SIZE_MB} MB por arquivo</div>
             </div>
 
@@ -236,7 +173,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               />
               {arquivos.length > 0 && (
                 <div className="mt-2 text-xs text-sky-600 font-semibold">
-                  {arquivos.length} arquivo(s) selecionado(s) para upload em background
+                  {arquivos.length} arquivo(s) selecionado(s)
                 </div>
               )}
             </div>
@@ -268,7 +205,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               }`}
             >
               {loading && <Loader2 size={14} className="animate-spin" />}
-              {loading ? 'Salvando Registro...' : 'Salvar e Enviar'}
+              {loading ? 'Salvando...' : 'Salvar Procedimento'}
             </button>
           </div>
         </form>
