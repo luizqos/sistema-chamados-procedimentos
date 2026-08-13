@@ -5,6 +5,13 @@ import { API_URL } from '../utils/constants';
 export default function GaleriaAnexos({ anexos }) {
   if (!anexos || anexos.length === 0) return null;
 
+  const token = typeof window !== 'undefined' ? localStorage.getItem('@chamados:token') : '';
+  
+  const getMediaUrl = (caminho) => {
+    const caminhoCorrigido = caminho.startsWith('/') ? caminho : `/${caminho}`;
+    return `${API_URL}${caminhoCorrigido}?token=${token}`;
+  };
+
   return (
     <div className="mt-8">
       <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
@@ -17,16 +24,17 @@ export default function GaleriaAnexos({ anexos }) {
               {anexo.tipo === 'imagem' ? <ImageIcon size={14} /> : <Film size={14} />}
               <span className="truncate">{anexo.nome_original}</span>
             </div>
+            
             <div className="p-2 flex justify-center items-center min-h-[160px]">
               {anexo.tipo === 'imagem' ? (
-                <img 
-                  src={`${API_URL}${anexo.caminho_arquivo}`} 
-                  alt={anexo.nome_original} 
-                  className="max-w-full max-h-56 rounded object-contain" 
-                />
+                <img
+                   src={getMediaUrl(anexo.caminho_arquivo)}
+                   alt={anexo.nome_original}
+                   className="max-w-full max-h-56 rounded object-contain"
+                 />
               ) : (
                 <video controls className="w-full max-h-56 rounded">
-                  <source src={`${API_URL}${anexo.caminho_arquivo}`} type={anexo.mime_type} />
+                  <source src={getMediaUrl(anexo.caminho_arquivo)} type={anexo.mime_type} />
                 </video>
               )}
             </div>
