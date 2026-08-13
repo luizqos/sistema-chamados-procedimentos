@@ -6,7 +6,6 @@ const UploadContext = createContext({});
 export function UploadProvider({ children }) {
   const [uploadsAtivos, setUploadsAtivos] = useState([]);
 
-  // Adiciona ou atualiza um upload na lista global flutuante
   const registrarOuAtualizarUpload = (uploadId, dados) => {
     setUploadsAtivos((prev) => {
       const index = prev.findIndex((item) => item.id === uploadId);
@@ -37,7 +36,7 @@ function GlobalUploadWidget({ uploads }) {
   if (uploads.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full">
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-auto">
       {uploads.map((item) => (
         <div key={item.id} className="bg-slate-900 text-white p-4 rounded-xl shadow-2xl border border-slate-800 text-xs">
           <div className="flex justify-between items-center mb-1.5">
