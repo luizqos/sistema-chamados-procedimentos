@@ -2,11 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '../services/api';
+import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { ShieldAlert, User, Mail, Lock, ArrowRight, Loader2, Building2 } from 'lucide-react';
 
+import api from '../services/api';
+import BotaoIdiomaLogin from '../components/button/BotaoIdiomaLogin';
+
 export default function SetupPage() {
+  const t = useTranslations('Setup');
+  const tAuth = useTranslations('Auth');
+
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -53,13 +59,15 @@ export default function SetupPage() {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 text-slate-400 gap-3">
         <Loader2 size={24} className="animate-spin text-sky-500" />
-        <span className="text-xs">Verificando permissão de acesso...</span>
+        <span className="text-xs">{t('verificandoPermissao')}</span>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen w-full flex bg-slate-950 text-slate-100 font-sans antialiased">
+    <div className="min-h-screen w-full flex bg-slate-950 text-slate-100 font-sans antialiased relative">
+      <BotaoIdiomaLogin />
+
       {/* Painel Esquerdo - Banner de Setup */}
       <div className="hidden lg:flex lg:w-1/2 bg-slate-900 border-r border-slate-800/80 p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
@@ -70,19 +78,19 @@ export default function SetupPage() {
           </div>
           <div>
             <h2 className="text-base font-bold text-white tracking-wide uppercase">SPC</h2>
-            <p className="text-xs text-slate-400">Sistema de Procedimentos de Chamados</p>
+            <p className="text-xs text-slate-400">{tAuth('subtituloSistema')}</p>
           </div>
         </div>
 
         <div className="relative z-10 space-y-6 max-w-lg">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/60 border border-amber-500/30 text-amber-300 text-xs font-semibold">
-            <ShieldAlert size={14} /> Configuração Inicial do Sistema
+            <ShieldAlert size={14} /> {t('configInicial')}
           </div>
           <h1 className="text-3xl font-extrabold text-white leading-tight">
-            Bem-vindo ao Setup da Base de Conhecimento
+            {t('bemVindoSetup')}
           </h1>
           <p className="text-sm text-slate-400 leading-relaxed">
-            Identificamos que o banco de dados não possui usuários. Crie o perfil de **Administrador Geral** para ter acesso total ao gerenciamento de operadores e scripts técnicos.
+            {t('descricaoSetup')}
           </p>
         </div>
 
@@ -99,18 +107,18 @@ export default function SetupPage() {
               <div className="p-2 bg-sky-500/10 border border-sky-500/20 text-sky-400 rounded-lg">
                 <Building2 size={20} />
               </div>
-              <span className="text-sm font-bold text-white tracking-wider uppercase">SCP Enterprise</span>
+              <span className="text-sm font-bold text-white tracking-wider uppercase">SPC Enterprise</span>
             </div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Primeiro Acesso</h2>
+            <h2 className="text-2xl font-bold text-white tracking-tight">{t('primeiroAcesso')}</h2>
             <p className="text-xs text-slate-400 mt-1">
-              Preencha os dados do Administrador Principal para liberar o sistema.
+              {t('preenchaDadosAdmin')}
             </p>
           </div>
 
           <form onSubmit={handleSetup} className="space-y-4">
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                Nome do Administrador *
+                {t('nomeAdmin')}
               </label>
               <div className="relative">
                 <User size={18} className="absolute left-3.5 top-3 text-slate-500" />
@@ -127,7 +135,7 @@ export default function SetupPage() {
 
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                E-mail Corporativo *
+                {tAuth('emailCorretivo')}
               </label>
               <div className="relative">
                 <Mail size={18} className="absolute left-3.5 top-3 text-slate-500" />
@@ -144,7 +152,7 @@ export default function SetupPage() {
 
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                Senha Master *
+                {t('senhaMaster')}
               </label>
               <div className="relative">
                 <Lock size={18} className="absolute left-3.5 top-3 text-slate-500" />
@@ -162,16 +170,16 @@ export default function SetupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm rounded-xl transition duration-150 shadow-lg shadow-sky-600/20 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm rounded-xl transition duration-150 shadow-lg shadow-sky-600/20 disabled:opacity-50 disabled:cursor-not-allowed mt-2 cursor-pointer"
             >
               {loading ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
-                  <span>Criando Administrador...</span>
+                  <span>{t('criandoAdmin')}</span>
                 </>
               ) : (
                 <>
-                  <span>Cadastrar</span>
+                  <span>{t('cadastrar')}</span>
                   <ArrowRight size={18} />
                 </>
               )}
@@ -180,7 +188,7 @@ export default function SetupPage() {
 
           <div className="pt-4 border-t border-slate-800/80 text-center">
             <p className="text-[11px] text-slate-500">
-              Esta ação criará a conta máster com perfil ADMIN.
+              {t('avisoMaster')}
             </p>
           </div>
         </div>

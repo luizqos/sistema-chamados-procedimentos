@@ -73,5 +73,31 @@
     "emailEspecifico": "Specific Email (user@company.com)",
     "valor": "Value",
     "salvarRegra": "Save Rule"
+  },
+  "Auth": {
+    "verificandoSetup": "Checking system initialization...",
+    "subtituloSistema": "Support Procedure System",
+    "ambienteControlado": "Controlled Environment",
+    "bannerTitulo": "Operational Knowledge Base & Technical Procedures",
+    "bannerDescricao": "Centralizer for quick consultation of support scripts and internal regulations with corporate access management.",
+    "autenticacao": "Authentication",
+    "informeCredenciais": "Enter your corporate credentials to proceed.",
+    "emailCorretivo": "Corporate Email",
+    "senhaAcesso": "Password",
+    "acessar": "Sign In",
+    "entrarMicrosoft": "Sign in with Microsoft"
+  },
+  "Setup": {
+    "verificandoPermissao": "Checking access permission...",
+    "configInicial": "Initial System Setup",
+    "bemVindoSetup": "Welcome to the Knowledge Base Setup",
+    "descricaoSetup": "We identified that the database has no users. Create the General Administrator profile to gain full access to operators and technical scripts management.",
+    "primeiroAcesso": "First Access",
+    "preenchaDadosAdmin": "Fill in the Main Administrator details to unlock the system.",
+    "nomeAdmin": "Administrator Name *",
+    "senhaMaster": "Master Password *",
+    "criandoAdmin": "Creating Administrator...",
+    "cadastrar": "Register",
+    "avisoMaster": "This action will create the master account with the ADMIN role."
   }
 }

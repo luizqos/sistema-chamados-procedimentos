@@ -73,5 +73,31 @@
     "emailEspecifico": "E-mail Específico (usuario@empresa.com)",
     "valor": "Valor",
     "salvarRegra": "Salvar Regra"
+  },
+  "Auth": {
+    "verificandoSetup": "Verificando inicialização do sistema...",
+    "subtituloSistema": "Sistema de Procedimentos de Chamados",
+    "ambienteControlado": "Ambiente Controlado",
+    "bannerTitulo": "Base do Conhecimento Operacional & Procedimentos Técnicos",
+    "bannerDescricao": "Centralizador para consulta rápida de scripts de atendimento e normativas internas com gestão de acesso corporativo.",
+    "autenticacao": "Autenticação",
+    "informeCredenciais": "Informe suas credenciais corporativas para prosseguir.",
+    "emailCorretivo": "E-mail Corporativo",
+    "senhaAcesso": "Senha de Acesso",
+    "acessar": "Acessar",
+    "entrarMicrosoft": "Entrar com Microsoft"
+  },
+  "Setup": {
+    "verificandoPermissao": "Verificando permissão de acesso...",
+    "configInicial": "Configuração Inicial do Sistema",
+    "bemVindoSetup": "Bem-vindo ao Setup da Base de Conhecimento",
+    "descricaoSetup": "Identificamos que o banco de dados não possui usuários. Crie o perfil de Administrador Geral para ter acesso total ao gerenciamento de operadores e scripts técnicos.",
+    "primeiroAcesso": "Primeiro Acesso",
+    "preenchaDadosAdmin": "Preencha os dados do Administrador Principal para liberar o sistema.",
+    "nomeAdmin": "Nome do Administrador *",
+    "senhaMaster": "Senha Master *",
+    "criandoAdmin": "Criando Administrador...",
+    "cadastrar": "Cadastrar",
+    "avisoMaster": "Esta ação criará a conta máster com perfil ADMIN."
   }
 }
