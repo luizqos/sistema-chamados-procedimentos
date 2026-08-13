@@ -2,8 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { procedimentoService } from '../services/procedimentoService';
-import { useUpload } from '../contexts/UploadContext';
+import { procedimentoService } from '../../services/procedimentoService';
+import { useUpload } from '../../contexts/UploadContext';
 import { X, Upload, AlertCircle, Loader2 } from 'lucide-react';
 import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../utils/constants';
 
