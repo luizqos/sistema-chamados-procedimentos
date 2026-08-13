@@ -1,10 +1,35 @@
 const jwt = require('jsonwebtoken');
 
-function autenticar(req, res, next) {
+// TODO: AUTENTICAR ANTERIOR
+function autenticar2(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'Token não fornecido' });
 
   const [, token] = authHeader.split(' ');
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.usuario = decoded;
+    return next();
+  } catch (err) {
+    return res.status(401).json({ error: 'Token inválido ou expirado' });
+  }
+}
+
+function autenticar(req, res, next) {
+  let token = null;
+
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    [, token] = authHeader.split(' ');
+  } 
+  else if (req.query.token) {
+    token = req.query.token;
+  }
+
+  if (!token) {
+    return res.status(401).json({ error: 'Token não fornecido' });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

@@ -5,6 +5,7 @@ const swaggerUi = require('swagger-ui-express');
 
 const swaggerSpec = require('./config/swagger');
 const routes = require('./routes');
+const { autenticar } = require('./middlewares/authMiddleware');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -30,7 +31,11 @@ app.use(express.json({ limit: '300mb' }));
 app.use(express.urlencoded({ limit: '300mb', extended: true }));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads', autenticar, express.static(path.join(__dirname, '../uploads'), {
+  acceptRanges: true,
+  cacheControl: true,
+  maxAge: '1d'
+}));
 
 app.use('/', routes);
 
