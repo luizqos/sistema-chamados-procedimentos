@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { procedimentoService } from '../services/procedimentoService';
 import { useUpload } from '../contexts/UploadContext';
@@ -15,19 +15,14 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   const [erroValidacao, setErroValidacao] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Estados para controlar o progresso interno da modal
   const [progressoAtual, setProgressoAtual] = useState(0);
   const [statusTexto, setStatusTexto] = useState('');
   
-  // Referência para controlar se o upload está em andamento e se a modal foi fechada à força
   const uploadEmAndamentoRef = useRef(false);
-  const backgroundTriggeredRef = useRef(false);
-  const procedimentoCriadoIdRef = useRef(null);
-  const arquivosRestantesRef = useRef([]);
+  const modalFechadaForcadaRef = useRef(false);
+  
+  const { registrarOuAtualizarUpload, removerUpload } = useUpload();
 
-  const { iniciarUploadBackground } = useUpload();
-
-  // Função auxiliar para formatar bytes
   const formatBytes = (bytes) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -60,23 +55,12 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
     setArquivos(selectedFiles);
   };
 
-  // Tratativa ao fechar a modal (caso clique em X ou Cancelar durante o upload)
   const handleCloseModal = () => {
-    if (uploadEmAndamentoRef.current && !backgroundTriggeredRef.current) {
-      backgroundTriggeredRef.current = true;
-      // Transfere os arquivos restantes para o segundo plano global
-      if (procedimentoCriadoIdRef.current && arquivosRestantesRef.current.length > 0) {
-        arquivosRestantesRef.current.forEach((file) => {
-          iniciarUploadBackground(procedimentoCriadoIdRef.current, file);
-        });
-        toast('O upload continuará em segundo plano.', { icon: 'ℹ️' });
-      }
+    if (uploadEmAndamentoRef.current) {
+      modalFechadaForcadaRef.current = true;
+      toast('O upload continuará em segundo plano de onde parou.', { icon: 'ℹ️' });
     }
-    
-    // Reseta os estados locais e fecha
-    setLoading(false);
-    uploadEmAndamentoRef.current = false;
-    backgroundTriggeredRef.current = false;
+    limparFormulario();
     onClose();
   };
 
@@ -88,7 +72,6 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
     setProgressoAtual(0);
 
     try {
-      // 1. Cria o procedimento imediatamente
       setStatusTexto('Criando procedimento...');
       const novoProcedimento = await procedimentoService.criar({
         titulo,
@@ -96,52 +79,56 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
         script_passo_a_passo: script
       });
 
-      procedimentoCriadoIdRef.current = novoProcedimento.id;
-      arquivosRestantesRef.current = [...arquivos];
-
-      // 2. Se houver arquivos, faz o upload iterativo dentro da modal
       if (arquivos.length > 0) {
         uploadEmAndamentoRef.current = true;
 
         for (let i = 0; i < arquivos.length; i++) {
           const file = arquivos[i];
-          
-          // Se o usuário fechou a modal à força durante o loop, interrompe o loop local e joga o resto pro background
-          if (backgroundTriggeredRef.current) break;
+          const uploadId = `upload-${file.name}-${Date.now()}`;
 
           setStatusTexto(`Enviando arquivo ${i + 1} de ${arquivos.length}: ${file.name}`);
 
           try {
             await procedimentoService.enviarAnexo(novoProcedimento.id, file, (progressData) => {
-              // Se a modal foi fechada durante este progresso, aborta o loop interno
-              if (backgroundTriggeredRef.current) return;
-              
               setProgressoAtual(progressData.percent);
               setStatusTexto(
                 `Enviando (${i + 1}/${arquivos.length}): ${formatBytes(progressData.loaded)} de ${formatBytes(progressData.total)} (${progressData.percent}%)`
               );
+
+              // Se o usuário fechou o modal no meio do processo, ativa o widget flutuante mantendo a porcentagem atual
+              if (modalFechadaForcadaRef.current) {
+                registrarOuAtualizarUpload(uploadId, {
+                  nome: file.name,
+                  progresso: progressData.percent,
+                  status: 'enviando'
+                });
+              }
             });
 
-            // Remove o arquivo enviado da lista de restantes
-            arquivosRestantesRef.current = arquivosRestantesRef.current.slice(1);
+            // Se terminou com o modal fechado, atualiza o widget flutuante para concluído
+            if (modalFechadaForcadaRef.current) {
+              registrarOuAtualizarUpload(uploadId, { nome: file.name, progresso: 100, status: 'concluido' });
+              setTimeout(() => removerUpload(uploadId), 5000);
+            }
           } catch (err) {
             console.error(`Erro ao enviar anexo ${file.name}:`, err);
-            if (!backgroundTriggeredRef.current) {
+            if (modalFechadaForcadaRef.current) {
+              registrarOuAtualizarUpload(uploadId, { nome: file.name, progresso: progressoAtual, status: 'erro' });
+            } else {
               toast.error(`Falha ao enviar o anexo "${file.name}".`);
             }
           }
         }
 
-        // Se terminou tudo aqui dentro e a modal ainda estava aberta
-        if (!backgroundTriggeredRef.current) {
-          uploadEmAndamentoRef.current = false;
+        uploadEmAndamentoRef.current = false;
+
+        if (!modalFechadaForcadaRef.current) {
           toast.success('Procedimento e anexos salvos com sucesso!');
           onSuccess();
           onClose();
           limparFormulario();
         }
       } else {
-        // Sem arquivos, apenas sucesso normal
         toast.success('Procedimento cadastrado com sucesso!');
         onSuccess();
         onClose();
@@ -164,6 +151,8 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
     setLoading(false);
     setProgressoAtual(0);
     setStatusTexto('');
+    uploadEmAndamentoRef.current = false;
+    modalFechadaForcadaRef.current = false;
   };
 
   if (!isOpen) return null;
@@ -172,7 +161,6 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
     <div className="fixed inset-0 bg-slate-900/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 text-slate-900">
         
-        {/* Cabeçalho */}
         <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 bg-slate-50">
           <div>
             <h3 className="text-lg font-bold text-slate-900">Novo Procedimento</h3>
@@ -187,12 +175,9 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
           </button>
         </div>
 
-        {/* Formulário */}
         <form onSubmit={handleSubmit} className="p-6">
           <div className="mb-4">
-            <label className="block font-semibold text-xs text-slate-700 mb-1.5">
-              Título do Procedimento *
-            </label>
+            <label className="block font-semibold text-xs text-slate-700 mb-1.5">Título do Procedimento *</label>
             <input 
               type="text" 
               required 
@@ -205,9 +190,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
           </div>
 
           <div className="mb-4">
-            <label className="block font-semibold text-xs text-slate-700 mb-1.5">
-              Descrição Curta
-            </label>
+            <label className="block font-semibold text-xs text-slate-700 mb-1.5">Descrição Curta</label>
             <input 
               type="text" 
               value={descricao} 
@@ -219,9 +202,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
           </div>
 
           <div className="mb-4">
-            <label className="block font-semibold text-xs text-slate-700 mb-1.5">
-              Passo a Passo / Script *
-            </label>
+            <label className="block font-semibold text-xs text-slate-700 mb-1.5">Passo a Passo / Script *</label>
             <textarea 
               required 
               rows={6} 
@@ -233,11 +214,8 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
             />
           </div>
 
-          {/* Área de Upload */}
           <div className="mb-6">
-            <label className="block font-semibold text-xs text-slate-700 mb-1.5">
-              Anexos (Imagens e Vídeos)
-            </label>
+            <label className="block font-semibold text-xs text-slate-700 mb-1.5">Anexos (Imagens e Vídeos)</label>
 
             <div className="bg-slate-100 p-3 rounded-lg text-xs text-slate-600 mb-3 space-y-0.5 border border-slate-200">
               <div><strong>Formatos aceitos:</strong> Imagens e Vídeos</div>
@@ -255,27 +233,21 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
                 className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100 transition cursor-pointer"
               />
               {arquivos.length > 0 && !loading && (
-                <div className="mt-2 text-xs text-sky-600 font-semibold">
-                  {arquivos.length} arquivo(s) selecionado(s)
-                </div>
+                <div className="mt-2 text-xs text-sky-600 font-semibold">{arquivos.length} arquivo(s) selecionado(s)</div>
               )}
             </div>
 
-            {/* Barra de Progresso interna da Modal */}
             {loading && (
               <div className="mt-4 space-y-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
                 <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
-                  <div 
-                    className="bg-sky-600 h-full transition-all duration-150 ease-out" 
-                    style={{ width: `${progressoAtual}%` }}
-                  ></div>
+                  <div className="bg-sky-600 h-full transition-all duration-150 ease-out" style={{ width: `${progressoAtual}%` }}></div>
                 </div>
                 <div className="flex justify-between items-center text-xs text-slate-600">
                   <span className="font-medium truncate max-w-[280px]">{statusTexto}</span>
                   <span className="font-bold">{progressoAtual}%</span>
                 </div>
                 <p className="text-[10px] text-slate-400 italic text-center pt-1">
-                  Se fechar esta janela, o envio continuará automaticamente em segundo plano.
+                  Se fechar esta janela, o envio continuará exatamente de onde parou em segundo plano.
                 </p>
               </div>
             )}
@@ -287,22 +259,19 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
             )}
           </div>
 
-          {/* Ações */}
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
             <button 
               type="button" 
               onClick={handleCloseModal} 
               className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition"
             >
-              {loading ? 'Fechar (Ir para segundo plano)' : 'Cancelar'}
+              {loading ? 'Fechar (Continuar em background)' : 'Cancelar'}
             </button>
             <button 
               type="submit" 
               disabled={loading || !!erroValidacao}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white text-xs font-semibold transition ${
-                loading || !!erroValidacao 
-                  ? 'bg-slate-400 cursor-not-allowed' 
-                  : 'bg-sky-600 hover:bg-sky-700'
+                loading || !!erroValidacao ? 'bg-slate-400 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-700'
               }`}
             >
               {loading && <Loader2 size={14} className="animate-spin" />}
