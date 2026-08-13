@@ -1,11 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { usuarioService } from '../../services/usuarioService';
+import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { X, Loader2, UserPlus } from 'lucide-react';
 
+import { usuarioService } from '../../services/usuarioService';
+
 export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }) {
+  const tUsuarios = useTranslations('Usuarios');
+  const tCommon = useTranslations('Common');
+
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -49,12 +54,14 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }) {
         <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 transition-colors">
           <div className="flex items-center gap-2">
             <UserPlus size={18} className="text-sky-600 dark:text-sky-400" />
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Cadastrar Novo Usuário</h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">
+              {tUsuarios('modalTitulo')} 
+            </h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition p-1 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition p-1 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800 cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -64,7 +71,7 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }) {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Nome Completo *
+              {tUsuarios('nomeCompleto')} 
             </label>
             <input
               type="text"
@@ -78,7 +85,7 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }) {
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              E-mail Corporativo *
+              {tUsuarios('emailCorporativo')} 
             </label>
             <input
               type="email"
@@ -92,7 +99,7 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }) {
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Senha Inicial *
+              {tUsuarios('senhaInicial')} 
             </label>
             <input
               type="password"
@@ -106,7 +113,7 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }) {
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Perfil de Acesso (Role) *
+              {tUsuarios('perfilAcesso')} 
             </label>
             <select
               value={roleId}
@@ -123,17 +130,17 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
             >
-              Cancelar
+              {tCommon('cancelar')} 
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold transition disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold transition disabled:opacity-50 cursor-pointer"
             >
               {loading && <Loader2 size={14} className="animate-spin" />}
-              {loading ? 'Salvando...' : 'Salvar Usuário'}
+              {tUsuarios('salvarUsuario')} 
             </button>
           </div>
         </form>

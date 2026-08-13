@@ -2,23 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import toast from 'react-hot-toast';
+import { Users, Shield, Loader2, ArrowLeft, UserPlus, Power, CheckCircle, XCircle } from 'lucide-react';
+
 import { WithPermission } from '../components/WithPermission';
 import { usuarioService } from '../services/usuarioService';
 import { useAuth } from '../contexts/AuthContext';
 import ModalNovoUsuario from '../components/modal/ModalNovoUsuario';
-import toast from 'react-hot-toast';
-import {
-  Users,
-  Shield,
-  Loader2,
-  ArrowLeft,
-  UserPlus,
-  Power,
-  CheckCircle,
-  XCircle,
-} from 'lucide-react';
 
 export default function GestaoUsuariosPage() {
+  const tUsuarios = useTranslations('Usuarios');
+  const tCommon = useTranslations('Common');
   const { user: usuarioLogado } = useAuth();
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,8 +41,7 @@ export default function GestaoUsuariosPage() {
       toast.success('Perfil alterado com sucesso!');
       carregarUsuarios();
     } catch (err) {
-      const msg = err.response?.data?.error || 'Erro ao alterar perfil.';
-      toast.error(msg);
+      toast.error(err.response?.data?.error || 'Erro ao alterar perfil.');
     }
   };
 
@@ -58,8 +52,7 @@ export default function GestaoUsuariosPage() {
       toast.success(`Usuário ${novoStatus ? 'ativado' : 'inativado'} com sucesso!`);
       carregarUsuarios();
     } catch (err) {
-      const msg = err.response?.data?.error || 'Erro ao alterar status.';
-      toast.error(msg);
+      toast.error(err.response?.data?.error || 'Erro ao alterar status.');
     }
   };
 
@@ -73,7 +66,7 @@ export default function GestaoUsuariosPage() {
             <Link
               href="/"
               className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl transition shadow-sm"
-              title="Voltar para os chamados"
+              title={tCommon('voltar')}
             >
               <ArrowLeft size={20} />
             </Link>
@@ -81,17 +74,15 @@ export default function GestaoUsuariosPage() {
               <Users size={22} />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-white">Gestão de Usuários</h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Gerencie perfis e atribua papéis de acesso ao sistema
-              </p>
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white">{tUsuarios('titulo')}</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{tUsuarios('subtitulo')}</p>
             </div>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20 cursor-pointer"
           >
-            <UserPlus size={16} /> Novo Usuário
+            <UserPlus size={16} /> {tUsuarios('novoUsuario')}
           </button>
         </div>
 
@@ -106,12 +97,12 @@ export default function GestaoUsuariosPage() {
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-100/80 dark:bg-slate-950/60 text-slate-600 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
                   <tr>
-                    <th className="p-4">ID</th>
-                    <th className="p-4">Nome</th>
-                    <th className="p-4">E-mail</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4">Perfil Atual</th>
-                    <th className="p-4 text-right">Ações</th>
+                    <th className="p-4">{tUsuarios('id')}</th>
+                    <th className="p-4">{tUsuarios('nome')}</th>
+                    <th className="p-4">{tUsuarios('email')}</th>
+                    <th className="p-4">{tCommon('status')}</th>
+                    <th className="p-4">{tUsuarios('perfilAtual')}</th>
+                    <th className="p-4 text-right">{tCommon('acoes')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60">
@@ -132,7 +123,6 @@ export default function GestaoUsuariosPage() {
                         <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">{u.nome}</td>
                         <td className="p-4 text-slate-500 dark:text-slate-400">{u.email}</td>
                         
-                        {/* Status */}
                         <td className="p-4">
                           <span
                             className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${
@@ -142,11 +132,10 @@ export default function GestaoUsuariosPage() {
                             }`}
                           >
                             {u.ativo ? <CheckCircle size={12} /> : <XCircle size={12} />}
-                            {u.ativo ? 'ATIVO' : 'INATIVO'}
+                            {u.ativo ? tCommon('ativo') : tCommon('inativo')}
                           </span>
                         </td>
 
-                        {/* Perfil (Role Badge) */}
                         <td className="p-4">
                           <span
                             className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold border ${
@@ -160,13 +149,12 @@ export default function GestaoUsuariosPage() {
                           </span>
                         </td>
 
-                        {/* Ações */}
                         <td className="p-4 text-right flex items-center justify-end gap-3">
                           <select
                             value={u.role?.id || ''}
                             onChange={(e) => handleRoleChange(u.id, e.target.value)}
                             disabled={!u.ativo}
-                            className="bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-sky-500 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-sky-500 transition cursor-pointer disabled:opacity-40"
                           >
                             <option value={1}>ADMIN</option>
                             <option value={2}>OPERADOR</option>
@@ -175,18 +163,7 @@ export default function GestaoUsuariosPage() {
                           <button
                             onClick={() => handleToggleStatus(u)}
                             disabled={ehUsuarioLogado}
-                            title={
-                              ehUsuarioLogado
-                                ? 'Você não pode inativar sua própria conta'
-                                : u.ativo
-                                ? 'Inativar usuário'
-                                : 'Reativar usuário'
-                            }
-                            className={`p-1.5 transition rounded-lg ${
-                              u.ativo
-                                ? 'text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-slate-200/60 dark:hover:bg-slate-800'
-                                : 'text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-200/60 dark:hover:bg-slate-800'
-                            } disabled:opacity-30 disabled:hover:text-slate-500 disabled:hover:bg-transparent`}
+                            className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer disabled:opacity-30"
                           >
                             <Power size={16} />
                           </button>
@@ -200,7 +177,6 @@ export default function GestaoUsuariosPage() {
           </div>
         )}
 
-        {/* Modal de Cadastro de Usuário */}
         <ModalNovoUsuario
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

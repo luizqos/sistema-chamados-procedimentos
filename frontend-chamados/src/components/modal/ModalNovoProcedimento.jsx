@@ -2,12 +2,16 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 import { procedimentoService } from '../../services/procedimentoService';
 import { useUpload } from '../../contexts/UploadContext';
 import { X, Upload, AlertCircle, Loader2 } from 'lucide-react';
 import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../utils/constants';
 
 export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
+  const t = useTranslations('Procedimento');
+  const tCommon = useTranslations('Common');
+
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
   const [script, setScript] = useState('');
@@ -182,13 +186,13 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
         <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 transition-colors">
           <div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Novo Procedimento</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Cadastre a tratativa padrão e anexe mídias.</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{t('novoProcedimento')}</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('subtituloNovo')}</p>
           </div>
           <button
             type="button"
             onClick={handleCloseModal}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition p-1 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition p-1 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800 cursor-pointer"
           >
             <X size={20} />
           </button>
@@ -196,7 +200,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="mb-4">
-            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">Título do Procedimento *</label>
+            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{t('tituloLabel')}</label>
             <input
               type="text"
               required
@@ -209,7 +213,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
           </div>
 
           <div className="mb-4">
-            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">Descrição Curta</label>
+            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{t('descricaoLabel')}</label>
             <input
               type="text"
               value={descricao}
@@ -221,7 +225,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
           </div>
 
           <div className="mb-4">
-            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">Passo a Passo / Script *</label>
+            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{t('scriptLabel')}</label>
             <textarea
               required
               rows={6}
@@ -234,11 +238,11 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
           </div>
 
           <div className="mb-6">
-            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">Anexos (Imagens e Vídeos)</label>
+            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{t('anexosLabel')}</label>
 
             <div className="bg-slate-100 dark:bg-slate-800/50 p-3 rounded-lg text-xs text-slate-600 dark:text-slate-400 mb-3 space-y-0.5 border border-slate-200 dark:border-slate-700/50 transition-colors">
-              <div><strong>Formatos aceitos:</strong> Imagens e Vídeos</div>
-              <div><strong>Tamanho máximo:</strong> Até {MAX_FILE_SIZE_MB} MB por arquivo</div>
+              <div><strong>{t('formatosAceitos')}:</strong> Imagens e Vídeos</div>
+              <div><strong>{t('tamanhoMaximo', { max: MAX_FILE_SIZE_MB })}</strong></div>
             </div>
 
             <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-sky-500 dark:hover:border-sky-500 rounded-lg p-4 text-center bg-slate-50 dark:bg-slate-950/50 transition cursor-pointer">
@@ -252,7 +256,9 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
                 className="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-sky-50 dark:file:bg-slate-800 file:text-sky-700 dark:file:text-sky-400 hover:file:bg-sky-100 dark:hover:file:bg-slate-700 transition cursor-pointer"
               />
               {arquivos.length > 0 && !loading && (
-                <div className="mt-2 text-xs text-sky-600 dark:text-sky-400 font-semibold">{arquivos.length} arquivo(s) selecionado(s)</div>
+                <div className="mt-2 text-xs text-sky-600 dark:text-sky-400 font-semibold">
+                  {t('arquivosSelecionados', { qtd: arquivos.length })}
+                </div>
               )}
             </div>
 
@@ -282,18 +288,18 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+              className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer"
             >
-              {loading ? 'Fechar' : 'Cancelar'}
+              {loading ? tCommon('voltar') : tCommon('cancelar')}
             </button>
             <button
               type="submit"
               disabled={loading || !!erroValidacao}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white text-xs font-semibold transition ${loading || !!erroValidacao ? 'bg-slate-400 dark:bg-slate-700 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600'
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white text-xs font-semibold transition cursor-pointer ${loading || !!erroValidacao ? 'bg-slate-400 dark:bg-slate-700 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600'
                 }`}
             >
               {loading && <Loader2 size={14} className="animate-spin" />}
-              {loading ? 'Enviando Anexos...' : 'Salvar Procedimento'}
+              {loading ? t('enviandoAnexos') : t('salvarProcedimento')}
             </button>
           </div>
         </form>

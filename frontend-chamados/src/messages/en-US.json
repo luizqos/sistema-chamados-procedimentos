@@ -6,7 +6,11 @@
     "excluir": "Delete",
     "simExcluir": "Yes, delete",
     "pesquisar": "Search by title, error, or command...",
-    "carregando": "Loading..."
+    "carregando": "Loading...",
+    "acoes": "Actions",
+    "status": "Status",
+    "ativo": "ACTIVE",
+    "inativo": "INACTIVE"
   },
   "Sidebar": {
     "atendimento": "Support",
@@ -21,6 +25,53 @@
     "copiarScript": "Copy Script",
     "copiado": "Copied!",
     "anexos": "Attachments & Demo Videos",
-    "criadoPor": "Created by:"
+    "criadoPor": "Created by:",
+    "selecioneProcedimento": "Select a procedure in the sidebar to view the script.",
+    "novoProcedimento": "New Procedure",
+    "subtituloNovo": "Register standard procedures and attach media.",
+    "tituloLabel": "Procedure Title *",
+    "descricaoLabel": "Short Description",
+    "scriptLabel": "Step-by-Step / Script *",
+    "anexosLabel": "Attachments (Images & Videos)",
+    "formatosAceitos": "Accepted formats: Images & Videos",
+    "tamanhoMaximo": "Maximum size: Up to {max} MB per file",
+    "arquivosSelecionados": "{qtd} file(s) selected",
+    "salvarProcedimento": "Save Procedure",
+    "enviandoAnexos": "Uploading Attachments..."
+  },
+  "Usuarios": {
+    "titulo": "User Management",
+    "subtitulo": "Manage profiles and assign access roles to the system",
+    "novoUsuario": "New User",
+    "id": "ID",
+    "nome": "Name",
+    "email": "Email",
+    "perfilAtual": "Current Role",
+    "modalTitulo": "Register New User",
+    "nomeCompleto": "Full Name *",
+    "emailCorporativo": "Corporate Email *",
+    "senhaInicial": "Initial Password *",
+    "perfilAcesso": "Access Role *",
+    "salvarUsuario": "Save User"
+  },
+  "Sso": {
+    "titulo": "SSO Security",
+    "subtitulo": "Access restrictions for SSO login.",
+    "novaRegra": "New Rule",
+    "alertaAllowlist": "Restricted Mode Active: Only domains/emails with an \"Allow\" rule can access the system.",
+    "tipo": "Type",
+    "alvo": "Target (Value)",
+    "efeito": "Action / Effect",
+    "semRegras": "No rules configured. The system is open for any valid corporate account.",
+    "modalTitulo": "New SSO Rule",
+    "acaoRegra": "Rule Action *",
+    "bloquearAcesso": "Block Access",
+    "permitirAcesso": "Allow Access (Activates Allowlist)",
+    "alertaPermitir": "By creating an \"Allow\" rule, all other internet domains will be blocked.",
+    "tipoAlvo": "Target Type *",
+    "dominioInteiro": "Entire Domain (@company.com)",
+    "emailEspecifico": "Specific Email (user@company.com)",
+    "valor": "Value",
+    "salvarRegra": "Save Rule"
   }
 }

@@ -2,14 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Shield, Loader2, ArrowLeft, Plus, Trash2, Globe, Mail, CheckCircle, XCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
+import { Shield, Loader2, ArrowLeft, Plus, Trash2, Globe, Mail, CheckCircle, XCircle } from 'lucide-react';
+
 import { WithPermission } from '../components/WithPermission';
 import { ssoRegrasService } from '../services/ssoRegrasService';
 import { dialog } from '../utils/dialogs';
 import ModalNovaRegraSso from '../components/modal/ModalNovaRegraSso';
 
 export default function SsoRegrasPage() {
+  const tSso = useTranslations('Sso');
+  const tCommon = useTranslations('Common');
   const [regras, setRegras] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,7 +60,7 @@ export default function SsoRegrasPage() {
             <Link 
               href="/" 
               className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl transition shadow-sm" 
-              title="Voltar"
+              title={tCommon('voltar')}
             >
               <ArrowLeft size={20} />
             </Link>
@@ -64,23 +68,23 @@ export default function SsoRegrasPage() {
               <Shield size={22} />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-white">Segurança SSO</h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Restrições de acesso para login via SSO.</p>
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white">{tSso('titulo')}</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{tSso('subtitulo')}</p>
             </div>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20 cursor-pointer"
           >
-            <Plus size={16} /> Nova Regra
+            <Plus size={16} /> {tSso('novaRegra')}
           </button>
         </div>
 
-        {/* Alerta de Allowlist Ativa */}
+        {/* Alerta */}
         {regras.some(r => r.acao === 'PERMITIR') && (
           <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold flex items-center gap-2">
             <CheckCircle size={16} /> 
-            Modo Restrito Ativado: Apenas domínios/e-mails com regra "Permitir" poderão acessar o sistema.
+            {tSso('alertaAllowlist')}
           </div>
         )}
 
@@ -95,17 +99,17 @@ export default function SsoRegrasPage() {
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-100/80 dark:bg-slate-950/60 text-slate-600 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
                   <tr>
-                    <th className="p-4">Tipo</th>
-                    <th className="p-4">Alvo (Valor)</th>
-                    <th className="p-4">Ação / Efeito</th>
-                    <th className="p-4 text-right">Ações</th>
+                    <th className="p-4">{tSso('tipo')}</th>
+                    <th className="p-4">{tSso('alvo')}</th>
+                    <th className="p-4">{tSso('efeito')}</th>
+                    <th className="p-4 text-right">{tCommon('acoes')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60">
                   {regras.length === 0 ? (
                     <tr>
                       <td colSpan="4" className="p-8 text-center text-slate-500 dark:text-slate-400">
-                        Nenhuma regra configurada. O sistema está aberto para qualquer conta corporativa válida.
+                        {tSso('semRegras')}
                       </td>
                     </tr>
                   ) : (
@@ -131,8 +135,7 @@ export default function SsoRegrasPage() {
                         <td className="p-4 text-right">
                           <button
                             onClick={() => handleDelete(r.id)}
-                            className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-slate-800 rounded-lg transition"
-                            title="Remover regra"
+                            className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer"
                           >
                             <Trash2 size={16} />
                           </button>

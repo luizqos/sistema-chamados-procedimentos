@@ -6,7 +6,11 @@
     "excluir": "Excluir",
     "simExcluir": "Sim, excluir",
     "pesquisar": "Buscar por título, erro ou comando...",
-    "carregando": "Carregando..."
+    "carregando": "Carregando...",
+    "acoes": "Ações",
+    "status": "Status",
+    "ativo": "ATIVO",
+    "inativo": "INATIVO"
   },
   "Sidebar": {
     "atendimento": "Atendimento",
@@ -21,6 +25,53 @@
     "copiarScript": "Copiar Script",
     "copiado": "Copiado!",
     "anexos": "Anexos e Vídeos Demonstrativos",
-    "criadoPor": "Criado por:"
+    "criadoPor": "Criado por:",
+    "selecioneProcedimento": "Selecione um procedimento na barra lateral para visualizar o script.",
+    "novoProcedimento": "Novo Procedimento",
+    "subtituloNovo": "Cadastre a tratativa padrão e anexe mídias.",
+    "tituloLabel": "Título do Procedimento *",
+    "descricaoLabel": "Descrição Curta",
+    "scriptLabel": "Passo a Passo / Script *",
+    "anexosLabel": "Anexos (Imagens e Vídeos)",
+    "formatosAceitos": "Formatos aceitos: Imagens e Vídeos",
+    "tamanhoMaximo": "Tamanho máximo: Até {max} MB por arquivo",
+    "arquivosSelecionados": "{qtd} arquivo(s) selecionado(s)",
+    "salvarProcedimento": "Salvar Procedimento",
+    "enviandoAnexos": "Enviando Anexos..."
+  },
+  "Usuarios": {
+    "titulo": "Gestão de Usuários",
+    "subtitulo": "Gerencie perfis e atribua papéis de acesso ao sistema",
+    "novoUsuario": "Novo Usuário",
+    "id": "ID",
+    "nome": "Nome",
+    "email": "E-mail",
+    "perfilAtual": "Perfil Atual",
+    "modalTitulo": "Cadastrar Novo Usuário",
+    "nomeCompleto": "Nome Completo *",
+    "emailCorporativo": "E-mail Corporativo *",
+    "senhaInicial": "Senha Inicial *",
+    "perfilAcesso": "Perfil de Acesso (Role) *",
+    "salvarUsuario": "Salvar Usuário"
+  },
+  "Sso": {
+    "titulo": "Segurança SSO",
+    "subtitulo": "Restrições de acesso para login via SSO.",
+    "novaRegra": "Nova Regra",
+    "alertaAllowlist": "Modo Restrito Ativado: Apenas domínios/e-mails com regra \"Permitir\" poderão acessar o sistema.",
+    "tipo": "Tipo",
+    "alvo": "Alvo (Valor)",
+    "efeito": "Ação / Efeito",
+    "semRegras": "Nenhuma regra configurada. O sistema está aberto para qualquer conta corporativa válida.",
+    "modalTitulo": "Nova Regra de SSO",
+    "acaoRegra": "Ação da Regra *",
+    "bloquearAcesso": "Bloquear Acesso",
+    "permitirAcesso": "Permitir Acesso (Ativa Allowlist)",
+    "alertaPermitir": "Ao criar uma regra de \"Permitir\", todo o resto da internet será bloqueado.",
+    "tipoAlvo": "Tipo do Alvo *",
+    "dominioInteiro": "Domínio Inteiro (@empresa.com)",
+    "emailEspecifico": "E-mail Específico (usuario@empresa.com)",
+    "valor": "Valor",
+    "salvarRegra": "Salvar Regra"
   }
 }
