@@ -8,7 +8,7 @@ import { Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useProcedimentos } from '../hooks/useProcedimentos';
 import Sidebar from '../components/Sidebar';
-import ModalNovoProcedimento from '../components/ModalNovoProcedimento';
+import ModalNovoProcedimento from '../components/modal/ModalNovoProcedimento';
 import PainelProcedimento from '../components/PainelProcedimento';
 import EmptyState from '../components/EmptyState';
 import { dialog } from '../utils/dialogs';
