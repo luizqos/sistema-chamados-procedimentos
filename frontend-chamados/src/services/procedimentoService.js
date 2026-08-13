@@ -28,14 +28,11 @@ async enviarAnexo(procedimentoId, arquivo, onProgress) {
     formData.append('arquivo', arquivo);
 
     const { data } = await api.post(`/api/procedimentos/${procedimentoId}/anexos`, formData, {
-      headers: { 
-        'Content-Type': 'multipart/form-data' 
-      },
+      headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 1800000,
       onUploadProgress: (progressEvent) => {
         if (progressEvent.total && onProgress) {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          
           onProgress({
             percent: percentCompleted,
             loaded: progressEvent.loaded,
@@ -44,7 +41,7 @@ async enviarAnexo(procedimentoId, arquivo, onProgress) {
         }
       }
     });
-    
     return data;
   }
+
 };

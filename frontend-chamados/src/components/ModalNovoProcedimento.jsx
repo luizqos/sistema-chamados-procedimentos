@@ -13,19 +13,8 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   const [arquivos, setArquivos] = useState([]);
   const [erroValidacao, setErroValidacao] = useState('');
   const [loading, setLoading] = useState(false);
-  
-  const [progressoUpload, setProgressoUpload] = useState(0);
-  const [textoStatusUpload, setTextoStatusUpload] = useState('');
 
   if (!isOpen) return null;
-
-  const formatBytes = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -56,7 +45,6 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
     if (erroValidacao) return;
 
     setLoading(true);
-    setProgressoUpload(0);
 
     try {
       const novoProcedimento = await procedimentoService.criar({
@@ -65,22 +53,8 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
         script_passo_a_passo: script
       });
 
-      if (arquivos.length > 0) {
-        let index = 1;
-        for (let file of arquivos) {
-          setTextoStatusUpload(`Enviando arquivo ${index} de ${arquivos.length}: ${file.name}`);
-          
-          await procedimentoService.enviarAnexo(novoProcedimento.id, file, (progressData) => {
-            setProgressoUpload(progressData.percent);
-            setTextoStatusUpload(
-              `Enviando (${index}/${arquivos.length}): ${formatBytes(progressData.loaded)} de ${formatBytes(progressData.total)} (${progressData.percent}%)`
-            );
-          });
-          index++;
-        }
-      }
-
-      toast.success('Procedimento cadastrado com sucesso!');
+      toast.success('Procedimento cadastrado! Os anexos estão sendo enviados em segundo plano.');
+      
       onSuccess();
       onClose();
       setTitulo('');
@@ -88,12 +62,32 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
       setScript('');
       setArquivos([]);
       setErroValidacao('');
+
+      if (arquivos.length > 0) {
+        (async () => {
+          for (let file of arquivos) {
+            try {
+              toast.loading(`Enviando anexo: ${file.name}...`, { id: file.name });
+              
+              await procedimentoService.enviarAnexo(novoProcedimento.id, file, (progressData) => {
+                if (progressData.percent % 25 === 0) {
+                  toast.loading(`Enviando ${file.name}: ${progressData.percent}%`, { id: file.name });
+                }
+              });
+
+              toast.success(`Anexo "${file.name}" enviado com sucesso!`, { id: file.name });
+            } catch (err) {
+              console.error(`Erro ao enviar anexo ${file.name}:`, err);
+              toast.error(`Falha ao enviar o anexo "${file.name}".`, { id: file.name });
+            }
+          }
+        })();
+      }
+
     } catch (err) {
       alert('Erro ao cadastrar: ' + (err.response?.data?.error || err.message));
     } finally {
       setLoading(false);
-      setProgressoUpload(0);
-      setTextoStatusUpload('');
     }
   };
 
@@ -105,7 +99,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
         <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 bg-slate-50">
           <div>
             <h3 className="text-lg font-bold text-slate-900">Novo Procedimento</h3>
-            <p className="text-xs text-slate-500 mt-0.5">Cadastre a tratativa padrão e anexe mídias.</p>
+            <p className="text-xs text-slate-500 mt-0.5">Cadastre a tratativa padrão e anexe mídias em segundo plano.</p>
           </div>
           <button 
             onClick={onClose} 
@@ -183,28 +177,12 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
                 disabled={loading}
                 className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100 transition cursor-pointer"
               />
-              {arquivos.length > 0 && !loading && (
+              {arquivos.length > 0 && (
                 <div className="mt-2 text-xs text-sky-600 font-semibold">
-                  {arquivos.length} arquivo(s) selecionado(s) e validado(s)
+                  {arquivos.length} arquivo(s) selecionado(s) e validado(s) para upload em background
                 </div>
               )}
             </div>
-
-            {/* Barra de Progresso Real durante o envio */}
-            {loading && arquivos.length > 0 && (
-              <div className="mt-4 space-y-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
-                <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
-                  <div 
-                    className="bg-sky-600 h-full transition-all duration-150 ease-out" 
-                    style={{ width: `${progressoUpload}%` }}
-                  ></div>
-                </div>
-                <div className="flex justify-between items-center text-xs text-slate-600">
-                  <span className="font-medium truncate max-w-[260px]">{textoStatusUpload}</span>
-                  <span className="font-bold">{progressoUpload}%</span>
-                </div>
-              </div>
-            )}
 
             {erroValidacao && (
               <div className="flex items-center gap-1.5 mt-2 text-red-600 text-xs font-medium">
@@ -233,7 +211,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               }`}
             >
               {loading && <Loader2 size={14} className="animate-spin" />}
-              {loading ? 'Salvando e Enviando...' : 'Salvar'}
+              {loading ? 'Salvando Registro...' : 'Salvar e Enviar Anexos'}
             </button>
           </div>
         </form>
