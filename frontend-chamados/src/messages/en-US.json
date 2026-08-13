@@ -1,0 +1,26 @@
+{
+  "Common": {
+    "voltar": "Back",
+    "cancelar": "Cancel",
+    "salvar": "Save",
+    "excluir": "Delete",
+    "simExcluir": "Yes, delete",
+    "pesquisar": "Search by title, error, or command...",
+    "carregando": "Loading..."
+  },
+  "Sidebar": {
+    "atendimento": "Support",
+    "scriptsEProcedimentos": "Scripts & Procedures",
+    "novo": "New",
+    "segurancaSSO": "SSO Security",
+    "gestaoUsuarios": "User Management",
+    "por": "By:"
+  },
+  "Procedimento": {
+    "passoAPasso": "Step-by-Step / Script",
+    "copiarScript": "Copy Script",
+    "copiado": "Copied!",
+    "anexos": "Attachments & Demo Videos",
+    "criadoPor": "Created by:"
+  }
+}

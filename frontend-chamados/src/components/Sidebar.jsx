@@ -1,7 +1,12 @@
+'use client';
+
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Search, Plus, Loader2, User, Shield, Users, Settings, LogOut } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
 import BotaoTema from './button/BotaoTema';
+import BotaoIdioma from './button/BotaoIdioma';
 
 export default function Sidebar({
   busca,
@@ -18,6 +23,9 @@ export default function Sidebar({
 }) {
   const observerRef = useRef(null);
   
+  const tSidebar = useTranslations('Sidebar');
+  const tCommon = useTranslations('Common');
+
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -54,8 +62,12 @@ export default function Sidebar({
       {/* Cabeçalho */}
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Atendimento</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Scripts e Procedimentos</p>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+            {tSidebar('atendimento')}
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {tSidebar('scriptsEProcedimentos')}
+          </p>
         </div>
         
         {/* Ações do Cabeçalho */}
@@ -85,7 +97,7 @@ export default function Sidebar({
                     className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
                   >
                     <Shield size={16} className="text-amber-600 dark:text-amber-500" />
-                    Segurança SSO
+                    {tSidebar('segurancaSSO')}
                   </Link>
                   <Link
                     href="/usuarios"
@@ -93,7 +105,7 @@ export default function Sidebar({
                     className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
                   >
                     <Users size={16} className="text-sky-600 dark:text-sky-500" />
-                    Gestão de Usuários
+                    {tSidebar('gestaoUsuarios')}
                   </Link>
                 </div>
               )}
@@ -104,9 +116,9 @@ export default function Sidebar({
           {(isAdmin || isOperador) && (
             <button
               onClick={onOpenModal}
-              className="flex items-center gap-1.5 px-3 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-md font-semibold text-xs transition"
+              className="flex items-center gap-1.5 px-3 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-md font-semibold text-xs transition cursor-pointer"
             >
-              <Plus size={16} /> Novo
+              <Plus size={16} /> {tSidebar('novo')}
             </button>
           )}
         </div>
@@ -117,7 +129,7 @@ export default function Sidebar({
         <Search size={16} className="absolute left-3 top-3 text-slate-400 dark:text-slate-500" />
         <input
           type="text"
-          placeholder="Buscar por título, erro ou comando..."
+          placeholder={tCommon('pesquisar')}
           value={busca}
           onChange={e => setBusca(e.target.value)}
           className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors duration-200"
@@ -147,7 +159,7 @@ export default function Sidebar({
                 {item.descricao || 'Sem descrição cadastrada'}
               </span>
               <div className="mt-2 pt-1.5 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-400 dark:text-slate-500 truncate">
-                Por: <strong className="text-slate-600 dark:text-slate-400 font-medium">{nomeAutor}</strong>
+                {tSidebar('por')} <strong className="text-slate-600 dark:text-slate-400 font-medium">{nomeAutor}</strong>
               </div>
             </div>
           );
@@ -156,16 +168,16 @@ export default function Sidebar({
         <div ref={observerRef} className="py-2 text-center">
           {loadingMore && (
             <div className="flex justify-center items-center gap-2 text-slate-500 dark:text-slate-400 text-xs">
-              <Loader2 size={16} className="animate-spin" /> Carregando mais...
+              <Loader2 size={16} className="animate-spin" /> {tCommon('carregando')}
             </div>
           )}
         </div>
       </div>
 
-      {/* Rodapé: Perfil do Usuário e Logout */}
+      {/* Rodapé: Perfil do Usuário, Seleção de Idioma, Tema e Logout */}
       {user && (
         <div className="pt-4 mt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-3 overflow-hidden">
+          <div className="flex items-center gap-2.5 overflow-hidden">
             <div className="p-2 bg-sky-100 dark:bg-sky-500/10 text-sky-700 dark:text-sky-400 rounded-full flex-shrink-0">
               <User size={18} />
             </div>
@@ -178,13 +190,14 @@ export default function Sidebar({
             </div>
           </div>
           
-          {/* Bloco de Ações Inferiores (Tema e Logout) */}
+          {/* Bloco de Controles (Idioma, Tema e Sair) */}
           <div className="flex items-center gap-1">
+            <BotaoIdioma />
             <BotaoTema />
             
             <button
               onClick={onLogout}
-              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition"
+              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition cursor-pointer"
               title="Sair"
             >
               <LogOut size={18} />

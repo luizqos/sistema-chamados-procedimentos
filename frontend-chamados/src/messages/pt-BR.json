@@ -1,0 +1,26 @@
+{
+  "Common": {
+    "voltar": "Voltar",
+    "cancelar": "Cancelar",
+    "salvar": "Salvar",
+    "excluir": "Excluir",
+    "simExcluir": "Sim, excluir",
+    "pesquisar": "Buscar por título, erro ou comando...",
+    "carregando": "Carregando..."
+  },
+  "Sidebar": {
+    "atendimento": "Atendimento",
+    "scriptsEProcedimentos": "Scripts e Procedimentos",
+    "novo": "Novo",
+    "segurancaSSO": "Segurança SSO",
+    "gestaoUsuarios": "Gestão de Usuários",
+    "por": "Por:"
+  },
+  "Procedimento": {
+    "passoAPasso": "Passo a Passo / Script",
+    "copiarScript": "Copiar Script",
+    "copiado": "Copiado!",
+    "anexos": "Anexos e Vídeos Demonstrativos",
+    "criadoPor": "Criado por:"
+  }
+}
