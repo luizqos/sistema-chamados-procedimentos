@@ -18,7 +18,7 @@ export default function GaleriaAnexos({ anexos }) {
   return (
     <div className="mt-8">
       <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-        Anexos e Vídeos Demonstrativos
+        Anexos
       </h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
