@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { MsalProvider } from '@azure/msal-react';
 import { msalInstance } from '../config/msalConfig';
 import { AuthProvider } from '../contexts/AuthContext';
+import { UploadProvider } from '../contexts/UploadContext';
 import { Toaster } from 'react-hot-toast';
 
 export default function Providers({ children }) {
@@ -25,8 +26,10 @@ export default function Providers({ children }) {
   return (
     <MsalProvider instance={msalInstance}>
       <AuthProvider>
-        {children}
-        <Toaster position="top-right" reverseOrder={false} />
+        <UploadProvider>
+          {children}
+          <Toaster position="top-right" reverseOrder={false} />
+        </UploadProvider>
       </AuthProvider>
     </MsalProvider>
   );
