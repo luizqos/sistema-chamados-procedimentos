@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { procedimentoService } from '../services/procedimentoService';
 import { useUpload } from '../contexts/UploadContext';
@@ -14,14 +14,17 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   const [arquivos, setArquivos] = useState([]);
   const [erroValidacao, setErroValidacao] = useState('');
   const [loading, setLoading] = useState(false);
-
   const [progressoAtual, setProgressoAtual] = useState(0);
   const [statusTexto, setStatusTexto] = useState('');
-
-  const uploadEmAndamentoRef = useRef(false);
-  const modalFechadaForcadaRef = useRef(false);
-
+  
+  const uploadContextRef = useRef(null);
   const { registrarOuAtualizarUpload, removerUpload } = useUpload();
+
+  useEffect(() => {
+    if (isOpen) {
+      limparFormulario();
+    }
+  }, [isOpen]);
 
   const formatBytes = (bytes) => {
     if (bytes === 0) return '0 Bytes';
@@ -55,98 +58,6 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
     setArquivos(selectedFiles);
   };
 
-  const handleCloseModal = () => {
-    if (uploadEmAndamentoRef.current) {
-      modalFechadaForcadaRef.current = true;
-      toast('O upload continuará em segundo plano pelo card flutuante.', { icon: 'ℹ️' });
-      onClose();
-    } else {
-      limparFormulario();
-      onClose();
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (erroValidacao) return;
-
-    setLoading(true);
-    setProgressoAtual(0);
-
-    try {
-      setStatusTexto('Criando procedimento...');
-
-      const novoProcedimento = await procedimentoService.criar({
-        titulo,
-        descricao,
-        script_passo_a_passo: script
-      });
-
-      if (arquivos.length > 0) {
-        uploadEmAndamentoRef.current = true;
-
-        for (let i = 0; i < arquivos.length; i++) {
-          const file = arquivos[i];
-          const cardId = `card-upload-${file.name}-${Date.now()}`;
-
-          setStatusTexto(`Enviando arquivo ${i + 1} de ${arquivos.length}: ${file.name}`);
-
-          try {
-            await procedimentoService.enviarAnexo(novoProcedimento.id, file, (progressData) => {
-              setProgressoAtual(progressData.percent);
-              setStatusTexto(
-                `Enviando (${i + 1}/${arquivos.length}): ${formatBytes(progressData.loaded)} de ${formatBytes(progressData.total)}`
-              );
-
-              if (modalFechadaForcadaRef.current) {
-                registrarOuAtualizarUpload(cardId, {
-                  nome: file.name,
-                  progresso: progressData.percent,
-                  status: 'enviando'
-                });
-              }
-            });
-
-            if (modalFechadaForcadaRef.current) {
-              registrarOuAtualizarUpload(cardId, { nome: file.name, progresso: 100, status: 'concluido' });
-              setTimeout(() => removerUpload(cardId), 5000);
-            }
-          } catch (err) {
-            console.error(`Erro ao enviar anexo ${file.name}:`, err);
-            if (modalFechadaForcadaRef.current) {
-              registrarOuAtualizarUpload(cardId, { nome: file.name, progresso: progressoAtual, status: 'erro' });
-            } else {
-              toast.error(`Falha ao enviar o anexo "${file.name}".`);
-            }
-          }
-        }
-
-        uploadEmAndamentoRef.current = false;
-
-        if (!modalFechadaForcadaRef.current) {
-          toast.success('Procedimento e anexos salvos com sucesso!');
-          onSuccess();
-          onClose();
-          limparFormulario();
-        } else {
-          onSuccess();
-          limparFormulario();
-        }
-
-      } else {
-        toast.success('Procedimento cadastrado com sucesso!');
-        onSuccess();
-        onClose();
-        limparFormulario();
-      }
-
-    } catch (err) {
-      alert('Erro ao cadastrar: ' + (err.response?.data?.error || err.message));
-      setLoading(false);
-      uploadEmAndamentoRef.current = false;
-    }
-  };
-
   const limparFormulario = () => {
     setTitulo('');
     setDescricao('');
@@ -156,8 +67,112 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
     setLoading(false);
     setProgressoAtual(0);
     setStatusTexto('');
-    uploadEmAndamentoRef.current = false;
-    modalFechadaForcadaRef.current = false;
+  };
+
+  const handleCloseModal = () => {
+    if (uploadContextRef.current && uploadContextRef.current.emAndamento) {
+      uploadContextRef.current.fechado = true;
+      toast('O upload continuará no card em segundo plano.', { icon: 'ℹ️' });
+    }
+    
+    onClose();
+    
+    setTimeout(() => {
+      limparFormulario();
+    }, 150);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (erroValidacao) return;
+
+    const contextoAtual = { emAndamento: false, fechado: false };
+    uploadContextRef.current = contextoAtual;
+
+    setLoading(true);
+    setProgressoAtual(0);
+
+    try {
+      setStatusTexto('Criando procedimento...');
+      
+      const novoProcedimento = await procedimentoService.criar({
+        titulo,
+        descricao,
+        script_passo_a_passo: script
+      });
+
+      if (arquivos.length > 0) {
+        contextoAtual.emAndamento = true;
+
+        for (let i = 0; i < arquivos.length; i++) {
+          const file = arquivos[i];
+          const cardId = `card-upload-${file.name}-${Date.now()}`;
+
+          setStatusTexto(`Enviando arquivo ${i + 1} de ${arquivos.length}: ${file.name}`);
+
+          try {
+            await procedimentoService.enviarAnexo(novoProcedimento.id, file, (progressData) => {
+              if (!contextoAtual.fechado) {
+                setProgressoAtual(progressData.percent);
+                setStatusTexto(
+                  `Enviando (${i + 1}/${arquivos.length}): ${formatBytes(progressData.loaded)} de ${formatBytes(progressData.total)} (${progressData.percent}%)`
+                );
+              } else {
+                registrarOuAtualizarUpload(cardId, {
+                  nome: file.name,
+                  progresso: progressData.percent,
+                  status: 'enviando',
+                  procedimento: titulo,
+                  enviado: progressData.loaded,
+                  total: progressData.total
+                });
+              }
+            });
+
+            if (contextoAtual.fechado) {
+              registrarOuAtualizarUpload(cardId, { 
+                nome: file.name, 
+                progresso: 100, 
+                status: 'concluido',
+                procedimento: titulo 
+              });
+              setTimeout(() => removerUpload(cardId), 5000);
+            }
+          } catch (err) {
+            console.error(`Erro ao enviar anexo ${file.name}:`, err);
+            if (contextoAtual.fechado) {
+              registrarOuAtualizarUpload(cardId, { 
+                nome: file.name, 
+                progresso: progressoAtual, 
+                status: 'erro',
+                procedimento: titulo 
+              });
+            } else {
+              toast.error(`Falha ao enviar o anexo "${file.name}".`);
+            }
+          }
+        }
+
+        contextoAtual.emAndamento = false;
+
+        if (!contextoAtual.fechado) {
+          toast.success('Procedimento e anexos salvos com sucesso!');
+          onSuccess();
+          handleCloseModal();
+        } else {
+          onSuccess();
+        }
+      } else {
+        toast.success('Procedimento cadastrado com sucesso!');
+        onSuccess();
+        handleCloseModal();
+      }
+
+    } catch (err) {
+      alert('Erro ao cadastrar: ' + (err.response?.data?.error || err.message));
+      setLoading(false);
+      contextoAtual.emAndamento = false;
+    }
   };
 
   if (!isOpen) return null;
@@ -165,15 +180,15 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   return (
     <div className="fixed inset-0 bg-slate-900/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 text-slate-900">
-
+        
         <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 bg-slate-50">
           <div>
             <h3 className="text-lg font-bold text-slate-900">Novo Procedimento</h3>
             <p className="text-xs text-slate-500 mt-0.5">Cadastre a tratativa padrão e anexe mídias.</p>
           </div>
-          <button
+          <button 
             type="button"
-            onClick={handleCloseModal}
+            onClick={handleCloseModal} 
             className="text-slate-400 hover:text-slate-600 transition p-1 rounded-lg hover:bg-slate-200/50"
           >
             <X size={20} />
@@ -183,10 +198,10 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
         <form onSubmit={handleSubmit} className="p-6">
           <div className="mb-4">
             <label className="block font-semibold text-xs text-slate-700 mb-1.5">Título do Procedimento *</label>
-            <input
-              type="text"
-              required
-              value={titulo}
+            <input 
+              type="text" 
+              required 
+              value={titulo} 
               onChange={e => setTitulo(e.target.value)}
               disabled={loading}
               placeholder="Ex: Reset de Senha do Roteador Wi-Fi"
@@ -196,9 +211,9 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
           <div className="mb-4">
             <label className="block font-semibold text-xs text-slate-700 mb-1.5">Descrição Curta</label>
-            <input
-              type="text"
-              value={descricao}
+            <input 
+              type="text" 
+              value={descricao} 
               onChange={e => setDescricao(e.target.value)}
               disabled={loading}
               placeholder="Ex: Utilizado para clientes em conexão de Fibra Óptica"
@@ -208,10 +223,10 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
           <div className="mb-4">
             <label className="block font-semibold text-xs text-slate-700 mb-1.5">Passo a Passo / Script *</label>
-            <textarea
-              required
-              rows={6}
-              value={script}
+            <textarea 
+              required 
+              rows={6} 
+              value={script} 
               onChange={e => setScript(e.target.value)}
               disabled={loading}
               placeholder="Digite as instruções..."
@@ -229,9 +244,9 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
             <div className="border-2 border-dashed border-slate-300 hover:border-sky-500 rounded-lg p-4 text-center bg-slate-50 transition cursor-pointer">
               <Upload size={24} className="mx-auto mb-2 text-sky-600" />
-              <input
-                type="file"
-                multiple
+              <input 
+                type="file" 
+                multiple 
                 accept="image/*,video/*"
                 onChange={handleFileChange}
                 disabled={loading}
@@ -265,18 +280,19 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
-            <button
-              type="button"
-              onClick={handleCloseModal}
+            <button 
+              type="button" 
+              onClick={handleCloseModal} 
               className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition"
             >
-              {loading ? 'Fechar' : 'Cancelar'}
+              {loading ? 'Fechar (Ir para card flutuante)' : 'Cancelar'}
             </button>
-            <button
-              type="submit"
+            <button 
+              type="submit" 
               disabled={loading || !!erroValidacao}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white text-xs font-semibold transition ${loading || !!erroValidacao ? 'bg-slate-400 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-700'
-                }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white text-xs font-semibold transition ${
+                loading || !!erroValidacao ? 'bg-slate-400 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-700'
+              }`}
             >
               {loading && <Loader2 size={14} className="animate-spin" />}
               {loading ? 'Enviando Anexos...' : 'Salvar Procedimento'}
