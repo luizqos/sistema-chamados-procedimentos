@@ -31,7 +31,7 @@ async enviarAnexo(procedimentoId, arquivo, onProgress) {
       headers: { 
         'Content-Type': 'multipart/form-data' 
       },
-      timeout: 600000,
+      timeout: 1800000,
       onUploadProgress: (progressEvent) => {
         if (progressEvent.total && onProgress) {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
