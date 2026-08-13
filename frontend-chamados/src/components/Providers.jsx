@@ -6,6 +6,7 @@ import { msalInstance } from '../config/msalConfig';
 import { AuthProvider } from '../contexts/AuthContext';
 import { UploadProvider } from '../contexts/UploadContext';
 import { Toaster } from 'react-hot-toast';
+import { ThemeProvider } from 'next-themes';
 
 export default function Providers({ children }) {
   const [initialized, setInitialized] = useState(false);
@@ -27,8 +28,10 @@ export default function Providers({ children }) {
     <MsalProvider instance={msalInstance}>
       <AuthProvider>
         <UploadProvider>
-          {children}
-          <Toaster position="top-right" reverseOrder={false} />
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {children}
+            <Toaster position="top-right" reverseOrder={false} />
+          </ThemeProvider>
         </UploadProvider>
       </AuthProvider>
     </MsalProvider>
