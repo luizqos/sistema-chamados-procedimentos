@@ -23,13 +23,28 @@ export const procedimentoService = {
     return data;
   },
 
-  async enviarAnexo(procedimentoId, arquivo) {
+async enviarAnexo(procedimentoId, arquivo, onProgress) {
     const formData = new FormData();
     formData.append('arquivo', arquivo);
 
     const { data } = await api.post(`/api/procedimentos/${procedimentoId}/anexos`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 
+        'Content-Type': 'multipart/form-data' 
+      },
+      timeout: 600000,
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total && onProgress) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          
+          onProgress({
+            percent: percentCompleted,
+            loaded: progressEvent.loaded,
+            total: progressEvent.total
+          });
+        }
+      }
     });
+    
     return data;
   }
 };

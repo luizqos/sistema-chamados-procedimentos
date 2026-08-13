@@ -39,4 +39,5 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Swagger disponível em http://localhost:${PORT}/api-docs`);
 });
 
-server.timeout = 300000;
+server.timeout = 600000;
+server.keepAliveTimeout = 600000;

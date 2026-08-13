@@ -13,8 +13,19 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   const [arquivos, setArquivos] = useState([]);
   const [erroValidacao, setErroValidacao] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  const [progressoUpload, setProgressoUpload] = useState(0);
+  const [textoStatusUpload, setTextoStatusUpload] = useState('');
 
   if (!isOpen) return null;
+
+  const formatBytes = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -45,6 +56,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
     if (erroValidacao) return;
 
     setLoading(true);
+    setProgressoUpload(0);
 
     try {
       const novoProcedimento = await procedimentoService.criar({
@@ -54,8 +66,17 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
       });
 
       if (arquivos.length > 0) {
+        let index = 1;
         for (let file of arquivos) {
-          await procedimentoService.enviarAnexo(novoProcedimento.id, file);
+          setTextoStatusUpload(`Enviando arquivo ${index} de ${arquivos.length}: ${file.name}`);
+          
+          await procedimentoService.enviarAnexo(novoProcedimento.id, file, (progressData) => {
+            setProgressoUpload(progressData.percent);
+            setTextoStatusUpload(
+              `Enviando (${index}/${arquivos.length}): ${formatBytes(progressData.loaded)} de ${formatBytes(progressData.total)} (${progressData.percent}%)`
+            );
+          });
+          index++;
         }
       }
 
@@ -71,12 +92,14 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
       alert('Erro ao cadastrar: ' + (err.response?.data?.error || err.message));
     } finally {
       setLoading(false);
+      setProgressoUpload(0);
+      setTextoStatusUpload('');
     }
   };
 
   return (
     <div className="fixed inset-0 bg-slate-900/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl w-full max-w-2xl maxHeight-[90vh] overflow-y-auto shadow-2xl border border-slate-200 text-slate-900">
+      <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 text-slate-900">
         
         {/* Cabeçalho */}
         <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 bg-slate-50">
@@ -86,6 +109,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
           </div>
           <button 
             onClick={onClose} 
+            disabled={loading}
             className="text-slate-400 hover:text-slate-600 transition p-1 rounded-lg hover:bg-slate-200/50"
           >
             <X size={20} />
@@ -103,6 +127,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               required 
               value={titulo} 
               onChange={e => setTitulo(e.target.value)}
+              disabled={loading}
               placeholder="Ex: Reset de Senha do Roteador Wi-Fi"
               className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
@@ -116,6 +141,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               type="text" 
               value={descricao} 
               onChange={e => setDescricao(e.target.value)}
+              disabled={loading}
               placeholder="Ex: Utilizado para clientes em conexão de Fibra Óptica"
               className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
@@ -130,6 +156,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               rows={6} 
               value={script} 
               onChange={e => setScript(e.target.value)}
+              disabled={loading}
               placeholder="Digite as instruções. Suporta Markdown, listas e blocos de código..."
               className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-slate-900 text-slate-100 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
@@ -153,14 +180,31 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
                 multiple 
                 accept="image/*,video/*"
                 onChange={handleFileChange}
+                disabled={loading}
                 className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100 transition cursor-pointer"
               />
-              {arquivos.length > 0 && (
+              {arquivos.length > 0 && !loading && (
                 <div className="mt-2 text-xs text-sky-600 font-semibold">
                   {arquivos.length} arquivo(s) selecionado(s) e validado(s)
                 </div>
               )}
             </div>
+
+            {/* Barra de Progresso Real durante o envio */}
+            {loading && arquivos.length > 0 && (
+              <div className="mt-4 space-y-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                  <div 
+                    className="bg-sky-600 h-full transition-all duration-150 ease-out" 
+                    style={{ width: `${progressoUpload}%` }}
+                  ></div>
+                </div>
+                <div className="flex justify-between items-center text-xs text-slate-600">
+                  <span className="font-medium truncate max-w-[260px]">{textoStatusUpload}</span>
+                  <span className="font-bold">{progressoUpload}%</span>
+                </div>
+              </div>
+            )}
 
             {erroValidacao && (
               <div className="flex items-center gap-1.5 mt-2 text-red-600 text-xs font-medium">
@@ -174,6 +218,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
             <button 
               type="button" 
               onClick={onClose} 
+              disabled={loading}
               className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition"
             >
               Cancelar
@@ -188,7 +233,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               }`}
             >
               {loading && <Loader2 size={14} className="animate-spin" />}
-              {loading ? 'Salvando...' : 'Salvar'}
+              {loading ? 'Salvando e Enviando...' : 'Salvar'}
             </button>
           </div>
         </form>
