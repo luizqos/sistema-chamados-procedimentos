@@ -84,7 +84,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
         for (let i = 0; i < arquivos.length; i++) {
           const file = arquivos[i];
-          const uploadId = `upload-${file.name}-${Date.now()}`;
+          const toastId = `upload-toast-${file.name}-${Date.now()}`;
 
           setStatusTexto(`Enviando arquivo ${i + 1} de ${arquivos.length}: ${file.name}`);
 
@@ -95,25 +95,54 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
                 `Enviando (${i + 1}/${arquivos.length}): ${formatBytes(progressData.loaded)} de ${formatBytes(progressData.total)} (${progressData.percent}%)`
               );
 
-              // Se o usuário fechou o modal no meio do processo, ativa o widget flutuante mantendo a porcentagem atual
+              // Se o usuário fechou o modal no meio do processo, ativa o toast customizado com a barra de progresso
               if (modalFechadaForcadaRef.current) {
-                registrarOuAtualizarUpload(uploadId, {
+                registrarOuAtualizarUpload(toastId, {
                   nome: file.name,
                   progresso: progressData.percent,
                   status: 'enviando'
                 });
+
+                // Renderiza o Toast customizado dinamicamente
+                toast.custom(
+                  (t) => (
+                    <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-slate-900 text-white shadow-xl rounded-xl pointer-events-auto flex p-4 border border-slate-800`}>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="text-xs font-bold text-sky-400 truncate max-w-[220px]" title={file.name}>
+                            Segundo plano: {file.name}
+                          </p>
+                          <span className="text-xs font-semibold text-slate-300">{progressData.percent}%</span>
+                        </div>
+                        <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                          <div 
+                            className="bg-sky-500 h-full transition-all duration-150 ease-out" 
+                            style={{ width: `${progressData.percent}%` }}
+                          ></div>
+                        </div>
+                        <div className="flex justify-between items-center text-[10px] text-slate-400 mt-1">
+                          <span>{formatBytes(progressData.loaded)} de {formatBytes(progressData.total)}</span>
+                          <span className="text-sky-400 font-medium">Continuando de onde parou</span>
+                        </div>
+                      </div>
+                    </div>
+                  ),
+                  { id: toastId, duration: Infinity }
+                );
               }
             });
 
-            // Se terminou com o modal fechado, atualiza o widget flutuante para concluído
+            // Se terminou com o modal fechado, atualiza o toast para sucesso
             if (modalFechadaForcadaRef.current) {
-              registrarOuAtualizarUpload(uploadId, { nome: file.name, progresso: 100, status: 'concluido' });
-              setTimeout(() => removerUpload(uploadId), 5000);
+              registrarOuAtualizarUpload(toastId, { nome: file.name, progresso: 100, status: 'concluido' });
+              toast.success(`Anexo "${file.name}" enviado com sucesso!`, { id: toastId, duration: 4000 });
+              setTimeout(() => removerUpload(toastId), 5000);
             }
           } catch (err) {
             console.error(`Erro ao enviar anexo ${file.name}:`, err);
             if (modalFechadaForcadaRef.current) {
-              registrarOuAtualizarUpload(uploadId, { nome: file.name, progresso: progressoAtual, status: 'erro' });
+              registrarOuAtualizarUpload(toastId, { nome: file.name, progresso: progressoAtual, status: 'erro' });
+              toast.error(`Falha ao enviar o anexo "${file.name}".`, { id: toastId, duration: 5000 });
             } else {
               toast.error(`Falha ao enviar o anexo "${file.name}".`);
             }
@@ -247,7 +276,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
                   <span className="font-bold">{progressoAtual}%</span>
                 </div>
                 <p className="text-[10px] text-slate-400 italic text-center pt-1">
-                  Se fechar esta janela, o envio continuará exatamente de onde parou em segundo plano.
+                  Se fechar esta janela, o envio continuará exatamente de onde parou em segundo plano com um Toast ativo.
                 </p>
               </div>
             )}
@@ -265,7 +294,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               onClick={handleCloseModal} 
               className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition"
             >
-              {loading ? 'Fechar (Continuar em background)' : 'Cancelar'}
+              {loading ? 'Fechar (Continuar com Toast)' : 'Cancelar'}
             </button>
             <button 
               type="submit" 
