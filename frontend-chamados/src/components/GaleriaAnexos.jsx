@@ -1,9 +1,13 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Image as ImageIcon, Film, X, Maximize2, PlayCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { API_URL } from '../utils/constants';
 import { secureStorage } from '@/src/utils/storage';
 
 export default function GaleriaAnexos({ anexos }) {
+  const t = useTranslations('Procedimento');
   const [mediaExpandida, setMediaExpandida] = useState(null);
 
   if (!anexos || anexos.length === 0) return null;
@@ -18,7 +22,7 @@ export default function GaleriaAnexos({ anexos }) {
   return (
     <div className="mt-8">
       <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-        Anexos
+        {t('anexosLabel')}
       </h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -62,7 +66,7 @@ export default function GaleriaAnexos({ anexos }) {
         <div className="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-in fade-in duration-200">
           <button 
             onClick={() => setMediaExpandida(null)} 
-            className="absolute top-4 right-4 md:top-6 md:right-6 p-2.5 bg-slate-800/80 hover:bg-red-600 text-slate-300 hover:text-white rounded-xl transition-all z-50 shadow-2xl border border-slate-700 hover:border-red-500"
+            className="absolute top-4 right-4 md:top-6 md:right-6 p-2.5 bg-slate-800/80 hover:bg-red-600 text-slate-300 hover:text-white rounded-xl transition-all z-50 shadow-2xl border border-slate-700 hover:border-red-500 cursor-pointer"
             title="Fechar (Esc)"
           >
             <X size={24} strokeWidth={2.5} />
@@ -74,7 +78,7 @@ export default function GaleriaAnexos({ anexos }) {
             ) : (
               <video controls autoPlay className="w-full max-h-[85vh] rounded-lg shadow-2xl bg-black border border-slate-800">
                 <source src={getMediaUrl(mediaExpandida.caminho_arquivo)} type={mediaExpandida.mime_type} />
-                Seu navegador não suporta a tag de vídeo.
+                Your browser does not support the video tag.
               </video>
             )}
           </div>
