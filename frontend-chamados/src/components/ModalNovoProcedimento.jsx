@@ -95,7 +95,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
             await procedimentoService.enviarAnexo(novoProcedimento.id, file, (progressData) => {
               setProgressoAtual(progressData.percent);
               setStatusTexto(
-                `Enviando (${i + 1}/${arquivos.length}): ${formatBytes(progressData.loaded)} de ${formatBytes(progressData.total)} (${progressData.percent}%)`
+                `Enviando (${i + 1}/${arquivos.length}): ${formatBytes(progressData.loaded)} de ${formatBytes(progressData.total)}`
               );
 
               if (modalFechadaForcadaRef.current) {
@@ -270,7 +270,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               onClick={handleCloseModal}
               className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition"
             >
-              {loading ? 'Fechar (Ir para card flutuante)' : 'Cancelar'}
+              {loading ? 'Fechar' : 'Cancelar'}
             </button>
             <button
               type="submit"

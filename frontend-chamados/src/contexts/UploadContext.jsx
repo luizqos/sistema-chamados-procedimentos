@@ -41,7 +41,7 @@ function GlobalUploadWidget({ uploads }) {
         <div key={item.id} className="bg-slate-900 text-white p-4 rounded-xl shadow-2xl border border-slate-800 text-xs">
           <div className="flex justify-between items-center mb-1.5">
             <span className="font-bold text-sky-400 truncate max-w-[200px]" title={item.nome}>
-              {item.status === 'enviando' ? 'Segundo plano: ' : item.status === 'concluido' ? 'Concluído: ' : 'Erro: '} 
+              {item.status === 'enviando' ? 'Enviando: ' : item.status === 'concluido' ? 'Concluído: ' : 'Erro: '} 
               {item.nome}
             </span>
             <span className="font-semibold text-slate-300">
