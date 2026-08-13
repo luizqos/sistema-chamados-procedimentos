@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Search, Plus, Loader2, User, Shield, Users, Settings, LogOut } from 'lucide-react';
-import BotaoTema from './button/BotaoTema'; // <-- Importando o botão de tema
+import BotaoTema from './button/BotaoTema';
 
 export default function Sidebar({
   busca,
@@ -18,11 +18,9 @@ export default function Sidebar({
 }) {
   const observerRef = useRef(null);
   
-  // Estado e Ref para controlar o menu Dropdown
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // Fecha o menu admin ao clicar fora dele
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -33,7 +31,6 @@ export default function Sidebar({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Observador do Scroll Infinito
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {

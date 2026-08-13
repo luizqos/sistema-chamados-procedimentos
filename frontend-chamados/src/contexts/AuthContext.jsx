@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMsal } from '@azure/msal-react';
 import api from '../services/api';
+import { secureStorage } from '../utils/storage';
 
 const AuthContext = createContext({});
 
@@ -15,15 +16,16 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     async function carregarSessao() {
-      const token = localStorage.getItem('@chamados:token');
+      const token = secureStorage.getItem('@chamados:token');
+      
       if (token) {
         try {
           api.defaults.headers.Authorization = `Bearer ${token}`;
           const { data } = await api.get('/api/auth/me');
           setUser(data);
         } catch (error) {
-          localStorage.removeItem('@chamados:token');
-          localStorage.removeItem('@chamados:user');
+          secureStorage.removeItem('@chamados:token');
+          secureStorage.removeItem('@chamados:user');
           setUser(null);
         }
       }
@@ -34,24 +36,28 @@ export function AuthProvider({ children }) {
 
   const login = async (email, senha) => {
     const { data } = await api.post('/api/auth/login', { email, senha });
-    localStorage.setItem('@chamados:token', data.token);
-    localStorage.setItem('@chamados:user', JSON.stringify(data.usuario));
+    
+    secureStorage.setItem('@chamados:token', data.token);
+    secureStorage.setItem('@chamados:user', data.usuario);
+
     api.defaults.headers.Authorization = `Bearer ${data.token}`;
     setUser(data.usuario);
     router.push('/');
   };
 
   const loginComToken = (token, usuario) => {
-    localStorage.setItem('@chamados:token', token);
-    localStorage.setItem('@chamados:user', JSON.stringify(usuario));
+    secureStorage.setItem('@chamados:token', token);
+    secureStorage.setItem('@chamados:user', usuario);
+
     api.defaults.headers.Authorization = `Bearer ${token}`;
     setUser(usuario);
     router.push('/');
   };
 
   const logout = async () => {
-    localStorage.removeItem('@chamados:token');
-    localStorage.removeItem('@chamados:user');
+    secureStorage.removeItem('@chamados:token');
+    secureStorage.removeItem('@chamados:user');
+
     delete api.defaults.headers.Authorization;
     setUser(null);
 
@@ -74,7 +80,6 @@ export function AuthProvider({ children }) {
     window.location.href = '/login';
   };
 
-  
   const hasPermission = (permissionKey) => {
     if (!user) return false;
     if (user.role?.nome === 'ADMIN') return true;

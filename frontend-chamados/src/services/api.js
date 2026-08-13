@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_URL } from '../utils/constants';
+import { secureStorage } from '../utils/storage';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -8,7 +9,7 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('@chamados:token');
+    const token = secureStorage.getItem('@chamados:token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -22,9 +23,11 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && typeof window !== 'undefined') {
       const urlRequisicao = error.config?.url || '';
       const ehRotaDeLogin = urlRequisicao.includes('/auth/login') || urlRequisicao.includes('/auth/sso/microsoft');
+      
       if (!ehRotaDeLogin && window.location.pathname !== '/login') {
-        localStorage.removeItem('@chamados:token');
-        localStorage.removeItem('@chamados:user');
+        secureStorage.removeItem('@chamados:token');
+        secureStorage.removeItem('@chamados:user');
+        
         window.location.href = '/login';
       }
     }

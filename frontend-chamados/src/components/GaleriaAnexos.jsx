@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Image as ImageIcon, Film, X, Maximize2, PlayCircle } from 'lucide-react';
 import { API_URL } from '../utils/constants';
+import { secureStorage } from '@/src/utils/storage';
 
 export default function GaleriaAnexos({ anexos }) {
   const [mediaExpandida, setMediaExpandida] = useState(null);
 
   if (!anexos || anexos.length === 0) return null;
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem('@chamados:token') : '';
+  const token = typeof window !== 'undefined' ? secureStorage.getItem('@chamados:token') : '';
 
   const getMediaUrl = (caminho) => {
     const caminhoCorrigido = caminho.startsWith('/') ? caminho : `/${caminho}`;
