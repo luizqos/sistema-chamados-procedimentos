@@ -72,7 +72,6 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   const handleCloseModal = () => {
     if (uploadContextRef.current && uploadContextRef.current.emAndamento) {
       uploadContextRef.current.fechado = true;
-      toast('O upload continuará no card em segundo plano.', { icon: 'ℹ️' });
     }
     
     onClose();
@@ -115,7 +114,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               if (!contextoAtual.fechado) {
                 setProgressoAtual(progressData.percent);
                 setStatusTexto(
-                  `Enviando (${i + 1}/${arquivos.length}): ${formatBytes(progressData.loaded)} de ${formatBytes(progressData.total)} (${progressData.percent}%)`
+                  `Enviando (${i + 1}/${arquivos.length}): ${formatBytes(progressData.loaded)} de ${formatBytes(progressData.total)}`
                 );
               } else {
                 registrarOuAtualizarUpload(cardId, {
@@ -285,7 +284,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               onClick={handleCloseModal} 
               className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition"
             >
-              {loading ? 'Fechar (Ir para card flutuante)' : 'Cancelar'}
+              {loading ? 'Fechar' : 'Cancelar'}
             </button>
             <button 
               type="submit" 
