@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { procedimentoService } from '../services/procedimentoService';
 import { useUpload } from '../contexts/UploadContext';
@@ -15,9 +15,26 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   const [erroValidacao, setErroValidacao] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Estados para controlar o progresso interno da modal
+  const [progressoAtual, setProgressoAtual] = useState(0);
+  const [statusTexto, setStatusTexto] = useState('');
+  
+  // Referência para controlar se o upload está em andamento e se a modal foi fechada à força
+  const uploadEmAndamentoRef = useRef(false);
+  const backgroundTriggeredRef = useRef(false);
+  const procedimentoCriadoIdRef = useRef(null);
+  const arquivosRestantesRef = useRef([]);
+
   const { iniciarUploadBackground } = useUpload();
 
-  if (!isOpen) return null;
+  // Função auxiliar para formatar bytes
+  const formatBytes = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -43,46 +60,113 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
     setArquivos(selectedFiles);
   };
 
+  // Tratativa ao fechar a modal (caso clique em X ou Cancelar durante o upload)
+  const handleCloseModal = () => {
+    if (uploadEmAndamentoRef.current && !backgroundTriggeredRef.current) {
+      backgroundTriggeredRef.current = true;
+      // Transfere os arquivos restantes para o segundo plano global
+      if (procedimentoCriadoIdRef.current && arquivosRestantesRef.current.length > 0) {
+        arquivosRestantesRef.current.forEach((file) => {
+          iniciarUploadBackground(procedimentoCriadoIdRef.current, file);
+        });
+        toast('O upload continuará em segundo plano.', { icon: 'ℹ️' });
+      }
+    }
+    
+    // Reseta os estados locais e fecha
+    setLoading(false);
+    uploadEmAndamentoRef.current = false;
+    backgroundTriggeredRef.current = false;
+    onClose();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (erroValidacao) return;
 
     setLoading(true);
+    setProgressoAtual(0);
 
     try {
-      // 1. Cria o procedimento imediatamente no banco
+      // 1. Cria o procedimento imediatamente
+      setStatusTexto('Criando procedimento...');
       const novoProcedimento = await procedimentoService.criar({
         titulo,
         descricao,
         script_passo_a_passo: script
       });
 
-      toast.success('Procedimento cadastrado com sucesso!');
-      
-      // 2. Fecha a modal imediatamente para liberar o usuário
-      onSuccess();
-      onClose();
-      
-      // Limpa os campos da modal
-      setTitulo('');
-      setDescricao('');
-      setScript('');
-      setArquivos([]);
-      setErroValidacao('');
+      procedimentoCriadoIdRef.current = novoProcedimento.id;
+      arquivosRestantesRef.current = [...arquivos];
 
-      // 3. Se houver arquivos, dispara o upload para o contexto global em segundo plano
+      // 2. Se houver arquivos, faz o upload iterativo dentro da modal
       if (arquivos.length > 0) {
-        arquivos.forEach((file) => {
-          iniciarUploadBackground(novoProcedimento.id, file);
-        });
+        uploadEmAndamentoRef.current = true;
+
+        for (let i = 0; i < arquivos.length; i++) {
+          const file = arquivos[i];
+          
+          // Se o usuário fechou a modal à força durante o loop, interrompe o loop local e joga o resto pro background
+          if (backgroundTriggeredRef.current) break;
+
+          setStatusTexto(`Enviando arquivo ${i + 1} de ${arquivos.length}: ${file.name}`);
+
+          try {
+            await procedimentoService.enviarAnexo(novoProcedimento.id, file, (progressData) => {
+              // Se a modal foi fechada durante este progresso, aborta o loop interno
+              if (backgroundTriggeredRef.current) return;
+              
+              setProgressoAtual(progressData.percent);
+              setStatusTexto(
+                `Enviando (${i + 1}/${arquivos.length}): ${formatBytes(progressData.loaded)} de ${formatBytes(progressData.total)} (${progressData.percent}%)`
+              );
+            });
+
+            // Remove o arquivo enviado da lista de restantes
+            arquivosRestantesRef.current = arquivosRestantesRef.current.slice(1);
+          } catch (err) {
+            console.error(`Erro ao enviar anexo ${file.name}:`, err);
+            if (!backgroundTriggeredRef.current) {
+              toast.error(`Falha ao enviar o anexo "${file.name}".`);
+            }
+          }
+        }
+
+        // Se terminou tudo aqui dentro e a modal ainda estava aberta
+        if (!backgroundTriggeredRef.current) {
+          uploadEmAndamentoRef.current = false;
+          toast.success('Procedimento e anexos salvos com sucesso!');
+          onSuccess();
+          onClose();
+          limparFormulario();
+        }
+      } else {
+        // Sem arquivos, apenas sucesso normal
+        toast.success('Procedimento cadastrado com sucesso!');
+        onSuccess();
+        onClose();
+        limparFormulario();
       }
 
     } catch (err) {
       alert('Erro ao cadastrar: ' + (err.response?.data?.error || err.message));
-    } finally {
       setLoading(false);
+      uploadEmAndamentoRef.current = false;
     }
   };
+
+  const limparFormulario = () => {
+    setTitulo('');
+    setDescricao('');
+    setScript('');
+    setArquivos([]);
+    setErroValidacao('');
+    setLoading(false);
+    setProgressoAtual(0);
+    setStatusTexto('');
+  };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-slate-900/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -92,12 +176,11 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
         <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 bg-slate-50">
           <div>
             <h3 className="text-lg font-bold text-slate-900">Novo Procedimento</h3>
-            <p className="text-xs text-slate-500 mt-0.5">Cadastre o procedimento. Os anexos pesados irão para segundo plano ao salvar.</p>
+            <p className="text-xs text-slate-500 mt-0.5">Cadastre a tratativa padrão e anexe mídias.</p>
           </div>
           <button 
             type="button"
-            onClick={onClose} 
-            disabled={loading}
+            onClick={handleCloseModal} 
             className="text-slate-400 hover:text-slate-600 transition p-1 rounded-lg hover:bg-slate-200/50"
           >
             <X size={20} />
@@ -171,12 +254,31 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
                 disabled={loading}
                 className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100 transition cursor-pointer"
               />
-              {arquivos.length > 0 && (
+              {arquivos.length > 0 && !loading && (
                 <div className="mt-2 text-xs text-sky-600 font-semibold">
                   {arquivos.length} arquivo(s) selecionado(s)
                 </div>
               )}
             </div>
+
+            {/* Barra de Progresso interna da Modal */}
+            {loading && (
+              <div className="mt-4 space-y-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                  <div 
+                    className="bg-sky-600 h-full transition-all duration-150 ease-out" 
+                    style={{ width: `${progressoAtual}%` }}
+                  ></div>
+                </div>
+                <div className="flex justify-between items-center text-xs text-slate-600">
+                  <span className="font-medium truncate max-w-[280px]">{statusTexto}</span>
+                  <span className="font-bold">{progressoAtual}%</span>
+                </div>
+                <p className="text-[10px] text-slate-400 italic text-center pt-1">
+                  Se fechar esta janela, o envio continuará automaticamente em segundo plano.
+                </p>
+              </div>
+            )}
 
             {erroValidacao && (
               <div className="flex items-center gap-1.5 mt-2 text-red-600 text-xs font-medium">
@@ -189,11 +291,10 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
             <button 
               type="button" 
-              onClick={onClose} 
-              disabled={loading}
+              onClick={handleCloseModal} 
               className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition"
             >
-              Cancelar
+              {loading ? 'Fechar (Ir para segundo plano)' : 'Cancelar'}
             </button>
             <button 
               type="submit" 
@@ -205,7 +306,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               }`}
             >
               {loading && <Loader2 size={14} className="animate-spin" />}
-              {loading ? 'Salvando...' : 'Salvar Procedimento'}
+              {loading ? 'Enviando Anexos...' : 'Salvar Procedimento'}
             </button>
           </div>
         </form>
