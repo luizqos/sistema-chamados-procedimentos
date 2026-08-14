@@ -57,7 +57,8 @@
     "placeholderTitulo": "E.g., Wi-Fi Router Password Reset",
     "textoUploadProcedimento": "Creating procedure...",
     "textoUploadEnviadoArquivo": "Sending file",
-    "escolherArquivos": "Select Files"
+    "escolherArquivos": "Select Files",
+    "nenhumArquivoSelecionado": "No file selected"
   },
   "Usuarios": {
     "titulo": "User Management",

@@ -57,7 +57,8 @@
     "placeholderTitulo": "Ex: Reset de Senha do Roteador Wi-Fi",
     "textoUploadProcedimento": "Criando Procedimento....",
     "textoUploadEnviadoArquivo": "Enviando arquivo",
-    "escolherArquivos": "Selecionar Arquivos"
+    "escolherArquivos": "Selecionar Arquivos",
+    "nenhumArquivoSelecionado": "Nenhum arquivo selecionado"
   },
   "Usuarios": {
     "titulo": "Gestão de Usuários",
