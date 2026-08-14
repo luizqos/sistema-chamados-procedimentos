@@ -11,6 +11,7 @@ import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../utils/constants';
 export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   const t = useTranslations('Procedimento');
   const tCommon = useTranslations('Common');
+  const tToastProcedimento = useTranslations('Toast.Procedimento');
 
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -151,7 +152,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
                 procedimento: titulo
               });
             } else {
-              toast.error(`Falha ao enviar o anexo "${file.name}".`);
+              toast.error(`${tToastProcedimento('falhaAnexo')} "${file.name}".`);
             }
           }
         }
@@ -159,20 +160,19 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
         contextoAtual.emAndamento = false;
 
         if (!contextoAtual.fechado) {
-          toast.success('Procedimento e anexos salvos com sucesso!');
+          toast.success(tToastProcedimento('cadastradoAnexoSucesso'));
           onSuccess();
           handleCloseModal();
         } else {
           onSuccess();
         }
       } else {
-        toast.success('Procedimento cadastrado com sucesso!');
+        toast.success(tToastProcedimento('cadastradoSucesso'));
         onSuccess();
         handleCloseModal();
       }
-
     } catch (err) {
-      alert('Erro ao cadastrar: ' + (err.response?.data?.error || err.message));
+      toast.error(`${tToastProcedimento('cadastroErro')} ${(err.response?.data?.error || err.message)}`);
       setLoading(false);
       contextoAtual.emAndamento = false;
     }

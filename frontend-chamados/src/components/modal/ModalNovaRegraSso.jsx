@@ -10,6 +10,7 @@ import { ssoRegrasService } from '../../services/ssoRegrasService';
 export default function ModalNovaRegraSso({ isOpen, onClose, onSuccess }) {
   const tSso = useTranslations('Sso');
   const tCommon = useTranslations('Common');
+  const tToastSSo = useTranslations('Toast.Sso');
 
   const [tipo, setTipo] = useState('DOMINIO');
   const [valor, setValor] = useState('');
@@ -24,12 +25,12 @@ export default function ModalNovaRegraSso({ isOpen, onClose, onSuccess }) {
 
     try {
       await ssoRegrasService.criar({ tipo, valor: valor.trim(), acao });
-      toast.success('Regra de segurança criada com sucesso!');
+      toast.success(tToastSSo('cadastroSucesso'));
       onSuccess();
       onClose();
       setValor('');
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Erro ao criar regra.');
+      toast.error(err.response?.data?.error || `${tToastSSo('cadastroErro')}`);
     } finally {
       setLoading(false);
     }

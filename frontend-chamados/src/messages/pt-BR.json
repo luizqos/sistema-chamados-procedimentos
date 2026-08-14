@@ -15,10 +15,7 @@
     "inativado": "INATIVADO",
     "usuario": "Usuário",
     "comSucesso": "com Sucesso",
-    "copiado": "Script copiado para a área de transferência!",
     "verificandoAutenticacao": "Verificando autenticação...",
-    "sucessoExclusao": "Procedimento excluído com sucesso!",
-    "erroExclusao": "Erro ao excluir procedimento",
     "tituloExclusao": "Excluir Procedimento?",
     "textoExclusao": "Esta ação removerá o procedimento e todos os seus anexos do servidor."
   },
@@ -119,6 +116,32 @@
       "alteradoPerfilErro": "Erro ao alterar perfil.",
       "erroStatus": "Erro ao alterar status.",
       "sucessoStatus": "Status alterado com sucesso!"
+    },
+    "Sso": {
+      "cadastroSucesso": "Regra de segurança criada com sucesso!",
+      "cadastroErro": "Erro ao criar regra.",
+      "carregarRegrasErro": "Erro ao carregar as regras de segurança.",
+      "deleteRegraSucesso": "Regra removida com sucesso!",
+      "deleteRegraErro": "Erro ao remover regra."
+    },
+    "Procedimento": {
+      "falhaAnexo": "Regra de segurança criada com sucesso!",
+      "cadastradoSucesso": "Procedimento cadastrado com sucesso!",
+      "cadastroErro": "Erro ao cadastrar:",
+      "cadastradoAnexoSucesso": "Procedimento e anexos salvos com sucesso!",
+      "copiado": "Script copiado para a área de transferência!",
+      "sucessoExclusao": "Procedimento excluído com sucesso!",
+      "erroExclusao": "Erro ao excluir procedimento"
+    },
+    "Login": {
+      "erroSso": "Erro no processamento do SSO.",
+      "erroConexao": "Erro ao conectar com a Microsoft.",
+      "falhaAutenticacao": "Falha na autenticação."
+    },
+    "Setup": {
+      "usuarioCadastradoErro": "O sistema já possui usuários cadastrados.",
+      "cadastradoSucesso": "Administrador cadastrado com sucesso! Faça login.",
+      "erroConfigInicial": "Erro ao realizar a configuração inicial."
     }
   }
 }

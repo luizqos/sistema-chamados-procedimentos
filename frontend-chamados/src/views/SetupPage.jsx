@@ -10,8 +10,9 @@ import api from '../services/api';
 import BotaoIdiomaLogin from '../components/button/BotaoIdiomaLogin';
 
 export default function SetupPage() {
-  const t = useTranslations('Setup');
+  const tSetup = useTranslations('Setup');
   const tAuth = useTranslations('Auth');
+  const tToastSetup = useTranslations('Toast.Setup');
 
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -26,7 +27,7 @@ export default function SetupPage() {
       try {
         const { data } = await api.get('/api/auth/setup-status');
         if (!data?.precisaSetupInicial) {
-          toast.error('O sistema já possui usuários cadastrados.');
+          toast.error(tToastSetup('usuarioCadastradoErro'));
           router.push('/login');
           return;
         }
@@ -45,10 +46,10 @@ export default function SetupPage() {
 
     try {
       await api.post('/api/auth/setup-inicial', { nome, email, senha });
-      toast.success('Administrador cadastrado com sucesso! Faça login.');
+      toast.success(tToastSetup('cadastradoSucesso'));
       router.push('/login');
     } catch (err) {
-      const msg = err.response?.data?.error || 'Erro ao realizar a configuração inicial.';
+      const msg = err.response?.data?.error || `${tToastSetup('erroConfigInicial')}`;
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -59,7 +60,7 @@ export default function SetupPage() {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 text-slate-400 gap-3">
         <Loader2 size={24} className="animate-spin text-sky-500" />
-        <span className="text-xs">{t('verificandoPermissao')}</span>
+        <span className="text-xs">{tSetup('verificandoPermissao')}</span>
       </div>
     );
   }
@@ -84,13 +85,13 @@ export default function SetupPage() {
 
         <div className="relative z-10 space-y-6 max-w-lg">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/60 border border-amber-500/30 text-amber-300 text-xs font-semibold">
-            <ShieldAlert size={14} /> {t('configInicial')}
+            <ShieldAlert size={14} /> {tSetup('configInicial')}
           </div>
           <h1 className="text-3xl font-extrabold text-white leading-tight">
-            {t('bemVindoSetup')}
+            {tSetup('bemVindoSetup')}
           </h1>
           <p className="text-sm text-slate-400 leading-relaxed">
-            {t('descricaoSetup')}
+            {tSetup('descricaoSetup')}
           </p>
         </div>
 
@@ -109,16 +110,16 @@ export default function SetupPage() {
               </div>
               <span className="text-sm font-bold text-white tracking-wider uppercase">SPC Enterprise</span>
             </div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">{t('primeiroAcesso')}</h2>
+            <h2 className="text-2xl font-bold text-white tracking-tight">{tSetup('primeiroAcesso')}</h2>
             <p className="text-xs text-slate-400 mt-1">
-              {t('preenchaDadosAdmin')}
+              {tSetup('preenchaDadosAdmin')}
             </p>
           </div>
 
           <form onSubmit={handleSetup} className="space-y-4">
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                {t('nomeAdmin')}
+                {tSetup('nomeAdmin')}
               </label>
               <div className="relative">
                 <User size={18} className="absolute left-3.5 top-3 text-slate-500" />
@@ -152,7 +153,7 @@ export default function SetupPage() {
 
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                {t('senhaMaster')}
+                {tSetup('senhaMaster')}
               </label>
               <div className="relative">
                 <Lock size={18} className="absolute left-3.5 top-3 text-slate-500" />
@@ -175,11 +176,11 @@ export default function SetupPage() {
               {loading ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
-                  <span>{t('criandoAdmin')}</span>
+                  <span>{tSetup('criandoAdmin')}</span>
                 </>
               ) : (
                 <>
-                  <span>{t('cadastrar')}</span>
+                  <span>{tSetup('cadastrar')}</span>
                   <ArrowRight size={18} />
                 </>
               )}
@@ -188,7 +189,7 @@ export default function SetupPage() {
 
           <div className="pt-4 border-t border-slate-800/80 text-center">
             <p className="text-[11px] text-slate-500">
-              {t('avisoMaster')}
+              {tSetup('avisoMaster')}
             </p>
           </div>
         </div>

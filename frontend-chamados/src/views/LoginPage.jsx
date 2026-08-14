@@ -13,8 +13,8 @@ import { loginRequest, msalInstance } from '@/src/config/msalConfig';
 import BotaoIdiomaLogin from '../components/button/BotaoIdiomaLogin';
 
 export default function LoginPage() {
-  const t = useTranslations('Auth');
-  const tCommon = useTranslations('Common');
+  const tAuth = useTranslations('Auth');
+  const tToastLogin = useTranslations('Toast.Login');
   const ssoAtivo = process.env.NEXT_PUBLIC_SSO_MICROSOFT_ATIVO === 'true';
 
   const [email, setEmail] = useState('');
@@ -52,7 +52,7 @@ export default function LoginPage() {
       } catch (err) {
         console.error('Erro ao processar SSO:', err);
         window.history.replaceState({}, document.title, window.location.pathname);
-        toast.error(err.response?.data?.error || err.message || 'Erro no processamento do SSO.');
+        toast.error(err.response?.data?.error || err.message || `${tToastLogin('erroSso')}`);
       } finally {
         setChecandoSetup(false);
         setLoading(false);
@@ -68,7 +68,7 @@ export default function LoginPage() {
       await instance.loginRedirect(loginRequest);
     } catch (err) {
       console.error('Erro ao redirecionar SSO:', err);
-      toast.error('Erro ao conectar com a Microsoft.');
+      toast.error( `${tToastLogin('erroConexao')}`);
       setLoading(false);
     }
   };
@@ -79,7 +79,7 @@ export default function LoginPage() {
     try {
       await login(email, senha);
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Falha na autenticação.');
+      toast.error(err.response?.data?.error || `${tToastLogin('falhaAutenticacao')}`);
     } finally {
       setLoading(false);
     }
@@ -89,7 +89,7 @@ export default function LoginPage() {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 text-slate-400 gap-3">
         <Loader2 size={24} className="animate-spin text-sky-500" />
-        <span className="text-xs">{t('verificandoSetup')}</span>
+        <span className="text-xs">{tAuth('verificandoSetup')}</span>
       </div>
     );
   }
@@ -106,18 +106,18 @@ export default function LoginPage() {
           </div>
           <div>
             <h2 className="text-base font-bold text-white tracking-wide uppercase">SPC</h2>
-            <p className="text-xs text-slate-400">{t('subtituloSistema')}</p>
+            <p className="text-xs text-slate-400">{tAuth('subtituloSistema')}</p>
           </div>
         </div>
         <div className="relative z-10 space-y-6 max-w-lg">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-950/60 border border-sky-500/30 text-sky-300 text-xs font-semibold">
-            <ShieldCheck size={14} /> {t('ambienteControlado')}
+            <ShieldCheck size={14} /> {tAuth('ambienteControlado')}
           </div>
           <h1 className="text-3xl font-extrabold text-white leading-tight">
-            {t('bannerTitulo')}
+            {tAuth('bannerTitulo')}
           </h1>
           <p className="text-sm text-slate-400 leading-relaxed">
-            {t('bannerDescricao')}
+            {tAuth('bannerDescricao')}
           </p>
         </div>
         <div className="relative z-10 text-xs text-slate-500">
@@ -128,12 +128,12 @@ export default function LoginPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-slate-900 lg:bg-slate-950">
         <div className="w-full max-w-md space-y-8 bg-slate-900 p-8 sm:p-10 rounded-2xl border border-slate-800 shadow-2xl">
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">{t('autenticacao')}</h2>
-            <p className="text-xs text-slate-400 mt-1">{t('informeCredenciais')}</p>
+            <h2 className="text-2xl font-bold text-white tracking-tight">{tAuth('autenticacao')}</h2>
+            <p className="text-xs text-slate-400 mt-1">{tAuth('informeCredenciais')}</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">{t('emailCorretivo')}</label>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">{tAuth('emailCorretivo')}</label>
               <div className="relative">
                 <Mail size={18} className="absolute left-3.5 top-3 text-slate-500" />
                 <input
@@ -147,7 +147,7 @@ export default function LoginPage() {
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">{t('senhaAcesso')}</label>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">{tAuth('senhaAcesso')}</label>
               <div className="relative">
                 <Lock size={18} className="absolute left-3.5 top-3 text-slate-500" />
                 <input
@@ -165,7 +165,7 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm rounded-xl transition duration-150 shadow-lg shadow-sky-600/20 disabled:opacity-50 cursor-pointer"
             >
-              {loading ? <Loader2 size={18} className="animate-spin" /> : <><span>{t('acessar')}</span><ArrowRight size={18} /></>}
+              {loading ? <Loader2 size={18} className="animate-spin" /> : <><span>{tAuth('acessar')}</span><ArrowRight size={18} /></>}
             </button>
             {ssoAtivo && (
               <button
@@ -180,7 +180,7 @@ export default function LoginPage() {
                   <path fill="#05a6f0" d="M1 12h10v10H1z" />
                   <path fill="#ffba08" d="M12 12h10v10H12z" />
                 </svg>
-                <span>{t('entrarMicrosoft')}</span>
+                <span>{tAuth('entrarMicrosoft')}</span>
               </button>
             )}
           </form>

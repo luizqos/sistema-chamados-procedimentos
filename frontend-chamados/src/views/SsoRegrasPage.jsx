@@ -14,6 +14,7 @@ import ModalNovaRegraSso from '../components/modal/ModalNovaRegraSso';
 export default function SsoRegrasPage() {
   const tSso = useTranslations('Sso');
   const tCommon = useTranslations('Common');
+  const tToastSso = useTranslations('Toast.Sso');
   const [regras, setRegras] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +29,7 @@ export default function SsoRegrasPage() {
       const data = await ssoRegrasService.listar();
       setRegras(data);
     } catch (err) {
-      toast.error('Erro ao carregar as regras de segurança.');
+      toast.error(tToastSso('carregarRegrasErro'));
     } finally {
       setLoading(false);
     }
@@ -42,10 +43,10 @@ export default function SsoRegrasPage() {
     if (confirmado) {
       try {
         await ssoRegrasService.deletar(id);
-        toast.success('Regra removida com sucesso!');
+        toast.success(tToastSso('deleteRegraSucesso'));
         carregarRegras();
       } catch (err) {
-        toast.error('Erro ao remover regra.');
+        toast.error(tToastSso('deleteRegraErro'));
       }
     }
   };

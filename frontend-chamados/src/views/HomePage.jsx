@@ -21,7 +21,7 @@ export default function HomePage() {
   const [copiado, setCopiado] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const tCommon = useTranslations('Common');
-
+  const tToastProcedimento = useTranslations('Toast.Procedimento');
   const {
     procedimentos,
     selecionado,
@@ -52,7 +52,7 @@ export default function HomePage() {
     if (!selecionado) return;
     navigator.clipboard.writeText(selecionado.script_passo_a_passo);
     setCopiado(true);
-    toast.success(tCommon('copiado'));
+    toast.success(tToastProcedimento('copiado'));
     setTimeout(() => setCopiado(false), 2000);
   };
 
@@ -67,10 +67,10 @@ export default function HomePage() {
     if (confirmado) {
       try {
         await excluirProcedimento(id);
-        toast.success(tCommon('sucessoExclusao'));
+        toast.success(tToastProcedimento('sucessoExclusao'));
         carregarProcedimentos({ busca, page: 1, limit: 15 }, true);
       } catch (err) {
-        const mensagemErro = err?.message || tCommon('erroExclusao');
+        const mensagemErro = err?.message || `${tToastProcedimento('erroExclusao')}`;
         toast.error(mensagemErro);
       }
     }
