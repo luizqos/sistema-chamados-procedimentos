@@ -10,7 +10,9 @@ import { usuarioService } from '../../services/usuarioService';
 export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }) {
   const tUsuarios = useTranslations('Usuarios');
   const tCommon = useTranslations('Common');
+  const tToastUser = useTranslations('Toast.Usuarios');
 
+  
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -31,7 +33,7 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }) {
         roleId: Number(roleId),
       });
 
-      toast.success('Usuário cadastrado com sucesso!');
+      toast.success(tToastUser('cadastradoSucesso'));
       onSuccess();
       onClose();
       setNome('');
@@ -39,7 +41,7 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }) {
       setSenha('');
       setRoleId(2);
     } catch (err) {
-      const msg = err.response?.data?.error || 'Erro ao cadastrar usuário.';
+      const msg = err.response?.data?.error || `${tToastUser('cadastroErro')}`;
       toast.error(msg);
     } finally {
       setLoading(false);

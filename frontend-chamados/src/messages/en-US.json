@@ -113,5 +113,11 @@
     "criandoAdmin": "Creating Administrator...",
     "cadastrar": "Register",
     "avisoMaster": "This action will create the master account with the ADMIN role."
+  },
+  "Toast": {
+    "Usuarios":{
+      "cadastradoSucesso": "User successfully registered!",
+      "cadastroErro": "Error registering user."
+    }
   }
 }

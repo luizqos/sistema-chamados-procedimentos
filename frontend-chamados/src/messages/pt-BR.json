@@ -113,5 +113,11 @@
     "criandoAdmin": "Criando Administrador...",
     "cadastrar": "Cadastrar",
     "avisoMaster": "Esta ação criará a conta máster com perfil ADMIN."
+  },
+  "Toast": {
+    "Usuarios":{
+      "cadastroSucesso": "Usuário cadastrado com sucesso!",
+      "cadastroErro": "Erro ao cadastrar usuário."
+    }
   }
 }

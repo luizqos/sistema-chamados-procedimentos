@@ -51,9 +51,7 @@ export default function GestaoUsuariosPage() {
     const novoStatus = !usuario.ativo;
     try {
       await usuarioService.alternarStatus(usuario.id, novoStatus);
-      //toast.success(`Usuário ${novoStatus ? 'ativado' : 'inativado'} com sucesso!`);
-      //toast.success(tCommon('sucessoStatus'));
-      toast.success(`${tCommon('usuario')} ${novoStatus ? tCommon('ativado') : tCommon('inativado')} ${tCommon('comSucesso')}!`);
+      toast.success(`${tCommon('usuario')} ${novoStatus ? tCommon('ativado').toLowerCase() : tCommon('inativado').toLowerCase()} ${tCommon('comSucesso')}!`);
       carregarUsuarios();
     } catch (err) {
       toast.error(err.response?.data?.error || tCommon('erroStatus'));
