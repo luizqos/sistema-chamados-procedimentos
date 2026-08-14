@@ -51,7 +51,7 @@
     "tamanhoMaximo": "Até {max} MB por arquivo",
     "arquivosSelecionados": "{qtd} arquivo(s) selecionado(s)",
     "salvarProcedimento": "Salvar",
-    "enviandoAnexos": "Enviando Anexos...",
+    "enviandoAnexos": "Enviando",
     "placeholderInstrucoes": "Digite as instruções...",
     "placeholderDescricao": "Ex: Utilizado para clientes em conexão de Fibra Óptica.",
     "placeholderTitulo": "Ex: Reset de Senha do Roteador Wi-Fi"

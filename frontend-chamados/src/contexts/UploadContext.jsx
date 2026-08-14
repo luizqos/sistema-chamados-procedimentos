@@ -42,11 +42,13 @@ const formatBytes = (bytes) => {
 };
 
 function GlobalUploadWidget({ uploads }) {
-  let tCommon = (key) => key;
-  try {
-    tCommon = useTranslations('Common');
-  } catch (e) {
-  }
+    
+  const tCommon = useTranslations('Common');
+  // let tCommon = (key) => key;
+  // try {
+  //   tCommon = useTranslations('Common');
+  // } catch (e) {
+  // }
 
   if (uploads.length === 0) return null;
 
@@ -68,7 +70,7 @@ function GlobalUploadWidget({ uploads }) {
               {item.nome}
             </span>
             <span className="font-semibold text-slate-300">
-              {item.status === 'enviando' ? `${item.progresso}%` : item.status === 'concluido' ? tCommon('sucesso') : tCommon('erro')}
+              {item.status === 'enviando' ? `${item.progresso}%` : item.status === 'concluido' ? `${tCommon('sucesso')}` : `${tCommon('erro')}`}
             </span>
           </div>
           
@@ -82,7 +84,7 @@ function GlobalUploadWidget({ uploads }) {
           {item.status === 'enviando' && item.total > 0 && (
             <div className="flex justify-between items-center text-[10px] text-slate-400 mt-1.5">
               <span>{formatBytes(item.enviado)} de {formatBytes(item.total)}</span>
-              <span className="text-sky-400 animate-pulse">{tCommon('aguarde')}...</span>
+              <span className="text-sky-400 animate-pulse">{tCommon('aguarde')}.....</span>
             </div>
           )}
         </div>
