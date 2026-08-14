@@ -241,8 +241,8 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
             <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{tProcedimento('anexosLabel')}</label>
 
             <div className="bg-slate-100 dark:bg-slate-800/50 p-3 rounded-lg text-xs text-slate-600 dark:text-slate-400 mb-3 space-y-0.5 border border-slate-200 dark:border-slate-700/50 transition-colors">
-              <div><p><strong>{tProcedimento('formatosAceitosLabel')}:</strong></p>{tProcedimento('formatosAceitos')}</div>
-              <div><p><strong>{tProcedimento('tamanhoMaximoLabel')}</strong>{tProcedimento('tamanhoMaximo', { max: MAX_FILE_SIZE_MB })}</p></div>
+              <div><p><strong>{tProcedimento('formatosAceitosLabel')}</strong>{` ${tProcedimento('formatosAceitos')}`}</p></div>
+              <div><p><strong>{tProcedimento('tamanhoMaximoLabel')}</strong>{` ${tProcedimento('tamanhoMaximo', { max: MAX_FILE_SIZE_MB })}` }</p></div>
             </div>
 
             <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-sky-500 dark:hover:border-sky-500 rounded-lg p-4 text-center bg-slate-50 dark:bg-slate-950/50 transition cursor-pointer">
@@ -271,9 +271,6 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
                   <span className="font-medium truncate max-w-[280px]">{statusTexto}</span>
                   <span className="font-bold">{progressoAtual}%</span>
                 </div>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 italic text-center pt-1">
-                  Se fechar esta janela, o envio continuará exatamente de onde parou em segundo plano pelo card flutuante.
-                </p>
               </div>
             )}
 
