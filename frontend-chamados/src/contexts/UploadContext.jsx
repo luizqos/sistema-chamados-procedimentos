@@ -82,7 +82,7 @@ function GlobalUploadWidget({ uploads }) {
           {item.status === 'enviando' && item.total > 0 && (
             <div className="flex justify-between items-center text-[10px] text-slate-400 mt-1.5">
               <span>{formatBytes(item.enviado)} de {formatBytes(item.total)}</span>
-              <span className="text-sky-400 animate-pulse">{`${tCommon('aguarde')}...`}</span>
+              <span className="text-sky-400 animate-pulse">{tCommon('aguarde')}...</span>
             </div>
           )}
         </div>
