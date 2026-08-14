@@ -42,13 +42,14 @@ const formatBytes = (bytes) => {
 };
 
 function GlobalUploadWidget({ uploads }) {
-    
-  const tCommon = useTranslations('Common');
-  // let tCommon = (key) => key;
-  // try {
-  //   tCommon = useTranslations('Common');
-  // } catch (e) {
-  // }
+  let tCommon = (key) => key;
+  try {
+    tCommon = useTranslations('Common');
+  } catch (e) {
+  }
+
+console.log('>>>>', tCommon);
+
 
   if (uploads.length === 0) return null;
 
@@ -70,7 +71,7 @@ function GlobalUploadWidget({ uploads }) {
               {item.nome}
             </span>
             <span className="font-semibold text-slate-300">
-              {item.status === 'enviando' ? `${item.progresso}%` : item.status === 'concluido' ? `${tCommon('sucesso')}` : `${tCommon('erro')}`}
+              {item.status === 'enviando' ? `${item.progresso}%` : item.status === 'concluido' ? `${ tCommon('sucesso')}` : `${ tCommon('erro')}`}
             </span>
           </div>
           
