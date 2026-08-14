@@ -79,9 +79,12 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 ALLOWED_DEV_ORIGINS=localhost,127.0.0.1
 
 # --- MICROSOFT SSO (AZURE ENTRA ID) ---
-MS_URL="[https://login.microsoftonline.com](https://login.microsoftonline.com)"
-MS_CLIENT_ID="seu-client-id"
-MS_TENANT_ID="seu-tenant-id"
+NEXT_PUBLIC_SSO_MICROSOFT_ATIVO=true
+NEXT_PUBLIC_REDIRECT_URI=http://localhost:3000/login
+NEXT_PUBLIC_MS_URL="https://login.microsoftonline.com"
+NEXT_PUBLIC_MS_CLIENT_ID="seu-client-id"
+NEXT_PUBLIC_MS_TENANT_ID="seu-tenant-id"
+NEXT_PUBLIC_STORAGE_KEY="chave_storage"
 
 ```
 
