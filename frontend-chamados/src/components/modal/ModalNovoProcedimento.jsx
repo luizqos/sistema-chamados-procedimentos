@@ -9,7 +9,7 @@ import { X, Upload, AlertCircle, Loader2 } from 'lucide-react';
 import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../utils/constants';
 
 export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
-  const t = useTranslations('Procedimento');
+  const tProcedimento = useTranslations('Procedimento');
   const tCommon = useTranslations('Common');
   const tToastProcedimento = useTranslations('Toast.Procedimento');
 
@@ -186,8 +186,8 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
         <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 transition-colors">
           <div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{t('novoProcedimento')}</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('subtituloNovo')}</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{tProcedimento('novoProcedimento')}</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{tProcedimento('subtituloNovo')}</p>
           </div>
           <button
             type="button"
@@ -200,49 +200,49 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="mb-4">
-            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{t('tituloLabel')}</label>
+            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{tProcedimento('tituloLabel')}</label>
             <input
               type="text"
               required
               value={titulo}
               onChange={e => setTitulo(e.target.value)}
               disabled={loading}
-              placeholder="Ex: Reset de Senha do Roteador Wi-Fi"
+              placeholder={tProcedimento('placeholderTitulo')}
               className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
             />
           </div>
 
           <div className="mb-4">
-            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{t('descricaoLabel')}</label>
+            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{tProcedimento('descricaoLabel')}</label>
             <input
               type="text"
               value={descricao}
               onChange={e => setDescricao(e.target.value)}
               disabled={loading}
-              placeholder="Ex: Utilizado para clientes em conexão de Fibra Óptica"
+              placeholder={tProcedimento('placeholderDescricao')}
               className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
             />
           </div>
 
           <div className="mb-4">
-            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{t('scriptLabel')}</label>
+            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{tProcedimento('scriptLabel')}</label>
             <textarea
               required
               rows={6}
               value={script}
               onChange={e => setScript(e.target.value)}
               disabled={loading}
-              placeholder="Digite as instruções..."
+              placeholder={tProcedimento('placeholderInstrucoes')}
               className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-900 dark:bg-black text-slate-100 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
             />
           </div>
 
           <div className="mb-6">
-            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{t('anexosLabel')}</label>
+            <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{tProcedimento('anexosLabel')}</label>
 
             <div className="bg-slate-100 dark:bg-slate-800/50 p-3 rounded-lg text-xs text-slate-600 dark:text-slate-400 mb-3 space-y-0.5 border border-slate-200 dark:border-slate-700/50 transition-colors">
-              <div><strong>{t('formatosAceitos')}:</strong> Imagens e Vídeos</div>
-              <div><strong>{t('tamanhoMaximo', { max: MAX_FILE_SIZE_MB })}</strong></div>
+              <div><p><strong>{tProcedimento('formatosAceitosLabel')}:</strong></p>{tProcedimento('formatosAceitos')}</div>
+              <div><p><strong>{tProcedimento('tamanhoMaximoLabel')}</strong>{tProcedimento('tamanhoMaximo', { max: MAX_FILE_SIZE_MB })}</p></div>
             </div>
 
             <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-sky-500 dark:hover:border-sky-500 rounded-lg p-4 text-center bg-slate-50 dark:bg-slate-950/50 transition cursor-pointer">
@@ -257,7 +257,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               />
               {arquivos.length > 0 && !loading && (
                 <div className="mt-2 text-xs text-sky-600 dark:text-sky-400 font-semibold">
-                  {t('arquivosSelecionados', { qtd: arquivos.length })}
+                  {tProcedimento('arquivosSelecionados', { qtd: arquivos.length })}
                 </div>
               )}
             </div>
@@ -299,7 +299,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
                 }`}
             >
               {loading && <Loader2 size={14} className="animate-spin" />}
-              {loading ? t('enviandoAnexos') : t('salvarProcedimento')}
+              {loading ? tProcedimento('enviandoAnexos') : tProcedimento('salvarProcedimento')}
             </button>
           </div>
         </form>

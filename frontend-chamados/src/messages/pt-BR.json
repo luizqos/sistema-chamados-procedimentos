@@ -42,11 +42,16 @@
     "descricaoLabel": "Descrição Curta",
     "scriptLabel": "Passo a Passo / Script *",
     "anexosLabel": "Anexos (Imagens e Vídeos)",
-    "formatosAceitos": "Formatos aceitos: Imagens e Vídeos",
-    "tamanhoMaximo": "Tamanho máximo: Até {max} MB por arquivo",
+    "formatosAceitosLabel": "Formatos aceitos:",
+    "formatosAceitos": "Imagens e Vídeos",
+    "tamanhoMaximoLabel": "Tamanho máximo:",
+    "tamanhoMaximo": "Até {max} MB por arquivo",
     "arquivosSelecionados": "{qtd} arquivo(s) selecionado(s)",
     "salvarProcedimento": "Salvar Procedimento",
-    "enviandoAnexos": "Enviando Anexos..."
+    "enviandoAnexos": "Enviando Anexos...",
+    "placeholderInstrucoes": "Digite as instruções...",
+    "placeholderDescricao": "Ex: Utilizado para clientes em conexão de Fibra Óptica.",
+    "placeholderTitulo": "Ex: Reset de Senha do Roteador Wi-Fi"
   },
   "Usuarios": {
     "titulo": "Gestão de Usuários",

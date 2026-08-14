@@ -42,11 +42,16 @@
     "descricaoLabel": "Short Description",
     "scriptLabel": "Step-by-Step / Script *",
     "anexosLabel": "Attachments (Images & Videos)",
-    "formatosAceitos": "Accepted formats: Images & Videos",
-    "tamanhoMaximo": "Maximum size: Up to {max} MB per file",
+    "formatosAceitosLabel": "Accepted formats:",
+    "formatosAceitos": "Images and Videos",
+    "tamanhoMaximoLabel": "Maximum size:",
+    "tamanhoMaximo": "Up to {max} MB per file",
     "arquivosSelecionados": "{qtd} file(s) selected",
     "salvarProcedimento": "Save Procedure",
-    "enviandoAnexos": "Uploading Attachments..."
+    "enviandoAnexos": "Uploading Attachments...",
+    "placeholderInstrucoes": "Enter the instructions...",
+    "placeholderDescricao": "E.g., Used for customers with a fiber-optic connection.",
+    "placeholderTitulo": "E.g., Wi-Fi Router Password Reset"
   },
   "Usuarios": {
     "titulo": "User Management",
