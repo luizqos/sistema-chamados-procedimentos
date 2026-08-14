@@ -12,6 +12,7 @@ import ModalNovoProcedimento from '../components/modal/ModalNovoProcedimento';
 import PainelProcedimento from '../components/PainelProcedimento';
 import EmptyState from '../components/EmptyState';
 import { dialog } from '../utils/dialogs';
+import { useTranslations } from 'next-intl';
 
 export default function HomePage() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function HomePage() {
   const [busca, setBusca] = useState('');
   const [copiado, setCopiado] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const tCommon = useTranslations('Common');
 
   const {
     procedimentos,
@@ -50,23 +52,25 @@ export default function HomePage() {
     if (!selecionado) return;
     navigator.clipboard.writeText(selecionado.script_passo_a_passo);
     setCopiado(true);
-    toast.success('Script copiado para a área de transferência!');
+    toast.success(tCommon('copiado'));
     setTimeout(() => setCopiado(false), 2000);
   };
 
   const handleDeletar = async (id) => {
     const confirmado = await dialog.confirmarExclusao({
-      titulo: 'Excluir Procedimento?',
-      texto: 'Esta ação removerá o procedimento e todos os seus anexos do servidor.',
+      titulo: tCommon('tituloExclusao'),
+      texto: tCommon('textoExclusao'),
+      textoBotaoConfirmar: tCommon('simExcluir'),
+      textoBotaoCancelar: tCommon('cancelar'),
     });
 
     if (confirmado) {
       try {
         await excluirProcedimento(id);
-        toast.success('Procedimento excluído com sucesso!');
+        toast.success(tCommon('sucessoExclusao'));
         carregarProcedimentos({ busca, page: 1, limit: 15 }, true);
       } catch (err) {
-        const mensagemErro = err?.message || 'Erro ao excluir procedimento';
+        const mensagemErro = err?.message || tCommon('erroExclusao');
         toast.error(mensagemErro);
       }
     }
@@ -77,7 +81,7 @@ export default function HomePage() {
       <div className="flex h-screen w-full items-center justify-center bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400 transition-colors duration-200">
         <div className="flex flex-col items-center gap-3">
           <Loader2 size={32} className="animate-spin text-sky-600 dark:text-sky-500" />
-          <span className="text-sm font-medium">Verificando autenticação...</span>
+          <span className="text-sm font-medium">{tCommon('verificandoAutenticacao')}</span>
         </div>
       </div>
     );
@@ -85,9 +89,9 @@ export default function HomePage() {
 
   const procedimentoComAutor = selecionado
     ? {
-        ...selecionado,
-        usuario: selecionado.usuario || procedimentos.find((p) => p.id === selecionado.id)?.usuario,
-      }
+      ...selecionado,
+      usuario: selecionado.usuario || procedimentos.find((p) => p.id === selecionado.id)?.usuario,
+    }
     : null;
 
   return (
