@@ -22,6 +22,8 @@ export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const tCommon = useTranslations('Common');
   const tToastProcedimento = useTranslations('Toast.Procedimento');
+  const tAlertaProcedimento = useTranslations('Alerta.Procedimento');
+
   const {
     procedimentos,
     selecionado,
@@ -58,10 +60,10 @@ export default function HomePage() {
 
   const handleDeletar = async (id) => {
     const confirmado = await dialog.confirmarExclusao({
-      titulo: tCommon('tituloExclusao'),
-      texto: tCommon('textoExclusao'),
-      textoBotaoConfirmar: tCommon('simExcluir'),
-      textoBotaoCancelar: tCommon('cancelar'),
+      titulo: tAlertaProcedimento('tituloExclusao'),
+      texto: tAlertaProcedimento('textoExclusao'),
+      textoBotaoConfirmar: tAlertaProcedimento('msgConfirmaExclusao'),
+      textoBotaoCancelar: tAlertaProcedimento('msgCancelaExclusao'),
     });
 
     if (confirmado) {

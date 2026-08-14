@@ -15,9 +15,7 @@
     "inativado": "INATIVADO",
     "usuario": "Usuário",
     "comSucesso": "com Sucesso",
-    "verificandoAutenticacao": "Verificando autenticação...",
-    "tituloExclusao": "Excluir Procedimento?",
-    "textoExclusao": "Esta ação removerá o procedimento e todos os seus anexos do servidor."
+    "verificandoAutenticacao": "Verificando autenticação..."
   },
   "Sidebar": {
     "atendimento": "Atendimento",
@@ -142,6 +140,20 @@
       "usuarioCadastradoErro": "O sistema já possui usuários cadastrados.",
       "cadastradoSucesso": "Administrador cadastrado com sucesso! Faça login.",
       "erroConfigInicial": "Erro ao realizar a configuração inicial."
+    }
+  },
+  "Alerta": {
+    "Sso": {
+      "tituloExclusao": "Remover Regra?",
+      "textoExclusao": "Esta política deixará de valer imediatamente para os próximos acessos.",
+      "msgConfirmaExclusao": "Sim, excluir",
+      "msgCancelaExclusao": "Cancelar"
+    },
+    "Procedimento": {
+      "tituloExclusao": "Excluir Procedimento?",
+      "textoExclusao": "Esta ação removerá o procedimento e todos os seus anexos do servidor.",
+      "msgConfirmaExclusao": "Sim, excluir",
+      "msgCancelaExclusao": "Cancelar"
     }
   }
 }

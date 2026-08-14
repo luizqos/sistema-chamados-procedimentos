@@ -15,9 +15,7 @@
     "inativado": "INACTIVED",
     "usuario": "User",
     "comSucesso": "successfully",
-    "verificandoAutenticacao": "Verifying authentication...",
-    "tituloExclusao": "Delete Procedure?",
-    "textoExclusao": "This action will remove the procedure and all its attachments from the server."
+    "verificandoAutenticacao": "Verifying authentication..."
   },
   "Sidebar": {
     "atendimento": "Support",
@@ -142,6 +140,20 @@
       "usuarioCadastradoErro": "The system already has registered users.",
       "cadastradoSucesso": "Administrator successfully registered! Please log in.",
       "erroConfigInicial": "Error performing initial configuration."
+    }
+  },
+  "Alerta": {
+    "Sso": {
+      "tituloExclusao": "Remove rule?",
+      "textoExclusao": "This policy will cease to apply immediately to future access..",
+      "msgConfirmaExclusao": "Yes, delete",
+      "msgCancelaExclusao": "Cancel"
+    },
+    "Procedimento": {
+      "tituloExclusao": "Remove procedure?",
+      "textoExclusao": "This action will remove the procedure and all its attachments from the server.",
+      "msgConfirmaExclusao": "Yes, delete",
+      "msgCancelaExclusao": "Cancel"
     }
   }
 }

@@ -14,6 +14,7 @@ import ModalNovaRegraSso from '../components/modal/ModalNovaRegraSso';
 export default function SsoRegrasPage() {
   const tSso = useTranslations('Sso');
   const tCommon = useTranslations('Common');
+  const tAlertaSso= useTranslations('Alerta.Sso');
   const tToastSso = useTranslations('Toast.Sso');
   const [regras, setRegras] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,8 +38,10 @@ export default function SsoRegrasPage() {
 
   const handleDelete = async (id) => {
     const confirmado = await dialog.confirmarExclusao({
-      titulo: 'Remover Regra?',
-      texto: 'Esta política deixará de valer imediatamente para os próximos acessos.',
+      titulo: tAlertaSso('tituloExclusao'),
+      texto: tAlertaSso('textoExclusao'),
+      textoBotaoConfirmar: tAlertaSso('msgConfirmaExclusao'),
+      textoBotaoCancelar: tAlertaSso('msgCancelaExclusao'),
     });
     if (confirmado) {
       try {
