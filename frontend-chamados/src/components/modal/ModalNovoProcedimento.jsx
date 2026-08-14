@@ -272,7 +272,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
               {arquivos.length > 0 && !loading && (
                 <div className="mt-2 text-xs text-sky-600 dark:text-sky-400 font-semibold text-left">
-                  {tProcedimento('arquivosSelecionados', { qtd: arquivos.length })}[cite: 2]
+                  {tProcedimento('arquivosSelecionados', { qtd: arquivos.length })}
                 </div>
               )}
             </div>
