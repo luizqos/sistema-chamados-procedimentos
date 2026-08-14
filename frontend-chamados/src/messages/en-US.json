@@ -46,7 +46,7 @@
     "tamanhoMaximoLabel": "Maximum size:",
     "tamanhoMaximo": "Up to {max} MB per file",
     "arquivosSelecionados": "{qtd} file(s) selected",
-    "salvarProcedimento": "Save Procedure",
+    "salvarProcedimento": "Save",
     "enviandoAnexos": "Uploading Attachments...",
     "placeholderInstrucoes": "Enter the instructions...",
     "placeholderDescricao": "E.g., Used for customers with a fiber-optic connection.",

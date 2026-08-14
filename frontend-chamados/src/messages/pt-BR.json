@@ -46,7 +46,7 @@
     "tamanhoMaximoLabel": "Tamanho máximo:",
     "tamanhoMaximo": "Até {max} MB por arquivo",
     "arquivosSelecionados": "{qtd} arquivo(s) selecionado(s)",
-    "salvarProcedimento": "Salvar Procedimento",
+    "salvarProcedimento": "Salvar",
     "enviandoAnexos": "Enviando Anexos...",
     "placeholderInstrucoes": "Digite as instruções...",
     "placeholderDescricao": "Ex: Utilizado para clientes em conexão de Fibra Óptica.",
