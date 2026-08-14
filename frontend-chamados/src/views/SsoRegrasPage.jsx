@@ -133,7 +133,7 @@ export default function SsoRegrasPage() {
                               : 'bg-red-100 dark:bg-red-950/60 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
                           }`}>
                             {r.acao === 'PERMITIR' ? <CheckCircle size={12} /> : <XCircle size={12} />}
-                            {r.acao}
+                            {r.acao === 'PERMITIR' ? 'ALLOW' : 'DENY'}
                           </span>
                         </td>
                         <td className="p-4 text-right">
