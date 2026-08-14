@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Providers from "@/src/components/Providers";
 import { UploadProvider } from '@/src/contexts/UploadContext';
+import GlobalUploadWidget from "@/src/components/GlobalUploadWidget";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -19,6 +20,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <UploadProvider>
           <Providers>
             {children}
+            {/* O widget agora roda aqui dentro, tendo acesso total ao tCommon */}
+            <GlobalUploadWidget />
           </Providers>
         </UploadProvider>
       </body>
