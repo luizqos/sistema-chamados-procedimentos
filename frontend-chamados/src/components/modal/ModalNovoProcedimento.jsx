@@ -245,26 +245,26 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               <div><p><strong>{tProcedimento('tamanhoMaximoLabel')}</strong>{` ${tProcedimento('tamanhoMaximo', { max: MAX_FILE_SIZE_MB })}`}</p></div>
             </div>
 
-            <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-sky-500 dark:hover:border-sky-500 rounded-lg p-4 text-center bg-slate-50 dark:bg-slate-950/50 transition cursor-pointer">
+            <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-sky-500 dark:hover:border-sky-500 rounded-lg p-4 text-center bg-slate-50 dark:bg-slate-950/50 transition">
               <Upload size={24} className="mx-auto mb-2 text-sky-600 dark:text-sky-500" />
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*,video/*"
-                  onChange={handleFileChange}
-                  disabled={loading}
-                  className="w-full sm:w-auto text-xs text-slate-500 dark:text-slate-400 
-                    file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 
-                    file:text-xs file:font-semibold 
-                    file:bg-sky-50 dark:file:bg-slate-800 
-                    file:text-sky-700 dark:file:text-sky-400 
-                    hover:file:bg-sky-100 dark:hover:file:bg-slate-700 
-                    transition cursor-pointer"
-                />
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                {/* Botão Customizado Traduzido */}
+                <label className="px-4 py-2 bg-sky-50 dark:bg-slate-800 text-sky-700 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-slate-700 text-xs font-semibold rounded-lg shadow-sm transition cursor-pointer inline-flex items-center gap-2">
+                  <span>{tProcedimento('escolherArquivos')}</span>
 
-                {/* Texto traduzido de "Nenhum arquivo selecionado" quando a lista estiver vazia */}
+                  {/* Input file real escondido, mas controlado pela label */}
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*,video/*"
+                    onChange={handleFileChange}
+                    disabled={loading}
+                    className="hidden"
+                  />
+                </label>
+
+                {/* Texto de nenhum arquivo selecionado (apenas o traduzido) */}
                 {arquivos.length === 0 && (
                   <span className="text-xs text-slate-400 dark:text-slate-500">
                     {tProcedimento('nenhumArquivoSelecionado')}
@@ -275,7 +275,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               {/* Mensagem quando há arquivos selecionados */}
               {arquivos.length > 0 && !loading && (
                 <div className="mt-2 text-xs text-sky-600 dark:text-sky-400 font-semibold">
-                  {tProcedimento('arquivosSelecionados', { qtd: arquivos.length })}
+                  {tProcedimento('arquivosSelecionados', { qtd: arquivos.length })}[cite: 2]
                 </div>
               )}
             </div>
