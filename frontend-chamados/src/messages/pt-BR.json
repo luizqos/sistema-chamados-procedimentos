@@ -54,7 +54,10 @@
     "enviandoAnexos": "Enviando",
     "placeholderInstrucoes": "Digite as instruções...",
     "placeholderDescricao": "Ex: Utilizado para clientes em conexão de Fibra Óptica.",
-    "placeholderTitulo": "Ex: Reset de Senha do Roteador Wi-Fi"
+    "placeholderTitulo": "Ex: Reset de Senha do Roteador Wi-Fi",
+    "textoUploadProcedimento": "Criando Procedimento....",
+    "textoUploadEnviadoArquivo": "Enviando arquivo",
+    "escolherArquivos": "Selecionar Arquivos"
   },
   "Usuarios": {
     "titulo": "Gestão de Usuários",
@@ -141,9 +144,7 @@
       "cadastradoAnexoSucesso": "Procedimento e anexos salvos com sucesso!",
       "copiado": "Script copiado para a área de transferência!",
       "sucessoExclusao": "Procedimento excluído com sucesso!",
-      "erroExclusao": "Erro ao excluir procedimento",
-      "textoUploadProcedimento": "Criando procedimento...",
-      "textoUploadEnviadoArquivo": "Enviando arquivo"
+      "erroExclusao": "Erro ao excluir procedimento"
     },
     "Login": {
       "erroSso": "Erro no processamento do SSO.",

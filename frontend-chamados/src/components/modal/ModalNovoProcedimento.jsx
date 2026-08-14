@@ -242,22 +242,31 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
             <div className="bg-slate-100 dark:bg-slate-800/50 p-3 rounded-lg text-xs text-slate-600 dark:text-slate-400 mb-3 space-y-0.5 border border-slate-200 dark:border-slate-700/50 transition-colors">
               <div><p><strong>{tProcedimento('formatosAceitosLabel')}</strong>{` ${tProcedimento('formatosAceitos')}`}</p></div>
-              <div><p><strong>{tProcedimento('tamanhoMaximoLabel')}</strong>{` ${tProcedimento('tamanhoMaximo', { max: MAX_FILE_SIZE_MB })}` }</p></div>
+              <div><p><strong>{tProcedimento('tamanhoMaximoLabel')}</strong>{` ${tProcedimento('tamanhoMaximo', { max: MAX_FILE_SIZE_MB })}`}</p></div>
             </div>
 
-            <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-sky-500 dark:hover:border-sky-500 rounded-lg p-4 text-center bg-slate-50 dark:bg-slate-950/50 transition cursor-pointer">
+            <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-sky-500 dark:hover:border-sky-500 rounded-lg p-5 text-center bg-slate-50 dark:bg-slate-950/50 transition flex flex-col items-center justify-center">
               <Upload size={24} className="mx-auto mb-2 text-sky-600 dark:text-sky-500" />
-              <input
-                type="file"
-                multiple
-                accept="image/*,video/*"
-                onChange={handleFileChange}
-                disabled={loading}
-                className="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-sky-50 dark:file:bg-slate-800 file:text-sky-700 dark:file:text-sky-400 hover:file:bg-sky-100 dark:hover:file:bg-slate-700 transition cursor-pointer"
-              />
+
+              {/* Label que funciona como o botão traduzido */}
+              <label className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-lg shadow-sm transition cursor-pointer inline-flex items-center gap-2">
+                <Upload size={16} />
+                <span>{tProcedimento('escolherArquivos')}</span> {/* Chave de tradução customizada */}
+
+                {/* Input file real escondido, mas acionado pelo clique da label */}
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*,video/*"
+                  onChange={handleFileChange}
+                  disabled={loading}
+                  className="hidden"
+                />
+              </label>
+
               {arquivos.length > 0 && !loading && (
-                <div className="mt-2 text-xs text-sky-600 dark:text-sky-400 font-semibold">
-                  {tProcedimento('arquivosSelecionados', { qtd: arquivos.length })}
+                <div className="mt-3 text-xs text-sky-600 dark:text-sky-400 font-semibold">
+                  {tProcedimento('arquivosSelecionados', { qtd: arquivos.length })}[cite: 2]
                 </div>
               )}
             </div>
