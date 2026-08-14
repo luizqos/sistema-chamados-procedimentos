@@ -13,6 +13,10 @@
     "inativo": "INACTIVE",
     "ativado": "ACTIVED",
     "inativado": "INACTIVED",
+    "permitir": "ALLOW",
+    "negar": "DENY",
+    "email": "EMAIL",
+    "dominio": "DOMAIN",
     "usuario": "User",
     "comSucesso": "successfully",
     "verificandoAutenticacao": "Verifying authentication..."

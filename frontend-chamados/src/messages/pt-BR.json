@@ -13,6 +13,10 @@
     "inativo": "INATIVO",
     "ativado": "ATIVADO",
     "inativado": "INATIVADO",
+    "permitir": "PERMITIR",
+    "negar": "NEGAR",
+    "email": "EMAIL",
+    "dominio": "DOMINIO",
     "usuario": "Usuário",
     "comSucesso": "com Sucesso",
     "verificandoAutenticacao": "Verificando autenticação..."

@@ -122,7 +122,7 @@ export default function SsoRegrasPage() {
                         <td className="p-4">
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sky-700 dark:text-sky-400">
                             {r.tipo === 'DOMINIO' ? <Globe size={12} /> : <Mail size={12} />}
-                            {r.tipo}
+                            {r.tipo === 'DOMINIO' ? `${tCommon('dominio')}` : `${tCommon('email')}` }
                           </span>
                         </td>
                         <td className="p-4 font-mono font-semibold text-slate-800 dark:text-slate-200">{r.valor}</td>
@@ -133,7 +133,7 @@ export default function SsoRegrasPage() {
                               : 'bg-red-100 dark:bg-red-950/60 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
                           }`}>
                             {r.acao === 'PERMITIR' ? <CheckCircle size={12} /> : <XCircle size={12} />}
-                            {r.acao === 'PERMITIR' ? 'ALLOW' : 'DENY'}
+                            {r.acao === 'PERMITIR' ? `${tCommon('permitir')}` : `${tCommon('negar')}` }
                           </span>
                         </td>
                         <td className="p-4 text-right">
