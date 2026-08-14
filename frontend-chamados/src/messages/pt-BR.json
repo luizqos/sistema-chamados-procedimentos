@@ -141,7 +141,9 @@
       "cadastradoAnexoSucesso": "Procedimento e anexos salvos com sucesso!",
       "copiado": "Script copiado para a área de transferência!",
       "sucessoExclusao": "Procedimento excluído com sucesso!",
-      "erroExclusao": "Erro ao excluir procedimento"
+      "erroExclusao": "Erro ao excluir procedimento",
+      "textoUploadProcedimento": "Criando procedimento...",
+      "textoUploadEnviadoArquivo": "Enviando arquivo"
     },
     "Login": {
       "erroSso": "Erro no processamento do SSO.",

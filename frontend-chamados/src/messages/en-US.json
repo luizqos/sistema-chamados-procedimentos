@@ -54,7 +54,9 @@
     "enviandoAnexos": "Uploading",
     "placeholderInstrucoes": "Enter the instructions...",
     "placeholderDescricao": "E.g., Used for customers with a fiber-optic connection.",
-    "placeholderTitulo": "E.g., Wi-Fi Router Password Reset"
+    "placeholderTitulo": "E.g., Wi-Fi Router Password Reset",
+    "textoUploadProcedimento": "Creating procedure...",
+    "textoUploadEnviadoArquivo": "Sending file"
   },
   "Usuarios": {
     "titulo": "User Management",

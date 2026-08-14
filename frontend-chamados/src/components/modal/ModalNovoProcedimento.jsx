@@ -97,7 +97,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
     setProgressoAtual(0);
 
     try {
-      setStatusTexto('Criando procedimento...');
+      setStatusTexto(`${tProcedimento('textoUploadProcedimento')}`);
 
       const novoProcedimento = await procedimentoService.criar({
         titulo,
@@ -112,7 +112,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
           const file = arquivos[i];
           const cardId = `card-upload-${file.name}-${Date.now()}`;
 
-          setStatusTexto(`Enviando arquivo ${i + 1} de ${arquivos.length}: ${file.name}`);
+          setStatusTexto(`${tProcedimento('textoUploadEnviadoArquivo')} ${i + 1} de ${arquivos.length}: ${file.name}`);
 
           try {
             await procedimentoService.enviarAnexo(novoProcedimento.id, file, (progressData) => {
