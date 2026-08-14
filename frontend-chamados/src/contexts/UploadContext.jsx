@@ -6,7 +6,6 @@ const UploadContext = createContext({});
 
 export function UploadProvider({ children }) {
   const [uploadsAtivos, setUploadsAtivos] = useState([]);
-  const tCommon = useTranslations('Common');
 
   const registrarOuAtualizarUpload = (uploadId, dados) => {
     setUploadsAtivos((prev) => {
@@ -43,6 +42,9 @@ const formatBytes = (bytes) => {
 };
 
 function GlobalUploadWidget({ uploads }) {
+  // O hook useTranslations agora está devidamente dentro de um componente React renderizado
+  const tCommon = useTranslations('Common');
+
   if (uploads.length === 0) return null;
 
   return (
@@ -64,7 +66,7 @@ function GlobalUploadWidget({ uploads }) {
               {item.nome}
             </span>
             <span className="font-semibold text-slate-300">
-              {item.status === 'enviando' ? `${item.progresso}%` : item.status === 'concluido' ? 'Sucesso' : 'Erro'}
+              {item.status === 'enviando' ? `${item.progresso}%` : item.status === 'concluido' ? tCommon('sucesso') : tCommon('erro')}
             </span>
           </div>
           
