@@ -180,6 +180,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
   if (!isOpen) return null;
 
+  console.log('como modal>>>', tCommon('aguarde'));
   return (
     <div className="fixed inset-0 bg-slate-900/75 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-colors">
       <div className="bg-white dark:bg-slate-900 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 transition-colors duration-200">
