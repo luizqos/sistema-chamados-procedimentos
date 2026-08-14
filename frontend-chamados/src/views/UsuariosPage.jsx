@@ -15,6 +15,7 @@ import ModalNovoUsuario from '../components/modal/ModalNovoUsuario';
 export default function GestaoUsuariosPage() {
   const tUsuarios = useTranslations('Usuarios');
   const tCommon = useTranslations('Common');
+  const tToastUser = useTranslations('Toast.Usuarios');
   const { user: usuarioLogado } = useAuth();
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,7 @@ export default function GestaoUsuariosPage() {
       const data = await usuarioService.listar();
       setUsuarios(data);
     } catch (err) {
-      toast.error('Erro ao carregar lista de usuários.');
+      toast.error(tToastUser('carregarUsuario'));
     } finally {
       setLoading(false);
     }
@@ -40,10 +41,10 @@ export default function GestaoUsuariosPage() {
   const handleRoleChange = async (usuarioId, novaRoleId) => {
     try {
       await usuarioService.alterarRole(usuarioId, novaRoleId);
-      toast.success(tCommon('alteradoPerfilSucesso'));
+      toast.success(tToastUser('alteradoPerfilSucesso'));
       carregarUsuarios();
     } catch (err) {
-      toast.error(err.response?.data?.error || tCommon('alteradoPerfilErro'));
+      toast.error(err.response?.data?.error || tToastUser('alteradoPerfilErro'));
     }
   };
 
@@ -54,7 +55,7 @@ export default function GestaoUsuariosPage() {
       toast.success(`${tCommon('usuario')} ${novoStatus ? tCommon('ativado').toLowerCase() : tCommon('inativado').toLowerCase()} ${tCommon('comSucesso')}!`);
       carregarUsuarios();
     } catch (err) {
-      toast.error(err.response?.data?.error || tCommon('erroStatus'));
+      toast.error(err.response?.data?.error || tToastUser('erroStatus'));
     }
   };
 

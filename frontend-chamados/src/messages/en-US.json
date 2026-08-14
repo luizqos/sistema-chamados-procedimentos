@@ -20,11 +20,7 @@
     "sucessoExclusao": "Procedure deleted successfully!",
     "erroExclusao": "Error deleting procedure",
     "tituloExclusao": "Delete Procedure?",
-    "textoExclusao": "This action will remove the procedure and all its attachments from the server.",
-    "sucessoStatus": "Status changed successfully!",
-    "erroStatus": "Error changing status.",
-    "alteradoPerfilSucesso": "Profile updated successfully!",
-    "alteradoPerfilErro":"Error changing profile."
+    "textoExclusao": "This action will remove the procedure and all its attachments from the server."
   },
   "Sidebar": {
     "atendimento": "Support",
@@ -115,9 +111,14 @@
     "avisoMaster": "This action will create the master account with the ADMIN role."
   },
   "Toast": {
-    "Usuarios":{
+    "Usuarios": {
       "cadastradoSucesso": "User successfully registered!",
-      "cadastroErro": "Error registering user."
+      "cadastroErro": "Error registering user.",
+      "carregarUsuario": "Error loading user list.",
+      "alteradoPerfilSucesso": "Profile updated successfully!",
+      "alteradoPerfilErro": "Error changing profile.",
+      "erroStatus": "Error changing status.",
+      "sucessoStatus": "Status changed successfully!"
     }
   }
 }

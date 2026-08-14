@@ -11,8 +11,8 @@
     "status": "Status",
     "ativo": "ATIVO",
     "inativo": "INATIVO",
-    "ativado": "ATIVO",
-    "inativado": "INATIVO",
+    "ativado": "ATIVADO",
+    "inativado": "INATIVADO",
     "usuario": "Usuário",
     "comSucesso": "com Sucesso",
     "copiado": "Script copiado para a área de transferência!",
@@ -20,11 +20,7 @@
     "sucessoExclusao": "Procedimento excluído com sucesso!",
     "erroExclusao": "Erro ao excluir procedimento",
     "tituloExclusao": "Excluir Procedimento?",
-    "textoExclusao": "Esta ação removerá o procedimento e todos os seus anexos do servidor.",
-    "sucessoStatus": "Status alterado com sucesso!",
-    "erroStatus": "Erro ao alterar status.",
-    "alteradoPerfilSucesso": "Perfil alterado com sucesso!",
-    "alteradoPerfilErro": "Erro ao alterar perfil."
+    "textoExclusao": "Esta ação removerá o procedimento e todos os seus anexos do servidor."
   },
   "Sidebar": {
     "atendimento": "Atendimento",
@@ -115,9 +111,14 @@
     "avisoMaster": "Esta ação criará a conta máster com perfil ADMIN."
   },
   "Toast": {
-    "Usuarios":{
+    "Usuarios": {
       "cadastroSucesso": "Usuário cadastrado com sucesso!",
-      "cadastroErro": "Erro ao cadastrar usuário."
+      "cadastroErro": "Erro ao cadastrar usuário.",
+      "carregarUsuario": "Erro ao carregar lista de usuários.",
+      "alteradoPerfilSucesso": "Perfil alterado com sucesso!",
+      "alteradoPerfilErro": "Erro ao alterar perfil.",
+      "erroStatus": "Erro ao alterar status.",
+      "sucessoStatus": "Status alterado com sucesso!"
     }
   }
 }
