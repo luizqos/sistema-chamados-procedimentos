@@ -11,6 +11,7 @@ import { usuarioService } from '../services/usuarioService';
 import { useAuth } from '../contexts/AuthContext';
 import ModalNovoUsuario from '../components/modal/ModalNovoUsuario';
 
+
 export default function GestaoUsuariosPage() {
   const tUsuarios = useTranslations('Usuarios');
   const tCommon = useTranslations('Common');
@@ -18,6 +19,7 @@ export default function GestaoUsuariosPage() {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   useEffect(() => {
     carregarUsuarios();
@@ -38,10 +40,10 @@ export default function GestaoUsuariosPage() {
   const handleRoleChange = async (usuarioId, novaRoleId) => {
     try {
       await usuarioService.alterarRole(usuarioId, novaRoleId);
-      toast.success('Perfil alterado com sucesso!');
+      toast.success(tCommon('alteradoPerfilSucesso'));
       carregarUsuarios();
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Erro ao alterar perfil.');
+      toast.error(err.response?.data?.error || tCommon('alteradoPerfilErro'));
     }
   };
 
@@ -49,10 +51,12 @@ export default function GestaoUsuariosPage() {
     const novoStatus = !usuario.ativo;
     try {
       await usuarioService.alternarStatus(usuario.id, novoStatus);
-      toast.success(`Usuário ${novoStatus ? 'ativado' : 'inativado'} com sucesso!`);
+      //toast.success(`Usuário ${novoStatus ? 'ativado' : 'inativado'} com sucesso!`);
+      //toast.success(tCommon('sucessoStatus'));
+      toast.success(`${tCommon('usuario')} ${novoStatus ? tCommon('ativado') : tCommon('inativado')} ${tCommon('comSucesso')}!`);
       carregarUsuarios();
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Erro ao alterar status.');
+      toast.error(err.response?.data?.error || tCommon('erroStatus'));
     }
   };
 

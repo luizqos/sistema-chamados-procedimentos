@@ -11,6 +11,10 @@
     "status": "Status",
     "ativo": "ACTIVE",
     "inativo": "INACTIVE",
+    "ativado": "ACTIVED",
+    "inativado": "INACTIVED",
+    "usuario": "User",
+    "comSucesso": "successfully",
     "copiado": "Script copied to the clipboard!",
     "verificandoAutenticacao": "Verifying authentication...",
     "sucessoExclusao": "Procedure deleted successfully!",
@@ -18,7 +22,9 @@
     "tituloExclusao": "Delete Procedure?",
     "textoExclusao": "This action will remove the procedure and all its attachments from the server.",
     "sucessoStatus": "Status changed successfully!",
-    "erroStatus": "Error changing status."
+    "erroStatus": "Error changing status.",
+    "alteradoPerfilSucesso": "Profile updated successfully!",
+    "alteradoPerfilErro":"Error changing profile."
   },
   "Sidebar": {
     "atendimento": "Support",
