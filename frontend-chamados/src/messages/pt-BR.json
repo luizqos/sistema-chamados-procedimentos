@@ -18,6 +18,10 @@
     "email": "EMAIL",
     "dominio": "DOMINIO",
     "usuario": "Usuário",
+    "enviando": "Enviando",
+    "erro": "Erro",
+    "concluido": "Concluido",
+    "aguarde": "Aguarde",
     "comSucesso": "com Sucesso",
     "verificandoAutenticacao": "Verificando autenticação..."
   },

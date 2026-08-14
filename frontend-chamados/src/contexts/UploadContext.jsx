@@ -1,10 +1,12 @@
 'use client';
 import React, { createContext, useContext, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 const UploadContext = createContext({});
 
 export function UploadProvider({ children }) {
   const [uploadsAtivos, setUploadsAtivos] = useState([]);
+  const tCommon = useTranslations('Common');
 
   const registrarOuAtualizarUpload = (uploadId, dados) => {
     setUploadsAtivos((prev) => {
@@ -58,7 +60,7 @@ function GlobalUploadWidget({ uploads }) {
 
           <div className="flex justify-between items-center mb-1.5">
             <span className="font-bold text-sky-400 truncate max-w-[200px]" title={item.nome}>
-              {item.status === 'enviando' ? 'Enviando: ' : item.status === 'concluido' ? 'Concluído: ' : 'Erro: '} 
+              {item.status === 'enviando' ? `${tCommon('enviando')} ` : item.status === 'concluido' ? `${tCommon('concluido')} ` : `${tCommon('erro')} `} 
               {item.nome}
             </span>
             <span className="font-semibold text-slate-300">
@@ -78,7 +80,7 @@ function GlobalUploadWidget({ uploads }) {
           {item.status === 'enviando' && item.total > 0 && (
             <div className="flex justify-between items-center text-[10px] text-slate-400 mt-1.5">
               <span>{formatBytes(item.enviado)} de {formatBytes(item.total)}</span>
-              <span className="text-sky-400 animate-pulse">Aguarde...</span>
+              <span className="text-sky-400 animate-pulse">{`${tCommon('aguarde')}...`}</span>
             </div>
           )}
         </div>

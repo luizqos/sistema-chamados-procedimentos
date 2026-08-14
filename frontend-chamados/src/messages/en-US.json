@@ -17,6 +17,10 @@
     "negar": "DENY",
     "email": "EMAIL",
     "dominio": "DOMAIN",
+    "enviando": "Sending",
+    "erro": "Error",
+    "concluido": "Completed",
+    "aguarde": "Waiting",
     "usuario": "User",
     "comSucesso": "successfully",
     "verificandoAutenticacao": "Verifying authentication..."
