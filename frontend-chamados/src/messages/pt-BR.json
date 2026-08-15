@@ -72,10 +72,12 @@
     "perfilAtual": "Perfil Atual",
     "modalTitulo": "Cadastrar Novo Usuário",
     "nomeCompleto": "Nome Completo *",
+    "modalTituloEditar": "Editar Usuário",
+    "senhaPlaceholderEdicao": "Deixe em branco para não alterar",
     "emailCorporativo": "E-mail Corporativo *",
-    "senhaInicial": "Senha Inicial *",
-    "perfilAcesso": "Perfil de Acesso (Role) *",
-    "salvarUsuario": "Salvar Usuário"
+    "senha": "Senha *",
+    "perfilAcesso": "Perfil de Acesso *",
+    "salvarUsuario": "Salvar"
   },
   "Sso": {
     "titulo": "Segurança SSO",
@@ -152,7 +154,9 @@
       "alteradoPerfilSucesso": "Perfil alterado com sucesso!",
       "alteradoPerfilErro": "Erro ao alterar perfil.",
       "erroStatus": "Erro ao alterar status.",
-      "sucessoStatus": "Status alterado com sucesso!"
+      "sucessoStatus": "Status alterado com sucesso!",
+      "atualizadoSucesso": "Usuário atualizado com sucesso!",
+      "atualizacaoErro": "Erro ao atualizar usuário."
     },
     "Sso": {
       "cadastroSucesso": "Regra de segurança criada com sucesso!",
