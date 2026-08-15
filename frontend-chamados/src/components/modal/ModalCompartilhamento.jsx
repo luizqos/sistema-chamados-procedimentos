@@ -85,6 +85,7 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
       setUsuariosSelecionados([]);
       carregarDados();
     } catch (err) {
+      console.log('erro>>', err)
       toast.error(err.response?.data?.error || 'Erro ao compartilhar procedimento.');
     } finally {
       setLoading(false);
