@@ -12,7 +12,7 @@ import { useAuth } from '../contexts/AuthContext';
 import ModalNovoUsuario from '../components/modal/ModalNovoUsuario';
 import ModalEditarUsuario from '../components/modal/ModalEditarUsuario';
 import { formatarData } from '../utils/formatters';
-import BotaoConfiguracao from '@/components/button/BotaoConfiguracao';
+import BotaoConfiguracao from '../components/button/BotaoConfiguracao';
 
 export default function GestaoUsuariosPage() {
   const tUsuarios = useTranslations('Usuarios');

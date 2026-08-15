@@ -11,7 +11,7 @@ import { ssoRegrasService } from '../services/ssoRegrasService';
 import { dialog } from '../utils/dialogs';
 import ModalNovaRegraSso from '../components/modal/ModalNovaRegraSso';
 import { useAuth } from '../contexts/AuthContext';
-import BotaoConfiguracao from '@/components/button/BotaoConfiguracao';
+import BotaoConfiguracao from '../components/button/BotaoConfiguracao';
 
 export default function SsoRegrasPage() {
   const tSso = useTranslations('Sso');
