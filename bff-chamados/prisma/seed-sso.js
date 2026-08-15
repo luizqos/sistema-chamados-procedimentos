@@ -20,7 +20,7 @@ async function main() {
     }
 
     // Utiliza createMany para alta performance em massa
-    await prisma.ssoDomain.createMany({
+    await prisma.ssoRegra.createMany({
       data: loteDominios,
       skipDuplicates: true, // Evita erros caso o script seja executado mais de uma vez
     });
