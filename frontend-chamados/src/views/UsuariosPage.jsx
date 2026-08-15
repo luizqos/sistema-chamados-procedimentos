@@ -19,11 +19,11 @@ export default function GestaoUsuariosPage() {
   const tCommon = useTranslations('Common');
   const tToastUser = useTranslations('Toast.Usuarios');
   const { user: usuarioLogado } = useAuth();
-  
+
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   const [usuarioEmEdicao, setUsuarioEmEdicao] = useState(null);
   const [isModalEdicaoOpen, setIsModalEdicaoOpen] = useState(false);
 
@@ -45,7 +45,7 @@ export default function GestaoUsuariosPage() {
     try {
       setLoading(true);
       const response = await usuarioService.listar({ page, limit, busca });
-      
+
       if (Array.isArray(response)) {
         setUsuarios(response);
         setTotalRegistros(response.length);
@@ -79,7 +79,7 @@ export default function GestaoUsuariosPage() {
   return (
     <WithPermission role="ADMIN">
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 md:p-10 space-y-6 transition-colors duration-200">
-        
+
         {/* Cabeçalho */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6 transition-colors">
           <div className="flex items-center gap-3">
@@ -94,20 +94,19 @@ export default function GestaoUsuariosPage() {
             <div className="p-2.5 bg-sky-500/10 border border-sky-500/20 text-sky-600 dark:text-sky-400 rounded-xl">
               <Users size={22} />
             </div>
+            <div className="flex items-center gap-2">
+              {isAdmin && <BotaoConfiguracao />}
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20 cursor-pointer"
+              >
+                <UserPlus size={16} /> {tUsuarios('novoUsuario')}
+              </button>
+            </div>
             <div>
               <h1 className="text-xl font-bold text-slate-900 dark:text-white">{tUsuarios('titulo')}</h1>
               <p className="text-xs text-slate-500 dark:text-slate-400">{tUsuarios('subtitulo')}</p>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {isAdmin && <BotaoConfiguracao />}
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20 cursor-pointer"
-            >
-              <UserPlus size={16} /> {tUsuarios('novoUsuario')}
-            </button>
           </div>
         </div>
 
@@ -164,23 +163,21 @@ export default function GestaoUsuariosPage() {
                       return (
                         <tr
                           key={u.id}
-                          className={`transition ${
-                            u.ativo
+                          className={`transition ${u.ativo
                               ? 'hover:bg-slate-50 dark:hover:bg-slate-800/30'
                               : 'bg-slate-100/50 dark:bg-slate-950/40 opacity-60'
-                          }`}
+                            }`}
                         >
                           <td className="p-4 text-slate-400 dark:text-slate-500 font-mono">#{u.id}</td>
                           <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">{u.nome}</td>
                           <td className="p-4 text-slate-500 dark:text-slate-400">{u.email}</td>
-                          
+
                           <td className="p-4">
                             <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${
-                                u.ativo
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${u.ativo
                                   ? 'bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
                                   : 'bg-red-100 dark:bg-red-950/60 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
-                              }`}
+                                }`}
                             >
                               {u.ativo ? <CheckCircle size={12} /> : <XCircle size={12} />}
                               {u.ativo ? tCommon('ativo') : tCommon('inativo')}
@@ -189,11 +186,10 @@ export default function GestaoUsuariosPage() {
 
                           <td className="p-4">
                             <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold border ${
-                                isUserAdmin
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold border ${isUserAdmin
                                   ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-300 dark:border-amber-500/30 text-amber-700 dark:text-amber-400'
                                   : 'bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-sky-700 dark:text-sky-400'
-                              }`}
+                                }`}
                             >
                               <Shield size={12} />
                               {u.role?.nome}
@@ -243,7 +239,7 @@ export default function GestaoUsuariosPage() {
                 <span className="text-xs text-slate-500">
                   {tUsuarios('totalRegistros')} <strong className="text-slate-700 dark:text-slate-300">{totalRegistros}</strong>
                 </span>
-                
+
                 <select
                   value={limit}
                   onChange={(e) => {
@@ -258,7 +254,7 @@ export default function GestaoUsuariosPage() {
                   <option value={100}>100 {tUsuarios('porPagina')}</option>
                 </select>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(p - 1, 1))}
@@ -267,7 +263,7 @@ export default function GestaoUsuariosPage() {
                 >
                   {tCommon('anterior') || 'Anterior'}
                 </button>
-                
+
                 <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">
                   {tUsuarios('paginaDe', { page, totalPages: totalPages || 1 })}
                 </span>
