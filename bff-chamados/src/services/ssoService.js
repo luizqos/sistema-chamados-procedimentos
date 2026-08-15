@@ -27,7 +27,7 @@ class SsoService {
     }
 
     const exigePermissao = await ssoRepository.oSistemaExigePermissaoExplicita();
-    
+
     if (exigePermissao) {
       const temPermissao = regras.find(r => r.acao === 'PERMITIR');
       if (!temPermissao) {
@@ -52,7 +52,7 @@ class SsoService {
     }
 
     const rolePadrao = await ssoRepository.buscarRolePorNome('OPERADOR');
-    
+
     if (!rolePadrao) {
       throw new Error('Role padrão OPERADOR não encontrada no banco de dados.');
     }
@@ -105,6 +105,10 @@ class SsoService {
   async deletarRegra(id) {
     if (!id) throw new Error('O ID da regra é obrigatório.');
     return await ssoRepository.deletarRegra(id);
+  }
+
+  async listarRegrasPaginadas(page = 1, limit = 10, busca = '') {
+    return await ssoRepository.listarPaginado(page, limit, busca);
   }
 }
 

@@ -55,7 +55,7 @@ class SsoRepository {
       where: { nome },
     });
   }
-  
+
   async buscarRegrasAplicaveis(email, dominio) {
     return await prisma.ssoRegra.findMany({
       where: {
@@ -94,6 +94,31 @@ class SsoRepository {
     return await prisma.ssoRegra.delete({
       where: { id: Number(id) }
     });
+  }
+
+  async listarPaginado(page = 1, limit = 10, busca = '') {
+    const skip = (page - 1) * limit;
+
+    const where = busca ? {
+      valor: { contains: busca, mode: 'insensitive' }
+    } : {};
+
+    const [dados, total] = await Promise.all([
+      prisma.ssoRegra.findMany({
+        where,
+        skip: Number(skip),
+        take: Number(limit),
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.ssoRegra.count({ where })
+    ]);
+
+    return {
+      dados,
+      total,
+      totalPages: Math.ceil(total / limit) || 1,
+      currentPage: Number(page)
+    };
   }
 }
 

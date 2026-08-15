@@ -35,7 +35,7 @@ class SsoController {
       });
     } catch (error) {
       console.error('Erro no controller SSO:', error);
-      
+
       const statusCode = error.message.includes('Acesso negado') || error.message.includes('bloqueado') ? 403 : 500;
       return res.status(statusCode).json({ error: error.message || 'Erro ao processar SSO.' });
     }
@@ -43,10 +43,15 @@ class SsoController {
 
   async listar(req, res) {
     try {
-      const regras = await ssoService.listarRegras();
-      res.json(regras);
+      const { page = 1, limit = 10, busca = '' } = req.query;
+      const resultado = await ssoService.listarRegrasPaginadas(
+        Number(page),
+        Number(limit),
+        busca
+      );
+      return res.json(resultado);
     } catch (err) {
-      res.status(500).json({ error: 'Erro interno ao buscar as regras de SSO.' });
+      return res.status(500).json({ error: 'Erro interno ao buscar as regras de SSO.' });
     }
   }
 

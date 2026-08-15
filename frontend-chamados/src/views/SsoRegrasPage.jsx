@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { Shield, Loader2, ArrowLeft, Plus, Trash2, Globe, Mail, CheckCircle, XCircle } from 'lucide-react';
+import { Shield, Loader2, ArrowLeft, Plus, Trash2, Globe, Mail, CheckCircle, XCircle, Search } from 'lucide-react';
 
 import { WithPermission } from '../components/WithPermission';
 import { ssoRegrasService } from '../services/ssoRegrasService';
@@ -14,21 +14,42 @@ import ModalNovaRegraSso from '../components/modal/ModalNovaRegraSso';
 export default function SsoRegrasPage() {
   const tSso = useTranslations('Sso');
   const tCommon = useTranslations('Common');
-  const tAlertaSso= useTranslations('Alerta.Sso');
+  const tAlertaSso = useTranslations('Alerta.Sso');
   const tToastSso = useTranslations('Toast.Sso');
+  const tUsuarios = useTranslations('Usuarios');
+
   const [regras, setRegras] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRegistros, setTotalRegistros] = useState(0);
+  const [busca, setBusca] = useState('');
+
   useEffect(() => {
-    carregarRegras();
-  }, []);
+    const delayDebounceFn = setTimeout(() => {
+      carregarRegras();
+    }, 400);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [page, limit, busca]);
 
   async function carregarRegras() {
     try {
       setLoading(true);
-      const data = await ssoRegrasService.listar();
-      setRegras(data);
+      const response = await ssoRegrasService.listar({ page, limit, busca });
+
+      if (Array.isArray(response)) {
+        setRegras(response);
+        setTotalRegistros(response.length);
+        setTotalPages(1);
+      } else {
+        setRegras(response.dados || []);
+        setTotalRegistros(response.total || 0);
+        setTotalPages(response.totalPages || 1);
+      }
     } catch (err) {
       toast.error(tToastSso('carregarRegrasErro'));
     } finally {
@@ -82,6 +103,23 @@ export default function SsoRegrasPage() {
           >
             <Plus size={16} /> {tSso('novaRegra')}
           </button>
+        </div>
+
+        {/* Barra de Busca Dinâmica */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="relative w-full max-w-sm">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => {
+                setBusca(e.target.value);
+                setPage(1);
+              }}
+              placeholder={tUsuarios('buscarPlaceholder') || 'Buscar por domínio ou e-mail...'}
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 transition shadow-sm"
+            />
+          </div>
         </div>
 
         {/* Alerta */}
@@ -150,6 +188,52 @@ export default function SsoRegrasPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* Controles de Paginação */}
+            <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 gap-3">
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-slate-500">
+                  {tUsuarios('totalRegistros') || 'Total de registros:'} <strong className="text-slate-700 dark:text-slate-300">{totalRegistros}</strong>
+                </span>
+                
+                <select
+                  value={limit}
+                  onChange={(e) => {
+                    setLimit(Number(e.target.value));
+                    setPage(1);
+                  }}
+                  className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 rounded-lg px-2 py-1 focus:outline-none focus:border-sky-500 cursor-pointer"
+                >
+                  <option value={10}>10 {tUsuarios('porPagina') || 'por pág'}</option>
+                  <option value={25}>25 {tUsuarios('porPagina') || 'por pág'}</option>
+                  <option value={50}>50 {tUsuarios('porPagina') || 'por pág'}</option>
+                  <option value={100}>100 {tUsuarios('porPagina') || 'por pág'}</option>
+                </select>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                  disabled={page === 1 || loading}
+                  className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-semibold disabled:opacity-40 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                >
+                  {tCommon('anterior') || 'Anterior'}
+                </button>
+                
+                <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">
+                  {tUsuarios('paginaDe', { page, totalPages: totalPages || 1 }) || `Página ${page} de ${totalPages || 1}`}
+                </span>
+
+                <button
+                  onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                  disabled={page >= totalPages || loading}
+                  className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-semibold disabled:opacity-40 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                >
+                  {tCommon('proxima') || 'Próxima'}
+                </button>
+              </div>
+            </div>
+
           </div>
         )}
 
