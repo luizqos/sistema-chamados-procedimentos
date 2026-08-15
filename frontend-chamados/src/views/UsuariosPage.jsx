@@ -22,7 +22,6 @@ export default function GestaoUsuariosPage() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  // Estados para gerenciar a edição de usuários
   const [usuarioEmEdicao, setUsuarioEmEdicao] = useState(null);
   const [isModalEdicaoOpen, setIsModalEdicaoOpen] = useState(false);
 
@@ -41,16 +40,6 @@ export default function GestaoUsuariosPage() {
       setLoading(false);
     }
   }
-
-  const handleRoleChange = async (usuarioId, novaRoleId) => {
-    try {
-      await usuarioService.alterarRole(usuarioId, novaRoleId);
-      toast.success(tToastUser('alteradoPerfilSucesso'));
-      carregarUsuarios();
-    } catch (err) {
-      toast.error(err.response?.data?.error || tToastUser('alteradoPerfilErro'));
-    }
-  };
 
   const handleToggleStatus = async (usuario) => {
     const novoStatus = !usuario.ativo;
@@ -157,7 +146,7 @@ export default function GestaoUsuariosPage() {
                         </td>
 
                         <td className="p-4 text-right flex items-center justify-end gap-2">
-                          {/* Botão de Editar Usuário */}
+                          {/* Botão de Editar Usuário (Nome, Email, Senha, Perfil) */}
                           <button
                             onClick={() => {
                               setUsuarioEmEdicao(u);
@@ -169,16 +158,7 @@ export default function GestaoUsuariosPage() {
                             <Pencil size={16} />
                           </button>
 
-                          <select
-                            value={u.role?.id || ''}
-                            onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                            disabled={!u.ativo}
-                            className="bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-sky-500 transition cursor-pointer disabled:opacity-40"
-                          >
-                            <option value={1}>ADMIN</option>
-                            <option value={2}>OPERADOR</option>
-                          </select>
-
+                          {/* Botão de Ativar / Inativar Status */}
                           <button
                             onClick={() => handleToggleStatus(u)}
                             disabled={ehUsuarioLogado}
