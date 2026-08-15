@@ -1,21 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Copy, Check, Trash2, User, Calendar } from 'lucide-react';
 import { useTranslations, useFormatter } from 'next-intl';
 
 import GaleriaAnexos from './GaleriaAnexos';
+import BotaoCompartilhar from './button/BotaoCompartilhar';
+import ModalCompartilhamento from './modal/ModalCompartilhamento';
 
 export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user }) {
   const tProcedimento = useTranslations('Procedimento');
   const tCommon = useTranslations('Common');
   const format = useFormatter();
 
+  const [modalCompartilharAberto, setModalCompartilharAberto] = useState(false);
+
   const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
   const isAdmin = roleNome === 'ADMIN';
   const isCriador = selecionado?.usuario_id && user?.id ? selecionado.usuario_id === user.id : false;
   const podeExcluir = isAdmin || isCriador;
+  const podeCompartilhar = isAdmin || isCriador; // Apenas admin ou criador podem gerenciar compartilhamentos
 
   const nomeAutor =
     selecionado?.usuario?.nome ||
@@ -61,6 +66,11 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
                 </>
               )}
             </button>
+
+            {/* Botão Compartilhar (Se Autorizado) */}
+            {podeCompartilhar && (
+              <BotaoCompartilhar onClick={() => setModalCompartilharAberto(true)} />
+            )}
             
             {/* Botão Excluir (Se Autorizado) */}
             {podeExcluir && (
@@ -106,6 +116,13 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           </div>
         )}
       </div>
+
+      {/* Modal de Compartilhamento */}
+      <ModalCompartilhamento
+        isOpen={modalCompartilharAberto}
+        onClose={() => setModalCompartilharAberto(false)}
+        procedimentoId={selecionado?.id}
+      />
     </div>
   );
 }
