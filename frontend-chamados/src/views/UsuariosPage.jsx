@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { Users, Shield, Loader2, ArrowLeft, UserPlus, Power, CheckCircle, XCircle, Pencil, Clock } from 'lucide-react';
+import { Users, Shield, Loader2, ArrowLeft, UserPlus, Power, CheckCircle, XCircle, Pencil, Search } from 'lucide-react';
 
 import { WithPermission } from '../components/WithPermission';
 import { usuarioService } from '../services/usuarioService';
@@ -26,19 +26,27 @@ export default function GestaoUsuariosPage() {
   const [usuarioEmEdicao, setUsuarioEmEdicao] = useState(null);
   const [isModalEdicaoOpen, setIsModalEdicaoOpen] = useState(false);
 
+  // Estados de Paginação e Busca
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRegistros, setTotalRegistros] = useState(0);
+  const [busca, setBusca] = useState('');
 
+  // Efeito com debounce simples para a busca (evita requisições a cada tecla digitada imediatamente)
   useEffect(() => {
-    carregarUsuarios();
-  }, [page, limit]);
+    const delayDebounceFn = setTimeout(() => {
+      carregarUsuarios();
+    }, 400); // Aguarda 400ms após parar de digitar para buscar
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [page, limit, busca]);
 
   async function carregarUsuarios() {
     try {
       setLoading(true);
-      const response = await usuarioService.listar({ page, limit });
+      // Enviando o parâmetro de busca para o backend (ex: /api/usuarios?page=1&limit=10&busca=termo)
+      const response = await usuarioService.listar({ page, limit, busca });
       
       if (Array.isArray(response)) {
         setUsuarios(response);
@@ -97,6 +105,23 @@ export default function GestaoUsuariosPage() {
           </button>
         </div>
 
+        {/* Barra de Busca Dinâmica */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="relative w-full max-w-sm">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => {
+                setBusca(e.target.value);
+                setPage(1); // Reseta para a primeira página ao buscar
+              }}
+              placeholder="Buscar por nome ou e-mail..."
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 transition shadow-sm"
+            />
+          </div>
+        </div>
+
         {/* Tabela de Usuários */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
@@ -119,86 +144,89 @@ export default function GestaoUsuariosPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60">
-                  {usuarios.map((u) => {
-                    const ehUsuarioLogado = u.id === usuarioLogado?.id;
-                    const isUserAdmin = u.role?.nome === 'ADMIN';
+                  {usuarios.length === 0 ? (
+                    <tr>
+                      <td colSpan="8" className="p-8 text-center text-slate-400">
+                        Nenhum usuário encontrado.
+                      </td>
+                    </tr>
+                  ) : (
+                    usuarios.map((u) => {
+                      const ehUsuarioLogado = u.id === usuarioLogado?.id;
+                      const isUserAdmin = u.role?.nome === 'ADMIN';
 
-                    return (
-                      <tr
-                        key={u.id}
-                        className={`transition ${
-                          u.ativo
-                            ? 'hover:bg-slate-50 dark:hover:bg-slate-800/30'
-                            : 'bg-slate-100/50 dark:bg-slate-950/40 opacity-60'
-                        }`}
-                      >
-                        <td className="p-4 text-slate-400 dark:text-slate-500 font-mono">#{u.id}</td>
-                        <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">{u.nome}</td>
-                        <td className="p-4 text-slate-500 dark:text-slate-400">{u.email}</td>
-                        
-                        <td className="p-4">
-                          <span
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${
-                              u.ativo
-                                ? 'bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
-                                : 'bg-red-100 dark:bg-red-950/60 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
-                            }`}
-                          >
-                            {u.ativo ? <CheckCircle size={12} /> : <XCircle size={12} />}
-                            {u.ativo ? tCommon('ativo') : tCommon('inativo')}
-                          </span>
-                        </td>
+                      return (
+                        <tr
+                          key={u.id}
+                          className={`transition ${
+                            u.ativo
+                              ? 'hover:bg-slate-50 dark:hover:bg-slate-800/30'
+                              : 'bg-slate-100/50 dark:bg-slate-950/40 opacity-60'
+                          }`}
+                        >
+                          <td className="p-4 text-slate-400 dark:text-slate-500 font-mono">#{u.id}</td>
+                          <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">{u.nome}</td>
+                          <td className="p-4 text-slate-500 dark:text-slate-400">{u.email}</td>
+                          
+                          <td className="p-4">
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${
+                                u.ativo
+                                  ? 'bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
+                                  : 'bg-red-100 dark:bg-red-950/60 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
+                              }`}
+                            >
+                              {u.ativo ? <CheckCircle size={12} /> : <XCircle size={12} />}
+                              {u.ativo ? tCommon('ativo') : tCommon('inativo')}
+                            </span>
+                          </td>
 
-                        <td className="p-4">
-                          <span
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold border ${
-                              isUserAdmin
-                                ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-300 dark:border-amber-500/30 text-amber-700 dark:text-amber-400'
-                                : 'bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-sky-700 dark:text-sky-400'
-                            }`}
-                          >
-                            <Shield size={12} />
-                            {u.role?.nome}
-                          </span>
-                        </td>
+                          <td className="p-4">
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold border ${
+                                isUserAdmin
+                                  ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-300 dark:border-amber-500/30 text-amber-700 dark:text-amber-400'
+                                  : 'bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-sky-700 dark:text-sky-400'
+                              }`}
+                            >
+                              <Shield size={12} />
+                              {u.role?.nome}
+                            </span>
+                          </td>
 
-                        {/* Data de Criação */}
-                        <td className="p-4 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
-                          {formatarData(u.created_at)}
-                        </td>
+                          <td className="p-4 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
+                            {formatarData(u.created_at)}
+                          </td>
 
-                        {/* Data de Último Login */}
-                        <td className="p-4 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
-                          {u.ultimo_login ? (
-                            formatarData(u.ultimo_login)
-                          ) : (null
-                          )}
-                        </td>
+                          <td className="p-4 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
+                            {u.ultimo_login ? formatarData(u.ultimo_login) : null}
+                          </td>
 
-                        <td className="p-4 text-right flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => {
-                              setUsuarioEmEdicao(u);
-                              setIsModalEdicaoOpen(true);
-                            }}
-                            className="p-1.5 text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer"
-                            title={tUsuarios('editarUsuario')}
-                          >
-                            <Pencil size={16} />
-                          </button>
+                          <td className="p-4 text-right flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => {
+                                setUsuarioEmEdicao(u);
+                                setIsModalEdicaoOpen(true);
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer"
+                              title={tUsuarios('editarUsuario')}
+                            >
+                              <Pencil size={16} />
+                            </button>
 
-                          <button
-                            onClick={() => handleToggleStatus(u)}
-                            disabled={ehUsuarioLogado}
-                            className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer disabled:opacity-30"
-                            title={tUsuarios('ativarInativar')}
-                          >
-                            <Power size={16} />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                            <button
+                              onClick={() => handleToggleStatus(u)}
+                              disabled={ehUsuarioLogado}
+                              className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer disabled:opacity-30"
+                              title={tUsuarios('ativarInativar')}
+                            >
+                              <Power size={16} />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
@@ -210,12 +238,11 @@ export default function GestaoUsuariosPage() {
                   Total de registros: <strong className="text-slate-700 dark:text-slate-300">{totalRegistros}</strong>
                 </span>
                 
-                {/* Seletor de limite por página */}
                 <select
                   value={limit}
                   onChange={(e) => {
                     setLimit(Number(e.target.value));
-                    setPage(1); // Reseta para a primeira página ao alterar o limite
+                    setPage(1);
                   }}
                   className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 rounded-lg px-2 py-1 focus:outline-none focus:border-sky-500 cursor-pointer"
                 >

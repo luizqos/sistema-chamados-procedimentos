@@ -166,11 +166,19 @@ class UsuarioRepository {
     });
   }
 
-  async listarPaginado(page = 1, limit = 10) {
+  async listarPaginado(page = 1, limit = 10, busca = '') {
     const skip = (page - 1) * limit;
+
+    const where = busca ? {
+      OR: [
+        { nome: { contains: busca, mode: 'insensitive' } },
+        { email: { contains: busca, mode: 'insensitive' } }
+      ]
+    } : {};
 
     const [dados, total] = await Promise.all([
       prisma.usuario.findMany({
+        where,
         skip,
         take: Number(limit),
         select: {
@@ -184,7 +192,7 @@ class UsuarioRepository {
         },
         orderBy: { id: 'asc' }
       }),
-      prisma.usuario.count()
+      prisma.usuario.count({ where })
     ]);
 
     return {
