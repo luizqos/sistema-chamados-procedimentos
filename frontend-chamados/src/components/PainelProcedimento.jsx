@@ -14,6 +14,7 @@ import { procedimentoService } from '@/src/services/procedimentoService';
 export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user, onAtualizarProcedimento }) {
   const tProcedimento = useTranslations('Procedimento');
   const tCommon = useTranslations('Common');
+  const tCompartilhamento = useTranslations('Compartilhamento');
   const format = useFormatter();
 
   const [modalCompartilharAberto, setModalCompartilharAberto] = useState(false);
@@ -51,14 +52,14 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
         publico: novoValor
       });
 
-      toast.success(novoValor ? 'Procedimento agora é público para todos os usuários!' : 'Procedimento agora possui acesso restrito.');
+      toast.success(novoValor ? tCompartilhamento('sucessoPublico') : tCompartilhamento('sucessoRestrito'));
 
       if (onAtualizarProcedimento) {
         onAtualizarProcedimento(procedimentoAtualizado);
       }
     } catch (err) {
       setIsPublico(!novoValor); // Reverte o estado visual em caso de erro
-      toast.error(err.response?.data?.error || 'Erro ao atualizar status público.');
+      toast.error(err.response?.data?.error || tCompartilhamento('erroPublico'));
     } finally {
       setCarregandoPublico(false);
     }
@@ -73,8 +74,8 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             {isPublico ? <Globe size={16} className="text-sky-500" /> : <Lock size={16} className="text-amber-500" />}
             <span>
               {isPublico
-                ? 'Este procedimento é público e visível para todos os usuários atuais e futuros.'
-                : 'Este procedimento é restrito apenas ao criador, administradores e usuários autorizados.'}
+                ? tCompartilhamento('avisoPublico')
+                : tCompartilhamento('avisoRestrito')}
             </span>
           </div>
 
@@ -90,7 +91,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
                   className="sr-only peer"
                 />
                 <div className="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-sky-600"></div>
-                <span className="ml-2 font-semibold text-slate-700 dark:text-slate-300">Público</span>
+                <span className="ml-2 font-semibold text-slate-700 dark:text-slate-300">{tCompartilhamento('publicoLabel')}</span>
               </label>
             </div>
           )}

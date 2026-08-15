@@ -122,6 +122,32 @@
     "cadastrar": "Cadastrar",
     "avisoMaster": "Esta ação criará a conta máster com perfil ADMIN."
   },
+  "Compartilhamento": {
+    "tituloModal": "Compartilhar Procedimento",
+    "selecionarUsuarios": "Selecionar Usuários",
+    "selecionarTodos": "Selecionar todos",
+    "desmarcarTodos": "Desmarcar todos",
+    "placeholderBusca": "Search by name or email...",
+    "nenhumUsuario": "No users found.",
+    "podeVisualizar": "Can View",
+    "podeEditar": "Can Edit",
+    "adicionar": "Add",
+    "pessoasComAcesso": "People with access",
+    "apenasCriador": "Only the creator and administrators have unrestricted access.",
+    "editor": "Editor",
+    "visualizador": "Viewer",
+    "sucessoSalvar": "Permissions successfully saved!",
+    "sucessoRemover": "Access removed.",
+    "erroCarregar": "Error loading sharing data.",
+    "erroCompartilhar": "Error sharing procedure.",
+    "erroRemover": "Error removing permission.",
+    "avisoPublico": "This procedure is public and visible to all current and future users.",
+    "avisoRestrito": "This procedure is restricted only to the creator, administrators, and authorized users.",
+    "publicoLabel": "Public",
+    "sucessoPublico": "Procedure is now public for all users!",
+    "sucessoRestrito": "Procedure now has restricted access.",
+    "erroPublico": "Error updating public status."
+  },
   "Toast": {
     "Usuarios": {
       "cadastroSucesso": "Usuário cadastrado com sucesso!",
