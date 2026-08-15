@@ -41,7 +41,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
       timeZone: 'UTC'
     })
     : null;
-    
+
   const handleTogglePublico = async (e) => {
     const novoValor = e.target.checked;
     setIsPublico(novoValor);
@@ -114,8 +114,8 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             <button
               onClick={onCopiar}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-white font-semibold text-sm transition cursor-pointer ${copiado
-                  ? 'bg-green-600 dark:bg-green-600'
-                  : 'bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700'
+                ? 'bg-green-600 dark:bg-green-600'
+                : 'bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700'
                 }`}
             >
               {copiado ? (
@@ -184,6 +184,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
         isOpen={modalCompartilharAberto}
         onClose={() => setModalCompartilharAberto(false)}
         procedimentoId={selecionado?.id}
+        criadorId={selecionado?.usuario_id}
       />
     </div>
   );

@@ -6,9 +6,8 @@ import { Share2, Trash2, UserPlus, X, Loader2, Search } from 'lucide-react';
 import api from '../../services/api';
 import { procedimentoPermissaoService } from '../../services/procedimentoPermissaoService';
 
-export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId }) {
-  const tCompartilhamento = useTranslations('Compartilhamento');
-  const tToastCompartilhamento = useTranslations('Toast.Compartilhamento');
+export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId, criadorId }) {
+  const t = useTranslations('Compartilhamento');
   const tCommon = useTranslations('Common');
 
   const [usuariosDisponiveis, setUsuariosDisponiveis] = useState([]);
@@ -32,18 +31,24 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
         api.get('/api/usuarios'),
         procedimentoPermissaoService.listarPermissoes(procedimentoId)
       ]);
-      setUsuariosDisponiveis(resUsuarios.data);
+
+      const usuariosElegiveis = resUsuarios.data.filter(u => {
+        const isAdm = u.role?.nome === 'ADMIN' || u.roleId === 1;
+        const isCriador = Number(u.id) === Number(criadorId);
+        return !isAdm && !isCriador;
+      });
+
+      setUsuariosDisponiveis(usuariosElegiveis);
       setPermissoesAtuais(permissoes);
       setUsuariosSelecionados([]); 
       setTermoBusca('');
     } catch (err) {
-      toast.error(tToastCompartilhamento('erroCarregar'));
+      toast.error(t('erroCarregar'));
     } finally {
       setCarregandoDados(false);
     }
   }
 
-  // Filtrar usuários com base no termo de busca
   const usuariosFiltrados = usuariosDisponiveis.filter(u => 
     u.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
     u.email.toLowerCase().includes(termoBusca.toLowerCase())
@@ -72,7 +77,7 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
   const handleAdicionarPermissao = async (e) => {
     e.preventDefault();
     if (usuariosSelecionados.length === 0) {
-      toast.error(tToastCompartilhamento('nenhumUsuario'));
+      toast.error(t('nenhumUsuario'));
       return;
     }
 
@@ -83,11 +88,11 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
         usuariosSelecionados.map(Number), 
         nivelSelecionado
       );
-      toast.success(tToastCompartilhamento('sucessoSalvar'));
+      toast.success(t('sucessoSalvar'));
       setUsuariosSelecionados([]);
       carregarDados();
     } catch (err) {
-      toast.error(err.response?.data?.error || tToastCompartilhamento('erroCompartilhar'));
+      toast.error(err.response?.data?.error || t('erroCompartilhar'));
     } finally {
       setLoading(false);
     }
@@ -96,10 +101,10 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
   const handleRemoverPermissao = async (usuarioId) => {
     try {
       await procedimentoPermissaoService.removerPermissao(procedimentoId, usuarioId);
-      toast.success(tToastCompartilhamento('sucessoRemover'));
+      toast.success(t('sucessoRemover'));
       carregarDados();
     } catch (err) {
-      toast.error(tToastCompartilhamento('erroRemover'));
+      toast.error(t('erroRemover'));
     }
   };
 
@@ -115,7 +120,7 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
         <div className="flex justify-between items-center pb-4 border-b border-slate-200 dark:border-slate-800 mb-4 shrink-0">
           <div className="flex items-center gap-2">
             <Share2 size={20} className="text-sky-500" />
-            <h3 className="text-base font-bold">{tCompartilhamento('tituloModal')}</h3>
+            <h3 className="text-base font-bold">{t('tituloModal')}</h3>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-200 transition p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
             <X size={20} />
@@ -133,7 +138,7 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
             <form onSubmit={handleAdicionarPermissao} className="space-y-3">
               <div className="flex justify-between items-center">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  {tCompartilhamento('selecionarUsuarios')}
+                  {t('selecionarUsuarios')}
                 </label>
                 {usuariosFiltrados.length > 0 && (
                   <button
@@ -141,7 +146,7 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
                     onClick={handleSelecionarTodos}
                     className="text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline cursor-pointer"
                   >
-                    {todosFiltradosSelecionados ? tCompartilhamento('desmarcarTodos') : tCompartilhamento('selecionarTodos')}
+                    {todosFiltradosSelecionados ? t('desmarcarTodos') : t('selecionarTodos')}
                   </button>
                 )}
               </div>
@@ -151,7 +156,7 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
-                  placeholder={tCompartilhamento('placeholderBusca')}
+                  placeholder={t('placeholderBusca')}
                   value={termoBusca}
                   onChange={(e) => setTermoBusca(e.target.value)}
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs rounded-lg pl-9 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-900 dark:text-slate-100 placeholder-slate-400"
@@ -161,7 +166,7 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
               {/* Lista com Checkboxes Filtrada */}
               <div className="max-h-40 overflow-y-auto bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-2 space-y-1">
                 {usuariosFiltrados.length === 0 ? (
-                  <p className="text-xs text-slate-500 text-center py-4">{tCompartilhamento('nenhumUsuario')}</p>
+                  <p className="text-xs text-slate-500 text-center py-4">{t('nenhumUsuario')}</p>
                 ) : (
                   usuariosFiltrados.map(u => {
                     const isChecked = usuariosSelecionados.includes(u.id);
@@ -199,8 +204,8 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
                   onChange={(e) => setNivelSelecionado(e.target.value)}
                   className="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-xs rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-sky-500"
                 >
-                  <option value="VISUALIZAR">{tCompartilhamento('podeVisualizar')}</option>
-                  <option value="EDITAR">{tCompartilhamento('podeEditar')}</option>
+                  <option value="VISUALIZAR">{t('podeVisualizar')}</option>
+                  <option value="EDITAR">{t('podeEditar')}</option>
                 </select>
 
                 <button
@@ -209,16 +214,16 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
                   className="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50 transition shrink-0"
                 >
                   {loading ? <Loader2 size={16} className="animate-spin" /> : <UserPlus size={16} />}
-                  {tCompartilhamento('adicionar')} ({usuariosSelecionados.length})
+                  {t('adicionar')} ({usuariosSelecionados.length})
                 </button>
               </div>
             </form>
 
             {/* Lista de Pessoas com Acesso Atual */}
             <div className="space-y-3 pt-2 border-t border-slate-200 dark:border-slate-800">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">{tCompartilhamento('pessoasComAcesso')}</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('pessoasComAcesso')}</h4>
               {permissoesAtuais.length === 0 ? (
-                <p className="text-xs text-slate-500 dark:text-slate-400">{tCompartilhamento('apenasCriador')}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{t('apenasCriador')}</p>
               ) : (
                 permissoesAtuais.map(p => (
                   <div key={p.usuario.id} className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 text-xs">
@@ -228,7 +233,7 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="px-2 py-1 rounded bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-400 font-bold text-[10px]">
-                        {p.nivel === 'EDITAR' ? tCompartilhamento('editor') : tCompartilhamento('visualizador')}
+                        {p.nivel === 'EDITAR' ? t('editor') : t('visualizador')}
                       </span>
                       <button
                         type="button"
