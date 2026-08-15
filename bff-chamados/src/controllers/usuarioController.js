@@ -11,7 +11,7 @@ class UsuarioController {
     }
   }
 
-async listar(req, res) {
+  async listar(req, res) {
     try {
       const usuarios = await usuarioService.listarUsuarios();
       return res.json(usuarios);
@@ -41,6 +41,17 @@ async listar(req, res) {
       return res.json(usuario);
     } catch (error) {
       return res.status(error.statusCode || 500).json({ error: error.message });
+    }
+  }
+
+  async atualizar(req, res) {
+    try {
+      const { id } = req.params;
+      const usuarioAtualizado = await usuarioService.atualizar(id, req.body);
+      return res.json(usuarioAtualizado);
+    } catch (error) {
+      const status = error.statusCode || 500;
+      return res.status(status).json({ error: error.message || 'Erro ao atualizar usuário.' });
     }
   }
 }

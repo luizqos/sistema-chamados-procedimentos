@@ -4,23 +4,27 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { Users, Shield, Loader2, ArrowLeft, UserPlus, Power, CheckCircle, XCircle } from 'lucide-react';
+import { Users, Shield, Loader2, ArrowLeft, UserPlus, Power, CheckCircle, XCircle, Pencil } from 'lucide-react';
 
 import { WithPermission } from '../components/WithPermission';
 import { usuarioService } from '../services/usuarioService';
 import { useAuth } from '../contexts/AuthContext';
 import ModalNovoUsuario from '../components/modal/ModalNovoUsuario';
-
+import ModalEditarUsuario from '../components/modal/ModalEditarUsuario';
 
 export default function GestaoUsuariosPage() {
   const tUsuarios = useTranslations('Usuarios');
   const tCommon = useTranslations('Common');
   const tToastUser = useTranslations('Toast.Usuarios');
   const { user: usuarioLogado } = useAuth();
+  
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  
+  // Estados para gerenciar a edição de usuários
+  const [usuarioEmEdicao, setUsuarioEmEdicao] = useState(null);
+  const [isModalEdicaoOpen, setIsModalEdicaoOpen] = useState(false);
 
   useEffect(() => {
     carregarUsuarios();
@@ -152,7 +156,19 @@ export default function GestaoUsuariosPage() {
                           </span>
                         </td>
 
-                        <td className="p-4 text-right flex items-center justify-end gap-3">
+                        <td className="p-4 text-right flex items-center justify-end gap-2">
+                          {/* Botão de Editar Usuário */}
+                          <button
+                            onClick={() => {
+                              setUsuarioEmEdicao(u);
+                              setIsModalEdicaoOpen(true);
+                            }}
+                            className="p-1.5 text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer"
+                            title="Editar Usuário"
+                          >
+                            <Pencil size={16} />
+                          </button>
+
                           <select
                             value={u.role?.id || ''}
                             onChange={(e) => handleRoleChange(u.id, e.target.value)}
@@ -167,6 +183,7 @@ export default function GestaoUsuariosPage() {
                             onClick={() => handleToggleStatus(u)}
                             disabled={ehUsuarioLogado}
                             className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer disabled:opacity-30"
+                            title="Ativar/Inativar"
                           >
                             <Power size={16} />
                           </button>
@@ -183,6 +200,16 @@ export default function GestaoUsuariosPage() {
         <ModalNovoUsuario
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
+          onSuccess={carregarUsuarios}
+        />
+
+        <ModalEditarUsuario
+          isOpen={isModalEdicaoOpen}
+          onClose={() => {
+            setIsModalEdicaoOpen(false);
+            setUsuarioEmEdicao(null);
+          }}
+          usuario={usuarioEmEdicao}
           onSuccess={carregarUsuarios}
         />
       </div>

@@ -52,7 +52,13 @@ export default function LoginPage() {
       } catch (err) {
         console.error('Erro ao processar SSO:', err);
         window.history.replaceState({}, document.title, window.location.pathname);
-        toast.error(err.response?.data?.error || err.message || `${tToastLogin('erroSso')}`);
+        
+        // Tratamento inteligente para Network Error / Servidor offline
+        if (err.message === 'Network Error' || !err.response) {
+          toast.error('Não foi possível conectar ao servidor backend. Verifique se a API está online.');
+        } else {
+          toast.error(err.response?.data?.error || err.message || `${tToastLogin('erroSso')}`);
+        }
       } finally {
         setChecandoSetup(false);
         setLoading(false);
@@ -68,7 +74,7 @@ export default function LoginPage() {
       await instance.loginRedirect(loginRequest);
     } catch (err) {
       console.error('Erro ao redirecionar SSO:', err);
-      toast.error( `${tToastLogin('erroConexao')}`);
+      toast.error(`${tToastLogin('erroConexao')}`);
       setLoading(false);
     }
   };

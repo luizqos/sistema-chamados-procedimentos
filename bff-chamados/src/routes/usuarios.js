@@ -87,32 +87,6 @@ const { autenticar, autorizar } = require('../middlewares/authMiddleware');
  *     responses:
  *       201:
  *         description: Usuário cadastrado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: integer
- *                   example: 2
- *                 nome:
- *                   type: string
- *                   example: Carlos Oliveira
- *                 email:
- *                   type: string
- *                   example: carlos.oliveira@empresa.com
- *                 role:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
- *                       example: 2
- *                     nome:
- *                       type: string
- *                       example: OPERADOR
- *                 created_at:
- *                   type: string
- *                   format: date-time
  *       400:
  *         description: Dados obrigatórios ausentes ou e-mail já cadastrado
  *       401:
@@ -124,6 +98,58 @@ const { autenticar, autorizar } = require('../middlewares/authMiddleware');
  */
 router.get('/', autenticar, autorizar(['ADMIN', 'OPERADOR']), (req, res) => usuarioController.listar(req, res));
 router.post('/', autenticar, autorizar(['ADMIN']), (req, res) => usuarioController.criar(req, res));
+
+/**
+ * @swagger
+ * /api/usuarios/{id}:
+ *   put:
+ *     summary: Atualiza os dados de um usuário existente
+ *     description: Permite alterar nome, senha, status e perfil. O e-mail só pode ser alterado se o usuário nunca tiver feito login no sistema.
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuário
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *                 example: Carlos Atualizado
+ *               email:
+ *                 type: string
+ *                 example: carlos.novo@empresa.com
+ *               senha:
+ *                 type: string
+ *                 example: novaSenha123
+ *               ativo:
+ *                 type: boolean
+ *                 example: true
+ *               roleId:
+ *                 type: integer
+ *                 example: 2
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado com sucesso
+ *       400:
+ *         description: E-mail não pode ser alterado após o primeiro login ou e-mail duplicado
+ *       401:
+ *         description: Token ausente ou inválido
+ *       403:
+ *         description: Acesso negado
+ *       404:
+ *         description: Usuário não encontrado
+ */
+router.put('/:id', autenticar, autorizar(['ADMIN']), (req, res) => usuarioController.atualizar(req, res));
 
 /**
  * @swagger

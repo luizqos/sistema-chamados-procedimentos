@@ -41,6 +41,7 @@ class UsuarioRepository {
         nome: true,
         email: true,
         ativo: true,
+        ultimo_login: true, // <-- Adicionado para permitir a validação na service
         role: true,
         created_at: true,
       },
@@ -104,6 +105,7 @@ class UsuarioRepository {
         nome: true,
         email: true,
         ativo: true,
+        ultimo_login: true,
         created_at: true,
         role: {
           select: { id: true, nome: true }
@@ -134,6 +136,29 @@ class UsuarioRepository {
         id: true,
         nome: true,
         email: true,
+        role: {
+          select: { id: true, nome: true }
+        }
+      }
+    });
+  }
+
+  async atualizarDataUltimoLogin(id) {
+    return await prisma.usuario.update({
+      where: { id: Number(id) },
+      data: { ultimo_login: new Date() },
+    });
+  }
+
+  async atualizarUsuario(id, dados) {
+    return await prisma.usuario.update({
+      where: { id: Number(id) },
+      data: dados,
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        ativo: true,
         role: {
           select: { id: true, nome: true }
         }

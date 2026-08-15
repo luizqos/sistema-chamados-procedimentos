@@ -19,6 +19,7 @@ model Usuario {
   procedimentos Procedimento[]
   permissoes    ProcedimentoPermissao[]
   created_at    DateTime       @default(now())
+  ultimo_login  DateTime?
 
   @@map("usuarios")
 }

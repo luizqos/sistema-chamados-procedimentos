@@ -58,10 +58,12 @@ class AuthService {
 
     const token = jwt.sign(
       { id: usuario.id, role: usuario.role.nome },
-      process.env.JWT_SECRET || 'secret_key',
+      process.env.JWT_SECRET,
       { expiresIn: '8h' }
     );
 
+    await usuarioRepository.atualizarDataUltimoLogin(usuario.id);
+    
     return {
       token,
       usuario: this._formatarRetornoUsuario(usuario),

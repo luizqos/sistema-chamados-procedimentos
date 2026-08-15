@@ -76,6 +76,43 @@ class UsuarioService {
 
     return await usuarioRepository.alternarStatus(id, ativo);
   }
+
+  async atualizar(id, dados) {
+    const usuarioAtual = await usuarioRepository.buscarPorId(Number(id));
+    if (!usuarioAtual) {
+      const error = new Error('Usuário não encontrado.');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (dados.email && dados.email !== usuarioAtual.email) {
+      if (usuarioAtual.ultimo_login !== null && usuarioAtual.ultimo_login !== undefined) {
+        const error = new Error('O e-mail não pode mais ser alterado pois este usuário já realizou login no sistema.');
+        error.statusCode = 400;
+        throw error;
+      }
+
+      const emailEmUso = await usuarioRepository.buscarPorEmail(dados.email);
+      if (emailEmUso && Number(emailEmUso.id) !== Number(id)) {
+        const error = new Error('Este e-mail já está em uso por outro usuário.');
+        error.statusCode = 400;
+        throw error;
+      }
+    }
+
+    const dadosParaAtualizar = {
+      nome: dados.nome,
+      email: dados.email,
+      ativo: dados.ativo !== undefined ? Boolean(dados.ativo) : undefined,
+      roleId: dados.roleId ? Number(dados.roleId) : undefined,
+    };
+
+    if (dados.senha && dados.senha.trim() !== '') {
+      dadosParaAtualizar.senha = await bcrypt.hash(dados.senha, 10);
+    }
+
+    return await usuarioRepository.atualizarUsuario(Number(id), dadosParaAtualizar);
+  }
 }
 
 module.exports = new UsuarioService();
