@@ -11,6 +11,7 @@ import { usuarioService } from '../services/usuarioService';
 import { useAuth } from '../contexts/AuthContext';
 import ModalNovoUsuario from '../components/modal/ModalNovoUsuario';
 import ModalEditarUsuario from '../components/modal/ModalEditarUsuario';
+import { formatarData } from '@/utils/formatters';
 
 export default function GestaoUsuariosPage() {
   const tUsuarios = useTranslations('Usuarios');
@@ -50,19 +51,6 @@ export default function GestaoUsuariosPage() {
     } catch (err) {
       toast.error(err.response?.data?.error || tToastUser('erroStatus'));
     }
-  };
-
-  // Função auxiliar para formatar datas
-  const formatarData = (dataString) => {
-    if (!dataString) return 'Nunca';
-    const data = new Date(dataString);
-    return data.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   };
 
   return (
@@ -111,8 +99,8 @@ export default function GestaoUsuariosPage() {
                     <th className="p-4">{tUsuarios('email')}</th>
                     <th className="p-4">{tCommon('status')}</th>
                     <th className="p-4">{tUsuarios('perfilAtual')}</th>
-                    <th className="p-4">Criação</th>
-                    <th className="p-4">Último Login</th>
+                    <th className="p-4">{tUsuarios('criacao')}</th>
+                    <th className="p-4">{tUsuarios('ultimoLogin')}</th>
                     <th className="p-4 text-right">{tCommon('acoes')}</th>
                   </tr>
                 </thead>
@@ -156,7 +144,7 @@ export default function GestaoUsuariosPage() {
                             }`}
                           >
                             <Shield size={12} />
-                            {u.role?.nome || 'SEM ROLE'}
+                            {u.role?.nome}
                           </span>
                         </td>
 
@@ -169,8 +157,7 @@ export default function GestaoUsuariosPage() {
                         <td className="p-4 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
                           {u.ultimo_login ? (
                             formatarData(u.ultimo_login)
-                          ) : (
-                            <span className="text-amber-600 dark:text-amber-400/80 italic font-sans text-[10px]"></span>
+                          ) : (null
                           )}
                         </td>
 
@@ -181,7 +168,7 @@ export default function GestaoUsuariosPage() {
                               setIsModalEdicaoOpen(true);
                             }}
                             className="p-1.5 text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer"
-                            title="Editar Usuário"
+                            title={tUsuarios('editarUsuario')}
                           >
                             <Pencil size={16} />
                           </button>
@@ -190,7 +177,7 @@ export default function GestaoUsuariosPage() {
                             onClick={() => handleToggleStatus(u)}
                             disabled={ehUsuarioLogado}
                             className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer disabled:opacity-30"
-                            title="Ativar/Inativar"
+                            title={tUsuarios('ativarInativar')}
                           >
                             <Power size={16} />
                           </button>

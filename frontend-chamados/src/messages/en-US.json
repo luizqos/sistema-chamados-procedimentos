@@ -77,7 +77,10 @@
     "emailCorporativo": "Corporate Email *",
     "senha": "Password *",
     "perfilAcesso": "Access Role *",
-    "salvarUsuario": "Save"
+    "salvarUsuario": "Save",
+    "ativarInativar": "Enable/Disable",
+    "criacao": "Created at",
+    "ultimoLogin": "Last Login at"
   },
   "Sso": {
     "titulo": "SSO Security",

@@ -53,7 +53,6 @@ export default function LoginPage() {
         console.error('Erro ao processar SSO:', err);
         window.history.replaceState({}, document.title, window.location.pathname);
         
-        // Tratamento inteligente para Network Error / Servidor offline
         if (err.message === 'Network Error' || !err.response) {
           toast.error('Não foi possível conectar ao servidor backend. Verifique se a API está online.');
         } else {

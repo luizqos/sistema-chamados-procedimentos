@@ -77,7 +77,10 @@
     "emailCorporativo": "E-mail Corporativo *",
     "senha": "Senha *",
     "perfilAcesso": "Perfil de Acesso *",
-    "salvarUsuario": "Salvar"
+    "salvarUsuario": "Salvar",
+    "ativarInativar": "Ativar/Inativar",
+    "criacao": "Criado",
+    "ultimoLogin": "Ultimo Login"
   },
   "Sso": {
     "titulo": "Segurança SSO",
