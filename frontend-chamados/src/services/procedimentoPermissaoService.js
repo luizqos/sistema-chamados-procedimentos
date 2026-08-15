@@ -6,9 +6,9 @@ export const procedimentoPermissaoService = {
     return response.data;
   },
 
-  async salvarPermissao(procedimentoId, usuarioId, nivel) {
+  async salvarPermissaoEmLote(procedimentoId, usuariosIds, nivel) {
     const response = await api.post(`/api/procedimentoPermissoes/${procedimentoId}/permissoes`, {
-      usuarioId: Number(usuarioId),
+      usuariosIds: usuariosIds.map(Number),
       nivel
     });
     return response.data;
