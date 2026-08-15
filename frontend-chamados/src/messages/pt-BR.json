@@ -137,7 +137,7 @@
     "apenasCriador": "Apenas o criador e administradores possuem acesso irrestrito.",
     "editor": "Editor",
     "visualizador": "Visualizador",
-    "avisoPublico": "Este procedimento é público e visível para todos os usuários atuais e futuros.",
+    "avisoPublico": "Este procedimento é público e visível para todos os usuários.",
     "avisoRestrito": "Este procedimento é restrito apenas ao criador, administradores e usuários autorizados.",
     "publicoLabel": "Público",
     "sucessoPublico": "Procedimento agora é público para todos os usuários!",
