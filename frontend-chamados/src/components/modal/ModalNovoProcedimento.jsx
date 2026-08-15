@@ -119,7 +119,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
               if (!contextoAtual.fechado) {
                 setProgressoAtual(progressData.percent);
                 setStatusTexto(
-                  `${tCommon('enviando')} (${i + 1}/${arquivos.length}): ${formatBytes(progressData.loaded)} de ${formatBytes(progressData.total)}`
+                  `${tCommon('enviando')} (${i + 1}/${arquivos.length}): ${formatBytes(progressData.loaded)} ${tCommon('de')} ${formatBytes(progressData.total)}`
                 );
               } else {
                 registrarOuAtualizarUpload(cardId, {
