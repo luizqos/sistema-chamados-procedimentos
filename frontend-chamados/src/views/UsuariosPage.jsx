@@ -26,15 +26,29 @@ export default function GestaoUsuariosPage() {
   const [usuarioEmEdicao, setUsuarioEmEdicao] = useState(null);
   const [isModalEdicaoOpen, setIsModalEdicaoOpen] = useState(false);
 
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRegistros, setTotalRegistros] = useState(0);
+
   useEffect(() => {
     carregarUsuarios();
-  }, []);
+  }, [page, limit]);
 
   async function carregarUsuarios() {
     try {
       setLoading(true);
-      const data = await usuarioService.listar();
-      setUsuarios(data);
+      const response = await usuarioService.listar({ page, limit });
+      
+      if (Array.isArray(response)) {
+        setUsuarios(response);
+        setTotalRegistros(response.length);
+        setTotalPages(1);
+      } else {
+        setUsuarios(response.dados || []);
+        setTotalRegistros(response.total || 0);
+        setTotalPages(response.totalPages || 1);
+      }
     } catch (err) {
       toast.error(tToastUser('carregarUsuario'));
     } finally {
@@ -188,6 +202,53 @@ export default function GestaoUsuariosPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* Controles de Paginação */}
+            <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 gap-3">
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-slate-500">
+                  Total de registros: <strong className="text-slate-700 dark:text-slate-300">{totalRegistros}</strong>
+                </span>
+                
+                {/* Seletor de limite por página */}
+                <select
+                  value={limit}
+                  onChange={(e) => {
+                    setLimit(Number(e.target.value));
+                    setPage(1); // Reseta para a primeira página ao alterar o limite
+                  }}
+                  className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 rounded-lg px-2 py-1 focus:outline-none focus:border-sky-500 cursor-pointer"
+                >
+                  <option value={10}>10 por pág</option>
+                  <option value={25}>25 por pág</option>
+                  <option value={50}>50 por pág</option>
+                  <option value={100}>100 por pág</option>
+                </select>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                  disabled={page === 1 || loading}
+                  className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-semibold disabled:opacity-40 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                >
+                  Anterior
+                </button>
+                
+                <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">
+                  Página {page} de {totalPages || 1}
+                </span>
+
+                <button
+                  onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                  disabled={page >= totalPages || loading}
+                  className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-semibold disabled:opacity-40 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                >
+                  Próxima
+                </button>
+              </div>
+            </div>
+
           </div>
         )}
 

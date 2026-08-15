@@ -165,6 +165,35 @@ class UsuarioRepository {
       }
     });
   }
+
+  async listarPaginado(page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+
+    const [dados, total] = await Promise.all([
+      prisma.usuario.findMany({
+        skip,
+        take: Number(limit),
+        select: {
+          id: true,
+          nome: true,
+          email: true,
+          ativo: true,
+          created_at: true,
+          ultimo_login: true,
+          role: { select: { id: true, nome: true } }
+        },
+        orderBy: { id: 'asc' }
+      }),
+      prisma.usuario.count()
+    ]);
+
+    return {
+      dados,
+      total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: Number(page)
+    };
+  }
 }
 
 module.exports = new UsuarioRepository();

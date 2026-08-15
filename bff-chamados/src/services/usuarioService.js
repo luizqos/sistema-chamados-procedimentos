@@ -40,7 +40,7 @@ class UsuarioService {
   }
 
   async listarUsuarios() {
-    return await usuarioRepository.listarTodos();
+    return await usuarioRepository.listarPaginado();
   }
 
   async alterarRole(usuarioId, roleId) {
