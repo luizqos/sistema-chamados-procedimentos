@@ -41,7 +41,7 @@ class UsuarioRepository {
         nome: true,
         email: true,
         ativo: true,
-        ultimo_login: true, // <-- Adicionado para permitir a validação na service
+        ultimo_login: true,
         role: true,
         created_at: true,
       },
