@@ -89,7 +89,7 @@ export default function ModalEditarUsuario({ isOpen, onClose, usuario, onSuccess
           <div className="space-y-1.5">
             <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">
               E-mail Corporativo
-              {!podeEditarEmail && <span className="text-[10px] text-amber-500 ml-2 font-normal">(Bloqueado: já realizou login)</span>}
+              {!podeEditarEmail && <span className="text-[10px] text-amber-500 ml-2 font-normal"></span>}
             </label>
             <div className="relative">
               <Mail size={18} className="absolute left-3.5 top-3 text-slate-500" />
