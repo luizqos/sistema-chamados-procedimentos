@@ -1,17 +1,40 @@
 const prisma = require('../config/prisma');
 
 class ProcedimentoRepository {
-  async listar({ busca, page = 1, limit = 15 }) {
+  async listar({ busca, page = 1, limit = 15, usuarioLogado }) {
     const parsedPage = Number(page) || 1;
     const parsedLimit = Number(limit) || 15;
     const skip = (parsedPage - 1) * parsedLimit;
 
-    const where = busca ? {
+    const whereBusca = busca ? {
       OR: [
         { titulo: { contains: busca, mode: 'insensitive' } },
         { descricao: { contains: busca, mode: 'insensitive' } },
       ]
     } : {};
+
+    const roleNome = typeof usuarioLogado?.role === 'object' ? usuarioLogado?.role?.nome : usuarioLogado?.role;
+    const isAdmin = roleNome === 'ADMIN';
+
+    let wherePermissao = {};
+
+    if (!isAdmin) {
+      const usuarioId = Number(usuarioLogado?.id || 0);
+      wherePermissao = {
+        OR: [
+          { publico: true },
+          { usuario_id: usuarioId },
+          { permissoes: { some: { usuarioId } } }
+        ]
+      };
+    }
+
+    const where = {
+      AND: [
+        whereBusca,
+        wherePermissao
+      ]
+    };
 
     const [items, total] = await Promise.all([
       prisma.procedimento.findMany({

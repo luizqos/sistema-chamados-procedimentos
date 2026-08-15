@@ -3,11 +3,11 @@ const service = require('../services/procedimentoService');
 exports.listar = async (req, res) => {
   try {
     const { busca, page = 1, limit = 15 } = req.query;
-    const resultado = await service.listarProcedimentos({ busca, page, limit });
-    res.json(resultado);
+    const resultado = await service.listarProcedimentos({ busca, page, limit }, req.usuario);
+    return res.json(resultado);
   } catch (error) {
     const status = error.statusCode || 500;
-    res.status(status).json({ error: error.message });
+    return res.status(status).json({ error: error.message });
   }
 };
 

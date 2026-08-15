@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 class ProcedimentoService {
-  async listarProcedimentos(busca) {
-    return await repository.listar(busca);
+  async listarProcedimentos(filtros, usuarioLogado) {
+    return await repository.listar({ ...filtros, usuarioLogado });
   }
 
   async obterProcedimentoPorId(id) {
