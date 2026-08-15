@@ -81,7 +81,12 @@
     "ativarInativar": "Enable/Disable",
     "editarUsuario": "Edit User",
     "criacao": "Created at",
-    "ultimoLogin": "Last Login at"
+    "ultimoLogin": "Last Login at",
+    "buscarPlaceholder": "Search by name or email...",
+    "nenhumUsuarioEncontrado": "No users found.",
+    "porPagina": "per page",
+    "totalRegistros": "Total records:",
+    "paginaDe": "Page {page} of {totalPages}"
   },
   "Sso": {
     "titulo": "SSO Security",

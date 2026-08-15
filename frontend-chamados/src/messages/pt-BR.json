@@ -81,7 +81,12 @@
     "ativarInativar": "Ativar/Inativar",
     "editarUsuario": "Editar Usuário",
     "criacao": "Criado",
-    "ultimoLogin": "Ultimo Login"
+    "ultimoLogin": "Ultimo Login",
+    "buscarPlaceholder": "Buscar por nome ou e-mail...",
+    "nenhumUsuarioEncontrado": "Nenhum usuário encontrado.",
+    "porPagina": "por pág",
+    "totalRegistros": "Total de registros:",
+    "paginaDe": "Página {page} de {totalPages}"
   },
   "Sso": {
     "titulo": "Segurança SSO",

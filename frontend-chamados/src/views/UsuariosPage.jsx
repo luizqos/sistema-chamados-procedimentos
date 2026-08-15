@@ -26,18 +26,16 @@ export default function GestaoUsuariosPage() {
   const [usuarioEmEdicao, setUsuarioEmEdicao] = useState(null);
   const [isModalEdicaoOpen, setIsModalEdicaoOpen] = useState(false);
 
-  // Estados de Paginação e Busca
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRegistros, setTotalRegistros] = useState(0);
   const [busca, setBusca] = useState('');
 
-  // Efeito com debounce simples para a busca (evita requisições a cada tecla digitada imediatamente)
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       carregarUsuarios();
-    }, 400); // Aguarda 400ms após parar de digitar para buscar
+    }, 400);
 
     return () => clearTimeout(delayDebounceFn);
   }, [page, limit, busca]);
@@ -45,7 +43,6 @@ export default function GestaoUsuariosPage() {
   async function carregarUsuarios() {
     try {
       setLoading(true);
-      // Enviando o parâmetro de busca para o backend (ex: /api/usuarios?page=1&limit=10&busca=termo)
       const response = await usuarioService.listar({ page, limit, busca });
       
       if (Array.isArray(response)) {
@@ -114,9 +111,9 @@ export default function GestaoUsuariosPage() {
               value={busca}
               onChange={(e) => {
                 setBusca(e.target.value);
-                setPage(1); // Reseta para a primeira página ao buscar
+                setPage(1);
               }}
-              placeholder="Buscar por nome ou e-mail..."
+              placeholder={tUsuarios('buscarPlaceholder')}
               className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 transition shadow-sm"
             />
           </div>
@@ -147,7 +144,7 @@ export default function GestaoUsuariosPage() {
                   {usuarios.length === 0 ? (
                     <tr>
                       <td colSpan="8" className="p-8 text-center text-slate-400">
-                        Nenhum usuário encontrado.
+                        {tUsuarios('nenhumUsuarioEncontrado')}
                       </td>
                     </tr>
                   ) : (
@@ -235,7 +232,7 @@ export default function GestaoUsuariosPage() {
             <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 gap-3">
               <div className="flex items-center gap-3">
                 <span className="text-xs text-slate-500">
-                  Total de registros: <strong className="text-slate-700 dark:text-slate-300">{totalRegistros}</strong>
+                  {tUsuarios('totalRegistros')} <strong className="text-slate-700 dark:text-slate-300">{totalRegistros}</strong>
                 </span>
                 
                 <select
@@ -246,10 +243,10 @@ export default function GestaoUsuariosPage() {
                   }}
                   className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 rounded-lg px-2 py-1 focus:outline-none focus:border-sky-500 cursor-pointer"
                 >
-                  <option value={10}>10 por pág</option>
-                  <option value={25}>25 por pág</option>
-                  <option value={50}>50 por pág</option>
-                  <option value={100}>100 por pág</option>
+                  <option value={10}>10 {tUsuarios('porPagina')}</option>
+                  <option value={25}>25 {tUsuarios('porPagina')}</option>
+                  <option value={50}>50 {tUsuarios('porPagina')}</option>
+                  <option value={100}>100 {tUsuarios('porPagina')}</option>
                 </select>
               </div>
               
@@ -259,11 +256,11 @@ export default function GestaoUsuariosPage() {
                   disabled={page === 1 || loading}
                   className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-semibold disabled:opacity-40 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
-                  Anterior
+                  {tCommon('anterior') || 'Anterior'}
                 </button>
                 
                 <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">
-                  Página {page} de {totalPages || 1}
+                  {tUsuarios('paginaDe', { page, totalPages: totalPages || 1 })}
                 </span>
 
                 <button
@@ -271,7 +268,7 @@ export default function GestaoUsuariosPage() {
                   disabled={page >= totalPages || loading}
                   className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-semibold disabled:opacity-40 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
-                  Próxima
+                  {tCommon('proxima') || 'Próxima'}
                 </button>
               </div>
             </div>
