@@ -11,7 +11,7 @@ import { usuarioService } from '../services/usuarioService';
 import { useAuth } from '../contexts/AuthContext';
 import ModalNovoUsuario from '../components/modal/ModalNovoUsuario';
 import ModalEditarUsuario from '../components/modal/ModalEditarUsuario';
-import { formatarData } from '@/utils/formatters';
+import { formatarData } from '../utils/formatters';
 
 export default function GestaoUsuariosPage() {
   const tUsuarios = useTranslations('Usuarios');
