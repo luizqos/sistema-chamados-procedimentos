@@ -24,7 +24,9 @@ class AuthService {
       throw error;
     }
 
-    const secret = process.env.JWT_SECRET || 'chave_secreta_padrao';
+    await usuarioRepository.atualizarDataUltimoLogin(usuario.id);
+
+    const secret = process.env.JWT_SECRET;
     const token = jwt.sign(
       {
         id: usuario.id,
@@ -138,9 +140,7 @@ class AuthService {
       role: usuario.role?.nome || usuario.role || 'OPERADOR',
     };
 
-    const secret = process.env.JWT_SECRET ;
-
-    await usuarioRepository.atualizarDataUltimoLogin(usuario.id);
+    const secret = process.env.JWT_SECRET;
 
     return jwt.sign(payload, secret, {
       expiresIn: '8h',
