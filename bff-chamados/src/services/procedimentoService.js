@@ -98,12 +98,27 @@ class ProcedimentoService {
       throw error;
     }
 
-    const isAdmin = usuarioLogado?.role === 'ADMIN';
+    const roleNome = typeof usuarioLogado?.role === 'object' ? usuarioLogado?.role?.nome : usuarioLogado?.role;
+    const isAdmin = roleNome === 'ADMIN';
     const isCriador = procedimento.usuario_id && procedimento.usuario_id === usuarioLogado?.id;
 
+    let temPermissaoEdicao = false;
     if (!isAdmin && !isCriador) {
+      const permissaoCompartilhada = await repository.verificarPermissaoUsuario(idNumerico, usuarioLogado?.id);
+      if (permissaoCompartilhada && permissaoCompartilhada.nivel === 'EDITAR') {
+        temPermissaoEdicao = true;
+      }
+    }
+
+    if (!isAdmin && !isCriador && !temPermissaoEdicao) {
       const error = new Error('Acesso negado: Você não tem permissão para editar este procedimento.');
       error.statusCode = 403;
+      throw error;
+    }
+
+    if (dados.titulo !== undefined && !dados.titulo.trim()) {
+      const error = new Error('O título é obrigatório.');
+      error.statusCode = 400;
       throw error;
     }
 

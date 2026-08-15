@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Copy, Check, Trash2, User, Calendar, Globe, Lock, Loader2 } from 'lucide-react';
+import { Copy, Check, Trash2, User, Calendar, Globe, Lock, Loader2, Pencil } from 'lucide-react';
 import { useTranslations, useFormatter } from 'next-intl';
 import toast from 'react-hot-toast';
 
 import GaleriaAnexos from './GaleriaAnexos';
 import BotaoCompartilhar from './button/BotaoCompartilhar';
 import ModalCompartilhamento from './modal/ModalCompartilhamento';
+import ModalEditarProcedimento from './modal/ModalEditarProcedimento'; // <-- Importado aqui
 import { procedimentoService } from '@/src/services/procedimentoService';
 
 export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user, onAtualizarProcedimento }) {
@@ -19,15 +20,22 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const format = useFormatter();
 
   const [modalCompartilharAberto, setModalCompartilharAberto] = useState(false);
+  const [modalEditarAberto, setModalEditarAberto] = useState(false); // <-- Estado do modal de edição
   const [isPublico, setIsPublico] = useState(selecionado?.publico || false);
   const [carregandoPublico, setCarregandoPublico] = useState(false);
 
   const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
   const isAdmin = roleNome === 'ADMIN';
   const isCriador = selecionado?.usuario_id && user?.id ? selecionado.usuario_id === user.id : false;
+  
+  // Verifica se o usuário possui permissão de edição explícita via compartilhamento
+  const temPermissaoEdicaoCompartilhada = selecionado?.permissoes?.some(
+    (p) => p.usuarioId === user?.id && p.nivel === 'EDITAR'
+  );
+
   const podeExcluir = isAdmin || isCriador;
   const podeCompartilhar = isAdmin || isCriador;
-  const podeEditar = isAdmin || isCriador;
+  const podeEditar = isAdmin || isCriador || temPermissaoEdicaoCompartilhada; // Regra completa de edição
 
   const nomeAutor =
     selecionado?.usuario?.nome ||
@@ -129,6 +137,17 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               )}
             </button>
 
+            {/* Botão Editar (Se Autorizado) */}
+            {podeEditar && (
+              <button
+                onClick={() => setModalEditarAberto(true)}
+                className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-sky-500 dark:border-sky-500/50 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/30 font-semibold text-sm transition cursor-pointer"
+                title="Editar Procedimento"
+              >
+                <Pencil size={18} /> Editar
+              </button>
+            )}
+
             {/* Botão Compartilhar (Se Autorizado) */}
             {podeCompartilhar && (
               <BotaoCompartilhar onClick={() => setModalCompartilharAberto(true)} />
@@ -185,6 +204,18 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
         onClose={() => setModalCompartilharAberto(false)}
         procedimentoId={selecionado?.id}
         criadorId={selecionado?.usuario_id}
+      />
+
+      {/* Modal de Edição */}
+      <ModalEditarProcedimento
+        isOpen={modalEditarAberto}
+        onClose={() => setModalEditarAberto(false)}
+        procedimento={selecionado}
+        onSuccess={(procedimentoAtualizado) => {
+          if (onAtualizarProcedimento) {
+            onAtualizarProcedimento(procedimentoAtualizado);
+          }
+        }}
       />
     </div>
   );
