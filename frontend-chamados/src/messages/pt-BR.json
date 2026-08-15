@@ -2,6 +2,8 @@
   "Common": {
     "voltar": "Voltar",
     "cancelar": "Cancelar",
+    "anterior": "Anterior",
+    "proxima": "Proxima",
     "salvar": "Salvar",
     "excluir": "Excluir",
     "simExcluir": "Sim, excluir",
