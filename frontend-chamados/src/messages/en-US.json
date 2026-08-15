@@ -108,7 +108,8 @@
     "dominioInteiro": "Entire Domain (@company.com)",
     "emailEspecifico": "Specific Email (user@company.com)",
     "valor": "Value",
-    "salvarRegra": "Save Rule"
+    "salvarRegra": "Save Rule",
+    "buscarPlaceholder": "Search by domain or email..."
   },
   "Auth": {
     "verificandoSetup": "Checking system initialization...",

@@ -116,7 +116,7 @@ export default function SsoRegrasPage() {
                 setBusca(e.target.value);
                 setPage(1);
               }}
-              placeholder={tUsuarios('buscarPlaceholder') || 'Buscar por domínio ou e-mail...'}
+              placeholder={tSso('buscarPlaceholder')}
               className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 transition shadow-sm"
             />
           </div>
