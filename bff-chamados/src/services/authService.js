@@ -138,7 +138,9 @@ class AuthService {
       role: usuario.role?.nome || usuario.role || 'OPERADOR',
     };
 
-    const secret = process.env.JWT_SECRET || 'sua_chave_secreta';
+    const secret = process.env.JWT_SECRET ;
+
+    await usuarioRepository.atualizarDataUltimoLogin(usuario.id);
 
     return jwt.sign(payload, secret, {
       expiresIn: '8h',
