@@ -17,6 +17,7 @@ model Usuario {
   roleId        Int
   role          Role           @relation(fields: [roleId], references: [id])
   procedimentos Procedimento[]
+  permissoes    ProcedimentoPermissao[]
   created_at    DateTime       @default(now())
 
   @@map("usuarios")
@@ -57,6 +58,7 @@ model Procedimento {
   script_passo_a_passo String
   usuario_id           Int?
   usuario              Usuario?            @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
+  permissoes           ProcedimentoPermissao[]
   created_at           DateTime            @default(now())
   updated_at           DateTime            @updatedAt
   anexos               ProcedimentoAnexo[]
@@ -76,6 +78,18 @@ model ProcedimentoAnexo {
   procedimento    Procedimento @relation(fields: [procedimento_id], references: [id], onDelete: Cascade)
 
   @@map("procedimento_anexos")
+}
+
+model ProcedimentoPermissao {
+  id             Int          @id @default(autoincrement())
+  procedimentoId Int
+  usuarioId      Int
+  nivel          String
+  
+  procedimento   Procedimento @relation(fields: [procedimentoId], references: [id], onDelete: Cascade)
+  usuario        Usuario      @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@unique([procedimentoId, usuarioId])
 }
 
 enum TipoRegraSso {
