@@ -13,6 +13,9 @@ api.interceptors.request.use((config) => {
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    const locale = localStorage.getItem('NEXT_LOCALE') || navigator.language || 'pt-BR';
+    config.headers['X-Locale'] = locale;
   }
   return config;
 });
@@ -22,7 +25,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401 && typeof window !== 'undefined') {
       const urlRequisicao = error.config?.url || '';
-      const ehRotaDeLogin = urlRequisicao.includes('/auth/login') || urlRequisicao.includes('/auth/sso/microsoft');
+      const ehRotaDeLogin = urlReissuer.includes('/auth/login') || urlRequisicao.includes('/auth/sso/microsoft');
       
       if (!ehRotaDeLogin && window.location.pathname !== '/login') {
         secureStorage.removeItem('@chamados:token');
