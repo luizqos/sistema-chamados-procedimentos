@@ -84,17 +84,18 @@ export default function SsoRegrasPage() {
   return (
     <WithPermission role="ADMIN">
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 md:p-10 space-y-6 transition-colors duration-200">
-        
+
         {/* Cabeçalho */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6 transition-colors">
           <div className="flex items-center gap-3">
-            <Link 
-              href="/" 
-              className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl transition shadow-sm" 
+            <Link
+              href="/"
+              className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl transition shadow-sm"
               title={tCommon('voltar')}
             >
               <ArrowLeft size={20} />
             </Link>
+            {isAdmin && <BotaoConfiguracao />}
             <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 rounded-xl">
               <Shield size={22} />
             </div>
@@ -135,7 +136,7 @@ export default function SsoRegrasPage() {
         {/* Alerta */}
         {regras.some(r => r.acao === 'PERMITIR') && (
           <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold flex items-center gap-2">
-            <CheckCircle size={16} /> 
+            <CheckCircle size={16} />
             {tSso('alertaAllowlist')}
           </div>
         )}
@@ -170,18 +171,17 @@ export default function SsoRegrasPage() {
                         <td className="p-4">
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sky-700 dark:text-sky-400">
                             {r.tipo === 'DOMINIO' ? <Globe size={12} /> : <Mail size={12} />}
-                            {r.tipo === 'DOMINIO' ? `${tCommon('dominio')}` : `${tCommon('email')}` }
+                            {r.tipo === 'DOMINIO' ? `${tCommon('dominio')}` : `${tCommon('email')}`}
                           </span>
                         </td>
                         <td className="p-4 font-mono font-semibold text-slate-800 dark:text-slate-200">{r.valor}</td>
                         <td className="p-4">
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${
-                            r.acao === 'PERMITIR' 
-                              ? 'bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400' 
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${r.acao === 'PERMITIR'
+                              ? 'bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
                               : 'bg-red-100 dark:bg-red-950/60 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
-                          }`}>
+                            }`}>
                             {r.acao === 'PERMITIR' ? <CheckCircle size={12} /> : <XCircle size={12} />}
-                            {r.acao === 'PERMITIR' ? `${tCommon('permitir')}` : `${tCommon('negar')}` }
+                            {r.acao === 'PERMITIR' ? `${tCommon('permitir')}` : `${tCommon('negar')}`}
                           </span>
                         </td>
                         <td className="p-4 text-right">
@@ -205,7 +205,7 @@ export default function SsoRegrasPage() {
                 <span className="text-xs text-slate-500">
                   {tUsuarios('totalRegistros') || 'Total de registros:'} <strong className="text-slate-700 dark:text-slate-300">{totalRegistros}</strong>
                 </span>
-                
+
                 <select
                   value={limit}
                   onChange={(e) => {
@@ -220,7 +220,7 @@ export default function SsoRegrasPage() {
                   <option value={100}>100 {tUsuarios('porPagina') || 'por pág'}</option>
                 </select>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(p - 1, 1))}
@@ -229,7 +229,7 @@ export default function SsoRegrasPage() {
                 >
                   {tCommon('anterior') || 'Anterior'}
                 </button>
-                
+
                 <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">
                   {tUsuarios('paginaDe', { page, totalPages: totalPages || 1 }) || `Página ${page} de ${totalPages || 1}`}
                 </span>
