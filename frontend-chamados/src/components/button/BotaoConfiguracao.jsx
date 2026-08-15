@@ -29,7 +29,6 @@ export default function BotaoConfiguracao() {
             ? 'bg-slate-200 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100' 
             : 'bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
         }`}
-        title={tSidebar('segurancaSSO') || 'Configurações'}
       >
         <Settings size={18} />
       </button>
