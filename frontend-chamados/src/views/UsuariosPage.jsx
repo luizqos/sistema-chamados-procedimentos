@@ -90,23 +90,23 @@ export default function GestaoUsuariosPage() {
             >
               <ArrowLeft size={20} />
             </Link>
-
+            {isAdmin && <BotaoConfiguracao />}
             <div className="p-2.5 bg-sky-500/10 border border-sky-500/20 text-sky-600 dark:text-sky-400 rounded-xl">
               <Users size={22} />
-            </div>
-            <div className="flex items-center gap-2">
-              {isAdmin && <BotaoConfiguracao />}
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20 cursor-pointer"
-              >
-                <UserPlus size={16} /> {tUsuarios('novoUsuario')}
-              </button>
             </div>
             <div>
               <h1 className="text-xl font-bold text-slate-900 dark:text-white">{tUsuarios('titulo')}</h1>
               <p className="text-xs text-slate-500 dark:text-slate-400">{tUsuarios('subtitulo')}</p>
             </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20 cursor-pointer"
+            >
+              <UserPlus size={16} /> {tUsuarios('novoUsuario')}
+            </button>
           </div>
         </div>
 
