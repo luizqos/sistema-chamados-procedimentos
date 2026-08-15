@@ -6,7 +6,8 @@ import { useTranslations } from 'next-intl';
 
 import BotaoTema from './button/BotaoTema';
 import BotaoIdioma from './button/BotaoIdioma';
-import BotaoConfiguracao from './BotaoConfiguracao';
+import BotaoConfiguracao from './button/BotaoConfiguracao';
+
 export default function Sidebar({
   busca,
   setBusca,
