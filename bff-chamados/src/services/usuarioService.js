@@ -39,8 +39,8 @@ class UsuarioService {
     });
   }
 
-  async listarUsuarios() {
-    return await usuarioRepository.listarPaginado();
+  async listarUsuarios(page = 1, limit = 10, busca = '') {
+    return await usuarioRepository.listarPaginado(page, limit, busca);
   }
 
   async alterarRole(usuarioId, roleId) {

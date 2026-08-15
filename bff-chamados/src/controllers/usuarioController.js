@@ -13,10 +13,15 @@ class UsuarioController {
 
   async listar(req, res) {
     try {
-      const usuarios = await usuarioService.listarUsuarios();
-      return res.json(usuarios);
+      const { page = 1, limit = 10, busca = '' } = req.query;
+      const resultado = await usuarioService.listarUsuarios(
+        Number(page),
+        Number(limit),
+        busca
+      );
+      return res.json(resultado);
     } catch (error) {
-      return res.status(error.statusCode || 500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   }
 

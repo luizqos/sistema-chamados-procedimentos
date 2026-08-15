@@ -1,8 +1,10 @@
 import api from './api';
 
 export const usuarioService = {
-  async listar() {
-    const { data } = await api.get('/api/usuarios');
+  async listar({ page = 1, limit = 10, busca = '' } = {}) {
+    const { data } = await api.get('/api/usuarios', {
+      params: { page, limit, busca }
+    });
     return data;
   },
   async criar(dados) {
