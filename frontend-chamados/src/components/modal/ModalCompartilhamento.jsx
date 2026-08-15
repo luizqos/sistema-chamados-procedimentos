@@ -139,7 +139,7 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
                     onClick={handleSelecionarTodos}
                     className="text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline cursor-pointer"
                   >
-                    {todosFiltradosSelecionados ? 'Desmarcar visíveis' : 'Selecionar visíveis'}
+                    {todosFiltradosSelecionados ? 'Desmarcar todos' : 'Selecionar todos'}
                   </button>
                 )}
               </div>
@@ -207,7 +207,7 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId 
                   className="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50 transition shrink-0"
                 >
                   {loading ? <Loader2 size={16} className="animate-spin" /> : <UserPlus size={16} />}
-                  Adicionar Selecionados ({usuariosSelecionados.length})
+                  Adicionar ({usuariosSelecionados.length})
                 </button>
               </div>
             </form>
