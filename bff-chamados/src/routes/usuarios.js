@@ -122,7 +122,7 @@ const { autenticar, autorizar } = require('../middlewares/authMiddleware');
  *       500:
  *         description: Erro interno no servidor
  */
-router.get('/', autenticar, autorizar(['ADMIN']), (req, res) => usuarioController.listar(req, res));
+router.get('/', autenticar, autorizar(['ADMIN', 'OPERADOR']), (req, res) => usuarioController.listar(req, res));
 router.post('/', autenticar, autorizar(['ADMIN']), (req, res) => usuarioController.criar(req, res));
 
 /**
