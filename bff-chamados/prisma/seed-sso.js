@@ -16,6 +16,7 @@ async function main() {
       loteDominios.push({
         dominio: `dominio-teste-${indiceAtual}.com`,
         ativo: indiceAtual % 10 !== 0, // Deixa 90% ativos e 10% inativos para testar regras variadas
+        tipo: 'DOMINIO', // Ajuste conforme o tipo esperado pelo seu banco (ex: 'DOMINIO', 'EMAIL', etc.)
       });
     }
 
