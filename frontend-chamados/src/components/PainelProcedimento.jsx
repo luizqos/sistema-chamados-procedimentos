@@ -2,25 +2,30 @@
 
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Copy, Check, Trash2, User, Calendar } from 'lucide-react';
+import { Copy, Check, Trash2, User, Calendar, Globe, Lock, Loader2 } from 'lucide-react';
 import { useTranslations, useFormatter } from 'next-intl';
+import toast from 'react-hot-toast';
 
 import GaleriaAnexos from './GaleriaAnexos';
 import BotaoCompartilhar from './button/BotaoCompartilhar';
 import ModalCompartilhamento from './modal/ModalCompartilhamento';
+import { procedimentoService } from '@/src/services/procedimentoService';
 
-export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user }) {
+export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user, onAtualizarProcedimento }) {
   const tProcedimento = useTranslations('Procedimento');
   const tCommon = useTranslations('Common');
   const format = useFormatter();
 
   const [modalCompartilharAberto, setModalCompartilharAberto] = useState(false);
+  const [isPublico, setIsPublico] = useState(selecionado?.publico || false);
+  const [carregandoPublico, setCarregandoPublico] = useState(false);
 
   const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
   const isAdmin = roleNome === 'ADMIN';
   const isCriador = selecionado?.usuario_id && user?.id ? selecionado.usuario_id === user.id : false;
   const podeExcluir = isAdmin || isCriador;
-  const podeCompartilhar = isAdmin || isCriador; // Apenas admin ou criador podem gerenciar compartilhamentos
+  const podeCompartilhar = isAdmin || isCriador;
+  const podeEditar = isAdmin || isCriador;
 
   const nomeAutor =
     selecionado?.usuario?.nome ||
@@ -29,14 +34,70 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
     'Sistema';
 
   const dataCriacao = selecionado?.created_at
-    ? format.dateTime(new Date(selecionado.created_at), { dateStyle: 'medium' })
+    ? format.dateTime(new Date(selecionado.created_at), {
+      dateStyle: 'medium',
+      timeZone: 'UTC'
+    })
     : null;
+    
+  const handleTogglePublico = async (e) => {
+    const novoValor = e.target.checked;
+    setIsPublico(novoValor);
+    setCarregandoPublico(true);
+
+    try {
+      const procedimentoAtualizado = await procedimentoService.atualizarProcedimento(selecionado.id, {
+        ...selecionado,
+        publico: novoValor
+      });
+
+      toast.success(novoValor ? 'Procedimento agora é público para todos os usuários!' : 'Procedimento agora possui acesso restrito.');
+
+      if (onAtualizarProcedimento) {
+        onAtualizarProcedimento(procedimentoAtualizado);
+      }
+    } catch (err) {
+      setIsPublico(!novoValor); // Reverte o estado visual em caso de erro
+      toast.error(err.response?.data?.error || 'Erro ao atualizar status público.');
+    } finally {
+      setCarregandoPublico(false);
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto flex flex-col justify-between min-h-full">
       <div>
+        {/* Flag de Procedimento Público / Restrito no Topo */}
+        <div className="flex items-center justify-between mb-6 p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg text-xs">
+          <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+            {isPublico ? <Globe size={16} className="text-sky-500" /> : <Lock size={16} className="text-amber-500" />}
+            <span>
+              {isPublico
+                ? 'Este procedimento é público e visível para todos os usuários atuais e futuros.'
+                : 'Este procedimento é restrito apenas ao criador, administradores e usuários autorizados.'}
+            </span>
+          </div>
+
+          {podeEditar && (
+            <div className="flex items-center gap-2 shrink-0">
+              {carregandoPublico && <Loader2 size={14} className="animate-spin text-sky-500" />}
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isPublico}
+                  onChange={handleTogglePublico}
+                  disabled={carregandoPublico}
+                  className="sr-only peer"
+                />
+                <div className="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-sky-600"></div>
+                <span className="ml-2 font-semibold text-slate-700 dark:text-slate-300">Público</span>
+              </label>
+            </div>
+          )}
+        </div>
+
         {/* Cabeçalho do Procedimento */}
-        <div className="flex justify-between items-start gap-4 mb-6">
+        <div className="flex justify-between items-start gap-4 mb-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2 transition-colors">
               {selecionado.titulo}
@@ -45,16 +106,15 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               {selecionado.descricao}
             </p>
           </div>
-          
+
           <div className="flex gap-2.5 shrink-0">
             {/* Botão Copiar Script */}
             <button
               onClick={onCopiar}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-white font-semibold text-sm transition cursor-pointer ${
-                copiado 
-                  ? 'bg-green-600 dark:bg-green-600' 
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-white font-semibold text-sm transition cursor-pointer ${copiado
+                  ? 'bg-green-600 dark:bg-green-600'
                   : 'bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700'
-              }`}
+                }`}
             >
               {copiado ? (
                 <>
@@ -71,7 +131,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             {podeCompartilhar && (
               <BotaoCompartilhar onClick={() => setModalCompartilharAberto(true)} />
             )}
-            
+
             {/* Botão Excluir (Se Autorizado) */}
             {podeExcluir && (
               <button

@@ -50,3 +50,14 @@ exports.adicionarAnexo = async (req, res) => {
     res.status(status).json({ error: error.message });
   }
 };
+
+exports.atualizar = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const procedimentoAtualizado = await service.atualizarProcedimento(id, req.body, req.usuario);
+    return res.json(procedimentoAtualizado);
+  } catch (error) {
+    const status = error.statusCode || 500;
+    return res.status(status).json({ error: error.message || 'Erro ao atualizar procedimento.' });
+  }
+};

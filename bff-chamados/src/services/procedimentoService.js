@@ -87,6 +87,28 @@ class ProcedimentoService {
       tamanho_bytes: file.size
     });
   }
+
+  async atualizarProcedimento(id, dados, usuarioLogado) {
+    const idNumerico = Number(id);
+    const procedimento = await repository.obterPorId(idNumerico);
+
+    if (!procedimento) {
+      const error = new Error('Procedimento não encontrado.');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const isAdmin = usuarioLogado?.role === 'ADMIN';
+    const isCriador = procedimento.usuario_id && procedimento.usuario_id === usuarioLogado?.id;
+
+    if (!isAdmin && !isCriador) {
+      const error = new Error('Acesso negado: Você não tem permissão para editar este procedimento.');
+      error.statusCode = 403;
+      throw error;
+    }
+
+    return await repository.atualizar(idNumerico, dados);
+  }
 }
 
 module.exports = new ProcedimentoService();

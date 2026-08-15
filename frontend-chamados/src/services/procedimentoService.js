@@ -23,7 +23,7 @@ export const procedimentoService = {
     return data;
   },
 
-async enviarAnexo(procedimentoId, arquivo, onProgress) {
+  async enviarAnexo(procedimentoId, arquivo, onProgress) {
     const formData = new FormData();
     formData.append('arquivo', arquivo);
 
@@ -42,6 +42,12 @@ async enviarAnexo(procedimentoId, arquivo, onProgress) {
       }
     });
     return data;
+  },
+
+  async atualizarProcedimento(id, dados) {
+    const response = await api.put(`/api/procedimentos/${id}`, dados);
+    return response.data;
   }
+
 
 };

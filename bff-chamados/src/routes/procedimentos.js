@@ -107,4 +107,49 @@ router.delete('/:id', autenticar, (req, res) => controller.deletar(req, res));
  */
 router.post('/:id/anexos', autenticar, upload.single('arquivo'), controller.adicionarAnexo);
 
+/**
+ * @openapi
+ * /api/procedimentos/{id}:
+ *   put:
+ *     summary: Atualiza um procedimento existente (Título, Descrição, Script ou Status Público)
+ *     tags: [Procedimentos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do procedimento
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               titulo:
+ *                 type: string
+ *               descricao:
+ *                 type: string
+ *               script_passo_a_passo:
+ *                 type: string
+ *               publico:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Procedimento atualizado com sucesso
+ *       400:
+ *         description: Dados inválidos
+ *       401:
+ *         description: Token ausente ou inválido
+ *       403:
+ *         description: Acesso negado
+ *       404:
+ *         description: Procedimento não encontrado
+ */
+router.put('/:id', autenticar, (req, res) => controller.atualizar(req, res));
+
 module.exports = router;

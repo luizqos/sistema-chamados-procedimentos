@@ -66,6 +66,24 @@ class ProcedimentoRepository {
   async criarAnexo(dadosAnexo) {
     return await prisma.procedimentoAnexo.create({ data: dadosAnexo });
   }
+
+  async atualizar(id, dados) {
+    return await prisma.procedimento.update({
+      where: { id: Number(id) },
+      data: {
+        titulo: dados.titulo,
+        descricao: dados.descricao,
+        script_passo_a_passo: dados.script_passo_a_passo,
+        publico: Boolean(dados.publico),
+      },
+      include: {
+        usuario: {
+          select: { id: true, nome: true, email: true }
+        },
+        anexos: true
+      }
+    });
+  }
 }
 
 module.exports = new ProcedimentoRepository();

@@ -56,6 +56,7 @@ model Procedimento {
   titulo               String
   descricao            String?
   script_passo_a_passo String
+  publico              Boolean             @default(false)
   usuario_id           Int?
   usuario              Usuario?            @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
   permissoes           ProcedimentoPermissao[]

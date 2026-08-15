@@ -3,8 +3,8 @@ const permissaoService = require('../services/permissaoService');
 class PermissaoController {
   async listar(req, res) {
     try {
-      const { id } = req.params;
-      const permissoes = await permissaoService.listar(id);
+      const { procedimentoId } = req.params;
+      const permissoes = await permissaoService.listar(procedimentoId);
       return res.json(permissoes);
     } catch (err) {
       const status = err.statusCode || 400;
@@ -14,9 +14,9 @@ class PermissaoController {
 
   async salvar(req, res) {
     try {
-      const { id } = req.params;
+      const { procedimentoId } = req.params;
       const { usuarioId, nivel } = req.body;
-      const resultado = await permissaoService.concederOuAtualizar(id, usuarioId, nivel);
+      const resultado = await permissaoService.concederOuAtualizar(procedimentoId, usuarioId, nivel);
       return res.status(201).json(resultado);
     } catch (err) {
       const status = err.statusCode || 400;
@@ -26,12 +26,24 @@ class PermissaoController {
 
   async deletar(req, res) {
     try {
-      const { id, usuarioId } = req.params;
-      await permissaoService.remover(id, usuarioId);
+      const { procedimentoId, usuarioId } = req.params;
+      await permissaoService.remover(procedimentoId, usuarioId);
       return res.status(204).send();
     } catch (err) {
       const status = err.statusCode || 400;
       return res.status(status).json({ error: err.message || 'Erro ao remover permissão.' });
+    }
+  }
+
+  async salvarLote(req, res) {
+    try {
+      const { procedimentoId } = req.params;
+      const { usuariosIds, nivel } = req.body;
+      const resultado = await permissaoService.concederOuAtualizarEmLote(procedimentoId, usuariosIds, nivel);
+      return res.status(201).json(resultado);
+    } catch (err) {
+      const status = err.statusCode || 400;
+      return res.status(status).json({ error: err.message || 'Erro ao salvar permissões.' });
     }
   }
 }

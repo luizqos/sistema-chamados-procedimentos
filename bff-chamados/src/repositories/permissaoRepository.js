@@ -50,6 +50,26 @@ class PermissaoRepository {
       }
     });
   }
+
+  async salvarMuitos(procedimentoId, usuariosIds, nivel) {
+    const operacoes = usuariosIds.map(usuarioId =>
+      prisma.procedimentoPermissao.upsert({
+        where: {
+          procedimentoId_usuarioId: {
+            procedimentoId: Number(procedimentoId),
+            usuarioId: Number(usuarioId)
+          }
+        },
+        update: { nivel },
+        create: {
+          procedimentoId: Number(procedimentoId),
+          usuarioId: Number(usuarioId),
+          nivel
+        }
+      })
+    );
+    return await prisma.$transaction(operacoes);
+  }
 }
 
 module.exports = new PermissaoRepository();
