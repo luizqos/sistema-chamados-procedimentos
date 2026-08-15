@@ -13,7 +13,7 @@ import { procedimentoService } from '@/src/services/procedimentoService';
 
 export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user, onAtualizarProcedimento }) {
   const tProcedimento = useTranslations('Procedimento');
-  const tToastProcedimento = useTranslations('Toast.Procedimento');
+  const tToastCompartilhamento = useTranslations('Toast.Compartilhamento');
   const tCommon = useTranslations('Common');
   const tCompartilhamento = useTranslations('Compartilhamento');
   const format = useFormatter();
@@ -53,14 +53,14 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
         publico: novoValor
       });
 
-      toast.success(novoValor ? tToastProcedimento('sucessoPublico') : tToastProcedimento('sucessoRestrito'));
+      toast.success(novoValor ? tToastCompartilhamento('sucessoPublico') : tToastCompartilhamento('sucessoRestrito'));
 
       if (onAtualizarProcedimento) {
         onAtualizarProcedimento(procedimentoAtualizado);
       }
     } catch (err) {
       setIsPublico(!novoValor);
-      toast.error(err.response?.data?.error || tToastProcedimento('erroPublico'));
+      toast.error(err.response?.data?.error || tToastCompartilhamento('erroPublico'));
     } finally {
       setCarregandoPublico(false);
     }
