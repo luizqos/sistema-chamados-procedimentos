@@ -170,7 +170,7 @@ export default function GestaoUsuariosPage() {
                           {u.ultimo_login ? (
                             formatarData(u.ultimo_login)
                           ) : (
-                            <span className="text-amber-600 dark:text-amber-400/80 italic font-sans text-[10px]">Nunca acessou</span>
+                            <span className="text-amber-600 dark:text-amber-400/80 italic font-sans text-[10px]">-</span>
                           )}
                         </td>
 
