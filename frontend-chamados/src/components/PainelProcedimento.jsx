@@ -1,15 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Copy, Check, Trash2, User, Calendar, Globe, Lock, Loader2, Pencil } from 'lucide-react';
+import { Copy, Check, Trash2, User, Calendar, Globe, Lock, Loader2, Pencil, Save, X } from 'lucide-react';
 import { useTranslations, useFormatter } from 'next-intl';
 import toast from 'react-hot-toast';
 
 import GaleriaAnexos from './GaleriaAnexos';
 import BotaoCompartilhar from './button/BotaoCompartilhar';
 import ModalCompartilhamento from './modal/ModalCompartilhamento';
-import ModalEditarProcedimento from './modal/ModalEditarProcedimento'; // <-- Importado aqui
 import { procedimentoService } from '@/src/services/procedimentoService';
 
 export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user, onAtualizarProcedimento }) {
@@ -20,22 +19,38 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const format = useFormatter();
 
   const [modalCompartilharAberto, setModalCompartilharAberto] = useState(false);
-  const [modalEditarAberto, setModalEditarAberto] = useState(false); // <-- Estado do modal de edição
   const [isPublico, setIsPublico] = useState(selecionado?.publico || false);
   const [carregandoPublico, setCarregandoPublico] = useState(false);
+
+  // Estados para o modo de edição inline
+  const [editando, setEditando] = useState(false);
+  const [titulo, setTitulo] = useState(selecionado?.titulo || '');
+  const [descricao, setDescricao] = useState(selecionado?.descricao || '');
+  const [scriptPassoAPasso, setScriptPassoAPasso] = useState(selecionado?.script_passo_a_passo || '');
+  const [salvando, setSalvando] = useState(false);
+
+  // Sincroniza os estados locais quando o procedimento selecionado mudar na sidebar
+  useEffect(() => {
+    if (selecionado) {
+      setTitulo(selecionado.titulo || '');
+      setDescricao(selecionado.descricao || '');
+      setScriptPassoAPasso(selecionado.script_passo_a_passo || '');
+      setIsPublico(selecionado.publico || false);
+      setEditando(false);
+    }
+  }, [selecionado]);
 
   const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
   const isAdmin = roleNome === 'ADMIN';
   const isCriador = selecionado?.usuario_id && user?.id ? selecionado.usuario_id === user.id : false;
   
-  // Verifica se o usuário possui permissão de edição explícita via compartilhamento
   const temPermissaoEdicaoCompartilhada = selecionado?.permissoes?.some(
     (p) => p.usuarioId === user?.id && p.nivel === 'EDITAR'
   );
 
   const podeExcluir = isAdmin || isCriador;
   const podeCompartilhar = isAdmin || isCriador;
-  const podeEditar = isAdmin || isCriador || temPermissaoEdicaoCompartilhada; // Regra completa de edição
+  const podeEditar = isAdmin || isCriador || temPermissaoEdicaoCompartilhada;
 
   const nomeAutor =
     selecionado?.usuario?.nome ||
@@ -74,6 +89,36 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
     }
   };
 
+  const handleSalvarEdicao = async () => {
+    setSalvando(true);
+    try {
+      const procedimentoAtualizado = await procedimentoService.atualizarProcedimento(selecionado.id, {
+        titulo,
+        descricao,
+        script_passo_a_passo: scriptPassoAPasso,
+        publico: isPublico
+      });
+
+      toast.success('Procedimento atualizado com sucesso!');
+      setEditando(false);
+
+      if (onAtualizarProcedimento) {
+        onAtualizarProcedimento(procedimentoAtualizado);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Erro ao atualizar procedimento.');
+    } finally {
+      setSalvando(false);
+    }
+  };
+
+  const handleCancelarEdicao = () => {
+    setTitulo(selecionado.titulo || '');
+    setDescricao(selecionado.descricao || '');
+    setScriptPassoAPasso(selecionado.script_passo_a_passo || '');
+    setEditando(false);
+  };
+
   return (
     <div className="max-w-4xl mx-auto flex flex-col justify-between min-h-full">
       <div>
@@ -88,7 +133,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             </span>
           </div>
 
-          {podeEditar && (
+          {podeEditar && !editando && (
             <div className="flex items-center gap-2 shrink-0">
               {carregandoPublico && <Loader2 size={14} className="animate-spin text-sky-500" />}
               <label className="relative inline-flex items-center cursor-pointer">
@@ -108,72 +153,124 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
 
         {/* Cabeçalho do Procedimento */}
         <div className="flex justify-between items-start gap-4 mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2 transition-colors">
-              {selecionado.titulo}
-            </h1>
-            <p className="text-sm text-slate-600 dark:text-slate-400 transition-colors">
-              {selecionado.descricao}
-            </p>
+          <div className="w-full">
+            {editando ? (
+              <div className="space-y-3 mb-4">
+                <input
+                  type="text"
+                  value={titulo}
+                  onChange={(e) => setTitulo(e.target.value)}
+                  placeholder="Título do Procedimento"
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-lg font-bold text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
+                />
+                <input
+                  type="text"
+                  value={descricao}
+                  onChange={(e) => setDescricao(e.target.value)}
+                  placeholder="Descrição curta (Opcional)"
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sky-500"
+                />
+              </div>
+            ) : (
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2 transition-colors">
+                  {selecionado.titulo}
+                </h1>
+                <p className="text-sm text-slate-600 dark:text-slate-400 transition-colors">
+                  {selecionado.descricao}
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2.5 shrink-0">
-            {/* Botão Copiar Script */}
-            <button
-              onClick={onCopiar}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-white font-semibold text-sm transition cursor-pointer ${copiado
-                ? 'bg-green-600 dark:bg-green-600'
-                : 'bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700'
-                }`}
-            >
-              {copiado ? (
-                <>
-                  <Check size={18} /> {tProcedimento('copiado')}
-                </>
-              ) : (
-                <>
-                  <Copy size={18} /> {tProcedimento('copiarScript')}
-                </>
-              )}
-            </button>
+            {editando ? (
+              <>
+                <button
+                  onClick={handleSalvarEdicao}
+                  disabled={salvando}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition cursor-pointer disabled:opacity-50"
+                >
+                  {salvando ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Salvar
+                </button>
+                <button
+                  onClick={handleCancelarEdicao}
+                  disabled={salvando}
+                  className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-sm transition cursor-pointer"
+                >
+                  <X size={18} /> Cancelar
+                </button>
+              </>
+            ) : (
+              <>
+                {/* Botão Copiar Script */}
+                <button
+                  onClick={onCopiar}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-white font-semibold text-sm transition cursor-pointer ${copiado
+                    ? 'bg-green-600 dark:bg-green-600'
+                    : 'bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700'
+                    }`}
+                >
+                  {copiado ? (
+                    <>
+                      <Check size={18} /> {tProcedimento('copiado')}
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={18} /> {tProcedimento('copiarScript')}
+                    </>
+                  )}
+                </button>
 
-            {/* Botão Editar (Se Autorizado) */}
-            {podeEditar && (
-              <button
-                onClick={() => setModalEditarAberto(true)}
-                className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-sky-500 dark:border-sky-500/50 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/30 font-semibold text-sm transition cursor-pointer"
-                title="Editar Procedimento"
-              >
-                <Pencil size={18} /> Editar
-              </button>
-            )}
+                {/* Botão Ativar Edição Inline */}
+                {podeEditar && (
+                  <button
+                    onClick={() => setEditando(true)}
+                    className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-sky-500 dark:border-sky-500/50 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/30 font-semibold text-sm transition cursor-pointer"
+                  >
+                    <Pencil size={18} /> Editar
+                  </button>
+                )}
 
-            {/* Botão Compartilhar (Se Autorizado) */}
-            {podeCompartilhar && (
-              <BotaoCompartilhar onClick={() => setModalCompartilharAberto(true)} />
-            )}
+                {/* Botão Compartilhar */}
+                {podeCompartilhar && (
+                  <BotaoCompartilhar onClick={() => setModalCompartilharAberto(true)} />
+                )}
 
-            {/* Botão Excluir (Se Autorizado) */}
-            {podeExcluir && (
-              <button
-                onClick={() => onDeletar(selecionado.id)}
-                className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-red-500 dark:border-red-500/50 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold text-sm transition cursor-pointer"
-                title={tCommon('excluir')}
-              >
-                <Trash2 size={18} /> {tCommon('excluir')}
-              </button>
+                {/* Botão Excluir */}
+                {podeExcluir && (
+                  <button
+                    onClick={() => onDeletar(selecionado.id)}
+                    className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-red-500 dark:border-red-500/50 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold text-sm transition cursor-pointer"
+                    title={tCommon('excluir')}
+                  >
+                    <Trash2 size={18} /> {tCommon('excluir')}
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
 
-        {/* Script Passo a Passo em Markdown */}
+        {/* Script Passo a Passo (Markdown vs Textarea) */}
         <div className="mb-8">
           <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
             {tProcedimento('passoAPasso')}
           </h3>
-          <div className="h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed font-mono border border-slate-800 dark:border-slate-800/80 transition-colors duration-200">
-            <ReactMarkdown>{selecionado.script_passo_a_passo}</ReactMarkdown>
-          </div>
+          
+          {editando ? (
+            <textarea
+              rows={16}
+              value={scriptPassoAPasso}
+              onChange={(e) => setScriptPassoAPasso(e.target.value)}
+              placeholder="Digite o script em Markdown..."
+              className="w-full p-5 rounded-xl bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 text-sm leading-relaxed font-mono border border-slate-700 dark:border-slate-800 focus:outline-none focus:border-sky-500 resize-none transition-colors"
+            />
+          ) : (
+            <div className="h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed font-mono border border-slate-800 dark:border-slate-800/80 transition-colors duration-200">
+              <ReactMarkdown>{selecionado.script_passo_a_passo}</ReactMarkdown>
+            </div>
+          )}
         </div>
 
         {/* Galeria de Anexos */}
@@ -204,18 +301,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
         onClose={() => setModalCompartilharAberto(false)}
         procedimentoId={selecionado?.id}
         criadorId={selecionado?.usuario_id}
-      />
-
-      {/* Modal de Edição */}
-      <ModalEditarProcedimento
-        isOpen={modalEditarAberto}
-        onClose={() => setModalEditarAberto(false)}
-        procedimento={selecionado}
-        onSuccess={(procedimentoAtualizado) => {
-          if (onAtualizarProcedimento) {
-            onAtualizarProcedimento(procedimentoAtualizado);
-          }
-        }}
       />
     </div>
   );
