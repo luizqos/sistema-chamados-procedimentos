@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { Users, Shield, Loader2, ArrowLeft, UserPlus, Power, CheckCircle, XCircle, Pencil } from 'lucide-react';
+import { Users, Shield, Loader2, ArrowLeft, UserPlus, Power, CheckCircle, XCircle, Pencil, Clock } from 'lucide-react';
 
 import { WithPermission } from '../components/WithPermission';
 import { usuarioService } from '../services/usuarioService';
@@ -50,6 +50,19 @@ export default function GestaoUsuariosPage() {
     } catch (err) {
       toast.error(err.response?.data?.error || tToastUser('erroStatus'));
     }
+  };
+
+  // Função auxiliar para formatar datas
+  const formatarData = (dataString) => {
+    if (!dataString) return 'Nunca';
+    const data = new Date(dataString);
+    return data.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (
@@ -98,6 +111,8 @@ export default function GestaoUsuariosPage() {
                     <th className="p-4">{tUsuarios('email')}</th>
                     <th className="p-4">{tCommon('status')}</th>
                     <th className="p-4">{tUsuarios('perfilAtual')}</th>
+                    <th className="p-4">Criação</th>
+                    <th className="p-4">Último Login</th>
                     <th className="p-4 text-right">{tCommon('acoes')}</th>
                   </tr>
                 </thead>
@@ -145,8 +160,21 @@ export default function GestaoUsuariosPage() {
                           </span>
                         </td>
 
+                        {/* Data de Criação */}
+                        <td className="p-4 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
+                          {formatarData(u.created_at)}
+                        </td>
+
+                        {/* Data de Último Login */}
+                        <td className="p-4 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
+                          {u.ultimo_login ? (
+                            formatarData(u.ultimo_login)
+                          ) : (
+                            <span className="text-amber-600 dark:text-amber-400/80 italic font-sans text-[10px]">Nunca acessou</span>
+                          )}
+                        </td>
+
                         <td className="p-4 text-right flex items-center justify-end gap-2">
-                          {/* Botão de Editar Usuário (Nome, Email, Senha, Perfil) */}
                           <button
                             onClick={() => {
                               setUsuarioEmEdicao(u);
@@ -158,7 +186,6 @@ export default function GestaoUsuariosPage() {
                             <Pencil size={16} />
                           </button>
 
-                          {/* Botão de Ativar / Inativar Status */}
                           <button
                             onClick={() => handleToggleStatus(u)}
                             disabled={ehUsuarioLogado}
