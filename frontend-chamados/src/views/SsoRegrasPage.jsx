@@ -10,6 +10,8 @@ import { WithPermission } from '../components/WithPermission';
 import { ssoRegrasService } from '../services/ssoRegrasService';
 import { dialog } from '../utils/dialogs';
 import ModalNovaRegraSso from '../components/modal/ModalNovaRegraSso';
+import { useAuth } from '../contexts/AuthContext';
+import BotaoConfiguracao from '@/components/button/BotaoConfiguracao';
 
 export default function SsoRegrasPage() {
   const tSso = useTranslations('Sso');
@@ -17,6 +19,7 @@ export default function SsoRegrasPage() {
   const tAlertaSso = useTranslations('Alerta.Sso');
   const tToastSso = useTranslations('Toast.Sso');
   const tUsuarios = useTranslations('Usuarios');
+  const { user: usuarioLogado } = useAuth();
 
   const [regras, setRegras] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,6 +78,9 @@ export default function SsoRegrasPage() {
     }
   };
 
+  const roleNome = typeof usuarioLogado?.role === 'object' ? usuarioLogado?.role?.nome : usuarioLogado?.role;
+  const isAdmin = roleNome === 'ADMIN';
+
   return (
     <WithPermission role="ADMIN">
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 md:p-10 space-y-6 transition-colors duration-200">
@@ -97,12 +103,16 @@ export default function SsoRegrasPage() {
               <p className="text-xs text-slate-500 dark:text-slate-400">{tSso('subtitulo')}</p>
             </div>
           </div>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20 cursor-pointer"
-          >
-            <Plus size={16} /> {tSso('novaRegra')}
-          </button>
+
+          <div className="flex items-center gap-2">
+            {isAdmin && <BotaoConfiguracao />}
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20 cursor-pointer"
+            >
+              <Plus size={16} /> {tSso('novaRegra')}
+            </button>
+          </div>
         </div>
 
         {/* Barra de Busca Dinâmica */}

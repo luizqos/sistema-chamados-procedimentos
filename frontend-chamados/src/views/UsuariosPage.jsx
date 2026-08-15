@@ -12,6 +12,7 @@ import { useAuth } from '../contexts/AuthContext';
 import ModalNovoUsuario from '../components/modal/ModalNovoUsuario';
 import ModalEditarUsuario from '../components/modal/ModalEditarUsuario';
 import { formatarData } from '../utils/formatters';
+import BotaoConfiguracao from '@/components/button/BotaoConfiguracao';
 
 export default function GestaoUsuariosPage() {
   const tUsuarios = useTranslations('Usuarios');
@@ -72,6 +73,9 @@ export default function GestaoUsuariosPage() {
     }
   };
 
+  const roleNome = typeof usuarioLogado?.role === 'object' ? usuarioLogado?.role?.nome : usuarioLogado?.role;
+  const isAdmin = roleNome === 'ADMIN';
+
   return (
     <WithPermission role="ADMIN">
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 md:p-10 space-y-6 transition-colors duration-200">
@@ -86,6 +90,7 @@ export default function GestaoUsuariosPage() {
             >
               <ArrowLeft size={20} />
             </Link>
+
             <div className="p-2.5 bg-sky-500/10 border border-sky-500/20 text-sky-600 dark:text-sky-400 rounded-xl">
               <Users size={22} />
             </div>
@@ -94,12 +99,16 @@ export default function GestaoUsuariosPage() {
               <p className="text-xs text-slate-500 dark:text-slate-400">{tUsuarios('subtitulo')}</p>
             </div>
           </div>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20 cursor-pointer"
-          >
-            <UserPlus size={16} /> {tUsuarios('novoUsuario')}
-          </button>
+
+          <div className="flex items-center gap-2">
+            {isAdmin && <BotaoConfiguracao />}
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20 cursor-pointer"
+            >
+              <UserPlus size={16} /> {tUsuarios('novoUsuario')}
+            </button>
+          </div>
         </div>
 
         {/* Barra de Busca Dinâmica */}
