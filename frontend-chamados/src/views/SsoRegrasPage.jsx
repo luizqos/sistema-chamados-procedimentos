@@ -106,7 +106,6 @@ export default function SsoRegrasPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            {isAdmin && <BotaoConfiguracao />}
             <button
               onClick={() => setIsModalOpen(true)}
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20 cursor-pointer"
