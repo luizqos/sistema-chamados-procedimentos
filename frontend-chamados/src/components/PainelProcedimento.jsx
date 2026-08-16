@@ -29,7 +29,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const [scriptPassoAPasso, setScriptPassoAPasso] = useState(selecionado?.script_passo_a_passo || '');
   const [salvando, setSalvando] = useState(false);
 
-  // Sincroniza APENAS quando o ID do procedimento selecionado mudar
+  // Sincroniza os estados locais APENAS quando trocar de procedimento na sidebar
   useEffect(() => {
     if (selecionado) {
       setTitulo(selecionado.titulo || '');
@@ -204,7 +204,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               </>
             ) : (
               <>
-                {/* Botão Copiar Script */}
                 <button
                   onClick={onCopiar}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-white font-semibold text-sm transition cursor-pointer ${copiado
@@ -223,7 +222,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
                   )}
                 </button>
 
-                {/* Botão Editar */}
                 {podeEditar && (
                   <button
                     onClick={() => setEditando(true)}
@@ -233,12 +231,10 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
                   </button>
                 )}
 
-                {/* Botão Compartilhar */}
                 {podeCompartilhar && (
                   <BotaoCompartilhar onClick={() => setModalCompartilharAberto(true)} />
                 )}
 
-                {/* Botão Excluir */}
                 {podeExcluir && (
                   <button
                     onClick={() => onDeletar(selecionado.id)}
@@ -273,12 +269,14 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           )}
         </div>
 
-        {/* Galeria de Anexos */}
+        {/* Galeria de Anexos Integrada com UploadContext */}
         <GaleriaAnexos 
           procedimentoId={selecionado.id}
+          tituloProcedimento={selecionado.titulo}
           anexos={selecionado.anexos || []}
           podeEditar={podeEditar && editando}
           onAtualizarAnexos={(novosAnexos) => {
+            // Filtro local instantâneo para exclusões
             if (onAtualizarProcedimento) {
               onAtualizarProcedimento({
                 ...selecionado,
@@ -286,10 +284,16 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               });
             }
           }}
+          onUploadConcluido={() => {
+            // Recarrega de forma silenciosa do servidor o procedimento para popular a nova mídia na tela
+            if (onAtualizarProcedimento) {
+              onAtualizarProcedimento({ id: selecionado.id });
+            }
+          }}
         />
       </div>
 
-      {/* Rodapé Informativo */}
+      {/* Rodapé Informativo (Criador e Data) */}
       <div className="mt-10 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-500 transition-colors duration-200">
         <div className="flex items-center gap-2">
           <div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400 transition-colors">
@@ -307,6 +311,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
         )}
       </div>
 
+      {/* Modal de Compartilhamento */}
       <ModalCompartilhamento
         isOpen={modalCompartilharAberto}
         onClose={() => setModalCompartilharAberto(false)}

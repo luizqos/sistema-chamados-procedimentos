@@ -1,19 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Image as ImageIcon, Film, X, Maximize2, PlayCircle, Trash2, Upload, Loader2 } from 'lucide-react';
+import { Image as ImageIcon, Film, X, Maximize2, PlayCircle, Trash2, Upload, Loader2, FileText } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { API_URL } from '../utils/constants';
 import { secureStorage } from '@/src/utils/storage';
 import { procedimentoService } from '@/src/services/procedimentoService';
+import { useUpload } from '../contexts/UploadContext';
 
-export default function GaleriaAnexos({ procedimentoId, anexos = [], podeEditar, onAtualizarAnexos }) {
+export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anexos = [], podeEditar, onAtualizarAnexos, onUploadConcluido }) {
   const t = useTranslations('Procedimento');
   const [mediaExpandida, setMediaExpandida] = useState(null);
-  const [enviando, setEnviando] = useState(false);
   const [excluindoId, setExcluindoId] = useState(null);
 
+  const { registrarOuAtualizarUpload, removerUpload } = useUpload();
   const token = typeof window !== 'undefined' ? secureStorage.getItem('@chamados:token') : '';
 
   const getMediaUrl = (caminho) => {
@@ -22,26 +23,67 @@ export default function GaleriaAnexos({ procedimentoId, anexos = [], podeEditar,
     return `${API_URL}${caminhoCorrigido}?token=${token}`;
   };
 
-  const handleUpload = async (e) => {
-    const arquivo = e.target.files[0];
-    if (!arquivo) return;
+  const handleUploadBackground = async (e) => {
+    const arquivosSelecionados = Array.from(e.target.files);
+    if (arquivosSelecionados.length === 0) return;
 
-    setEnviando(true);
-    const formData = new FormData();
-    formData.append('arquivo', arquivo);
+    // Limpa o input imediatamente para permitir novos envios seguidos
+    e.target.value = null;
 
-    try {
-      const novoAnexo = await procedimentoService.adicionarAnexo(procedimentoId, formData);
-      toast.success('Anexo enviado com sucesso!');
-      
-      if (onAtualizarAnexos) {
-        onAtualizarAnexos([...anexos, novoAnexo]);
+    for (let i = 0; i < arquivosSelecionados.length; i++) {
+      const arquivo = arquivosSelecionados[i];
+      const cardId = `card-upload-galeria-${arquivo.name}-${Date.now()}`;
+      const nomeProcedimento = tituloProcedimento || 'Anexo Adicional';
+
+      // Registra o início do upload no contexto global
+      registrarOuAtualizarUpload(cardId, {
+        nome: arquivo.name,
+        progresso: 0,
+        status: 'enviando',
+        procedimento: nomeProcedimento,
+        enviado: 0,
+        total: arquivo.size
+      });
+
+      try {
+        // Usa enviarAnexo que suporta o callback de progresso nativamente
+        await procedimentoService.enviarAnexo(procedimentoId, arquivo, (progressData) => {
+          registrarOuAtualizarUpload(cardId, {
+            nome: arquivo.name,
+            progresso: progressData.percent,
+            status: 'enviando',
+            procedimento: nomeProcedimento,
+            enviado: progressData.loaded,
+            total: progressData.total
+          });
+        });
+
+        // Atualiza status global para concluído
+        registrarOuAtualizarUpload(cardId, {
+          nome: arquivo.name,
+          progresso: 100,
+          status: 'concluido',
+          procedimento: nomeProcedimento
+        });
+
+        toast.success(`Anexo "${arquivo.name}" enviado com sucesso!`);
+        setTimeout(() => removerUpload(cardId), 5000);
+
+        // Dispara callback para o Painel recarregar os anexos do banco
+        if (onUploadConcluido) {
+          onUploadConcluido();
+        }
+
+      } catch (err) {
+        console.error('Erro no upload de anexo:', err);
+        registrarOuAtualizarUpload(cardId, {
+          nome: arquivo.name,
+          progresso: 0,
+          status: 'erro',
+          procedimento: nomeProcedimento
+        });
+        toast.error(`Erro ao enviar "${arquivo.name}".`);
       }
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Erro ao enviar o anexo.');
-    } finally {
-      setEnviando(false);
-      e.target.value = null; // Limpa o input file
     }
   };
 
@@ -54,7 +96,7 @@ export default function GaleriaAnexos({ procedimentoId, anexos = [], podeEditar,
       await procedimentoService.deletarAnexo(anexoId);
       toast.success('Anexo excluído com sucesso!');
 
-      // Filtra e repassa a nova lista sem o anexo deletado
+      // Remove instantaneamente da interface
       if (onAtualizarAnexos) {
         const anexosAtualizados = anexos.filter(a => a.id !== anexoId);
         onAtualizarAnexos(anexosAtualizados);
@@ -70,17 +112,18 @@ export default function GaleriaAnexos({ procedimentoId, anexos = [], podeEditar,
     <div className="mt-8">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-          {t('anexosLabel') || 'Anexos'} ({anexos.length})
+          {t('anexosLabel') || 'Anexos'} ({anexos?.length || 0})
         </h3>
 
+        {/* Botão de Upload agora usa 'multiple' para enviar vários de uma vez e não trava a tela */}
         {podeEditar && (
           <label className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-semibold transition cursor-pointer">
-            {enviando ? <Loader2 size={14} className="animate-spin text-sky-500" /> : <Upload size={14} />}
-            <span>Adicionar Anexo</span>
+            <Upload size={14} />
+            <span>Adicionar Anexo(s)</span>
             <input
               type="file"
-              onChange={handleUpload}
-              disabled={enviando}
+              multiple
+              onChange={handleUploadBackground}
               className="hidden"
               accept="image/*,video/*,.pdf,.doc,.docx"
             />
@@ -92,54 +135,61 @@ export default function GaleriaAnexos({ procedimentoId, anexos = [], podeEditar,
         <p className="text-xs text-slate-400 italic">Nenhum anexo cadastrado neste procedimento.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {anexos.map((anexo) => (
-            <div key={anexo.id} className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden bg-slate-50 dark:bg-slate-900/50 flex flex-col transition-colors duration-200 relative group/card">
-              
-              <div className="px-3 py-2 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-400 transition-colors duration-200">
-                <div className="flex items-center gap-2 truncate">
-                  {anexo.tipo === 'imagem' ? <ImageIcon size={14} /> : <Film size={14} />}
-                  <span className="truncate" title={anexo.nome_original}>{anexo.nome_original}</span>
-                </div>
+          {anexos.map((anexo) => {
+            const isImagem = anexo.tipo === 'imagem' || anexo.mime_type?.startsWith('image/');
+            const isVideo = anexo.tipo === 'video' || anexo.mime_type?.startsWith('video/');
 
-                {podeEditar && (
-                  <button
-                    onClick={(e) => handleExcluir(anexo.id, e)}
-                    disabled={excluindoId === anexo.id}
-                    className="p-1 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-slate-800 rounded transition cursor-pointer shrink-0"
-                    title="Excluir Anexo"
-                  >
-                    {excluindoId === anexo.id ? <Loader2 size={14} className="animate-spin text-red-500" /> : <Trash2 size={14} />}
-                  </button>
-                )}
-              </div>
-              
-              <div 
-                className="p-2 flex justify-center items-center h-48 relative group cursor-pointer overflow-hidden bg-slate-200/50 dark:bg-slate-800/50 transition-colors duration-200"
-                onClick={() => setMediaExpandida(anexo)}
-              >
-                <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors duration-300 flex items-center justify-center z-10">
-                  <div className="bg-slate-900/80 dark:bg-black/80 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100 shadow-lg">
-                    {anexo.tipo === 'imagem' ? <Maximize2 size={24} /> : <PlayCircle size={28} />}
+            return (
+              <div key={anexo.id} className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden bg-slate-50 dark:bg-slate-900/50 flex flex-col transition-colors duration-200 relative group/card">
+                
+                <div className="px-3 py-2 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-400 transition-colors duration-200">
+                  <div className="flex items-center gap-2 truncate">
+                    {isImagem ? <ImageIcon size={14} /> : isVideo ? <Film size={14} /> : <FileText size={14} />}
+                    <span className="truncate" title={anexo.nome_original}>{anexo.nome_original}</span>
                   </div>
-                </div>
 
-                {anexo.tipo === 'imagem' ? (
-                  <img
-                     src={getMediaUrl(anexo.caminho_arquivo)}
-                     alt={anexo.nome_original}
-                     className="max-w-full max-h-full rounded object-contain group-hover:scale-105 transition-transform duration-500"
-                   />
-                ) : (
-                  <video 
-                    className="w-full max-h-full rounded object-contain group-hover:scale-105 transition-transform duration-500"
-                    preload="metadata"
-                  >
-                    <source src={getMediaUrl(anexo.caminho_arquivo)} type={anexo.mime_type} />
-                  </video>
-                )}
+                  {podeEditar && (
+                    <button
+                      onClick={(e) => handleExcluir(anexo.id, e)}
+                      disabled={excluindoId === anexo.id}
+                      className="p-1 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-slate-800 rounded transition cursor-pointer shrink-0"
+                      title="Excluir Anexo"
+                    >
+                      {excluindoId === anexo.id ? <Loader2 size={14} className="animate-spin text-red-500" /> : <Trash2 size={14} />}
+                    </button>
+                  )}
+                </div>
+                
+                <div 
+                  className="p-2 flex justify-center items-center h-48 relative group cursor-pointer overflow-hidden bg-slate-200/50 dark:bg-slate-800/50 transition-colors duration-200"
+                  onClick={() => setMediaExpandida(anexo)}
+                >
+                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors duration-300 flex items-center justify-center z-10">
+                    <div className="bg-slate-900/80 dark:bg-black/80 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100 shadow-lg">
+                      {isImagem ? <Maximize2 size={24} /> : <PlayCircle size={28} />}
+                    </div>
+                  </div>
+
+                  {isImagem ? (
+                    <img
+                       src={getMediaUrl(anexo.caminho_arquivo)}
+                       alt={anexo.nome_original}
+                       className="max-w-full max-h-full rounded object-contain group-hover:scale-105 transition-transform duration-500"
+                     />
+                  ) : isVideo ? (
+                    <video 
+                      className="w-full max-h-full rounded object-contain group-hover:scale-105 transition-transform duration-500"
+                      preload="metadata"
+                    >
+                      <source src={getMediaUrl(anexo.caminho_arquivo)} type={anexo.mime_type} />
+                    </video>
+                  ) : (
+                    <FileText size={48} className="text-slate-400 group-hover:scale-105 transition-transform duration-500" />
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
