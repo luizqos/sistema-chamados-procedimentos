@@ -90,8 +90,8 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
     const confirmado = await dialog.confirmarExclusao({
       titulo: tAlertaAnexo('tituloExclusao'),
       texto: tAlertaAnexo('textoExclusao'),
-      textoBotaoConfirmar: tAlertaAnexo('simExcluir'),
-      textoBotaoCancelar: tAlertaAnexo('cancelar'),
+      textoBotaoConfirmar: tAlertaAnexo('msgConfirmaExclusao'),
+      textoBotaoCancelar: tAlertaAnexo('msgCancelaExclusao'),
     });
 
     if (!confirmado) return;

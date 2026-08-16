@@ -2,12 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Copy, Check, Trash2, User, Calendar, Globe, Lock, Loader2, Pencil, Save, X } from 'lucide-react';
+import { Copy, Check, Trash2, User, Calendar, Globe, Lock, Loader2, Pencil, Save, X, Share2 } from 'lucide-react';
 import { useTranslations, useFormatter } from 'next-intl';
 import toast from 'react-hot-toast';
 
 import GaleriaAnexos from './GaleriaAnexos';
-import BotaoCompartilhar from './button/BotaoCompartilhar';
 import ModalCompartilhamento from './modal/ModalCompartilhamento';
 import { procedimentoService } from '@/src/services/procedimentoService';
 
@@ -155,7 +154,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           )}
         </div>
 
-        {/* Cabeçalho do Procedimento */}
+        {/* Cabeçalho do Procedimento com Botões Minimalistas */}
         <div className="flex justify-between items-start gap-4 mb-4">
           <div className="w-full space-y-1">
             <input
@@ -184,64 +183,70 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             />
           </div>
 
-          <div className="flex gap-2.5 shrink-0">
+          {/* Grupo de Ações Minimalista */}
+          <div className="flex gap-1 shrink-0">
             {editando ? (
               <>
                 <button
                   onClick={handleSalvarEdicao}
                   disabled={salvando}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition cursor-pointer disabled:opacity-50 shadow-sm"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition cursor-pointer disabled:opacity-50 shadow-sm"
                 >
-                  {salvando ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Salvar
+                  {salvando ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Salvar
                 </button>
                 <button
                   onClick={handleCancelarEdicao}
                   disabled={salvando}
-                  className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-sm transition cursor-pointer shadow-sm"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-xs transition cursor-pointer shadow-sm"
                 >
-                  <X size={18} /> Cancelar
+                  <X size={16} /> Cancelar
                 </button>
               </>
             ) : (
               <>
+                {/* Botão Copiar Minimalista */}
                 <button
                   onClick={onCopiar}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-white font-semibold text-sm transition cursor-pointer ${copiado
-                    ? 'bg-green-600 dark:bg-green-600'
-                    : 'bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700'
-                    }`}
+                  title={copiado ? tProcedimento('copiado') : tProcedimento('copiarScript')}
+                  className={`p-2 rounded-lg transition cursor-pointer ${
+                    copiado
+                      ? 'text-green-600 bg-green-50 dark:bg-green-900/30'
+                      : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
                 >
-                  {copiado ? (
-                    <>
-                      <Check size={18} /> {tProcedimento('copiado')}
-                    </>
-                  ) : (
-                    <>
-                      <Copy size={18} /> {tProcedimento('copiarScript')}
-                    </>
-                  )}
+                  {copiado ? <Check size={18} /> : <Copy size={18} />}
                 </button>
 
+                {/* Botão Editar Minimalista */}
                 {podeEditar && (
                   <button
                     onClick={() => setEditando(true)}
-                    className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-sky-500 dark:border-sky-500/50 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/30 font-semibold text-sm transition cursor-pointer"
+                    title="Editar Procedimento"
+                    className="p-2 rounded-lg text-slate-500 hover:text-sky-600 dark:text-slate-400 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/30 transition cursor-pointer"
                   >
-                    <Pencil size={18} /> Editar
+                    <Pencil size={18} />
                   </button>
                 )}
 
+                {/* Botão Compartilhar Minimalista */}
                 {podeCompartilhar && (
-                  <BotaoCompartilhar onClick={() => setModalCompartilharAberto(true)} />
+                  <button
+                    onClick={() => setModalCompartilharAberto(true)}
+                    title={tCommon('compartilhar') || 'Compartilhar'}
+                    className="p-2 rounded-lg text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition cursor-pointer"
+                  >
+                    <Share2 size={18} />
+                  </button>
                 )}
 
+                {/* Botão Excluir Minimalista */}
                 {podeExcluir && (
                   <button
                     onClick={() => onDeletar(selecionado.id)}
-                    className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-red-500 dark:border-red-500/50 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold text-sm transition cursor-pointer"
                     title={tCommon('excluir')}
+                    className="p-2 rounded-lg text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition cursor-pointer"
                   >
-                    <Trash2 size={18} /> {tCommon('excluir')}
+                    <Trash2 size={18} />
                   </button>
                 )}
               </>
