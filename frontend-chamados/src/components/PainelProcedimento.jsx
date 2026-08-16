@@ -19,18 +19,21 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const tCompartilhamento = useTranslations('Compartilhamento');
   const format = useFormatter();
 
+  // =========================================================================
+  // DEBUG MODE: Mude para 'true' para visualizar a auditoria de permissões
+  // =========================================================================
+  const DEBUG_MODE = false;
+
   const [modalCompartilharAberto, setModalCompartilharAberto] = useState(false);
   const [isPublico, setIsPublico] = useState(selecionado?.publico || false);
   const [carregandoPublico, setCarregandoPublico] = useState(false);
 
-  // Estados para edição inline transparente
   const [editando, setEditando] = useState(false);
   const [titulo, setTitulo] = useState(selecionado?.titulo || '');
   const [descricao, setDescricao] = useState(selecionado?.descricao || '');
   const [scriptPassoAPasso, setScriptPassoAPasso] = useState(selecionado?.script_passo_a_passo || '');
   const [salvando, setSalvando] = useState(false);
 
-  // Sincroniza os estados locais APENAS quando trocar de procedimento na sidebar
   useEffect(() => {
     if (selecionado) {
       setTitulo(selecionado.titulo || '');
@@ -41,9 +44,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
     }
   }, [selecionado?.id]);
 
-  // =========================================================================
-  // LÓGICA DE PERMISSÕES
-  // =========================================================================
   const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
   const isAdmin = roleNome?.toUpperCase() === 'ADMIN';
   
@@ -64,7 +64,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const podeExcluir = isAdmin || isCriador;
   const podeCompartilhar = isAdmin || isCriador;
   const podeEditar = isAdmin || isCriador || temPermissaoEdicaoCompartilhada;
-  // =========================================================================
 
   const nomeAutor =
     selecionado?.usuario?.nome ||
@@ -169,27 +168,29 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           )}
         </div>
 
-        {/* ALERTA VISUAL DE DEBUG DAS PERMISSÕES */}
-        <div className="mb-6 p-4 bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/60 rounded-xl text-xs text-sky-800 dark:text-sky-300 space-y-2">
-          <div className="flex items-center gap-2 font-bold text-sm">
-            <Info size={18} /> 
-            <span>Auditoria de Permissões (Modo Debug)</span>
+        {/* ALERTA VISUAL DE DEBUG DAS PERMISSÕES (Ativado por constante) */}
+        {DEBUG_MODE && (
+          <div className="mb-6 p-4 bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/60 rounded-xl text-xs text-sky-800 dark:text-sky-300 space-y-2">
+            <div className="flex items-center gap-2 font-bold text-sm">
+              <Info size={18} /> 
+              <span>Auditoria de Permissões (Modo Debug)</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 font-mono bg-white/50 dark:bg-black/20 p-3 rounded-lg">
+              <div><strong>Seu ID (Logado):</strong> {user?.id || 'Desconhecido'}</div>
+              <div><strong>ID do Criador do Procedimento:</strong> {selecionado?.usuario_id || 'Desconhecido'}</div>
+              <div><strong>Seu Perfil (Role):</strong> {roleNome || 'Desconhecido'}</div>
+              <div><strong>O Botão de Editar foi Liberado?:</strong> <span className={podeEditar ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-red-600 dark:text-red-400 font-bold'}>{podeEditar ? 'SIM' : 'NÃO'}</span></div>
+            </div>
+            <div className="mt-2 pt-2 border-t border-sky-200/50 dark:border-sky-800/50">
+              <strong>O que a API retornou no array `selecionado.permissoes`?</strong>
+              <pre className="mt-2 p-3 bg-slate-900 text-green-400 rounded-lg overflow-x-auto font-mono text-[11px] leading-relaxed">
+                {selecionado?.permissoes 
+                  ? JSON.stringify(selecionado.permissoes, null, 2) 
+                  : '❌ Array undefined ou inexistente no objeto. (O Backend não fez o JOIN/Include das permissões)'}
+              </pre>
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 font-mono bg-white/50 dark:bg-black/20 p-3 rounded-lg">
-            <div><strong>Seu ID (Logado):</strong> {user?.id || 'Desconhecido'}</div>
-            <div><strong>ID do Criador do Procedimento:</strong> {selecionado?.usuario_id || 'Desconhecido'}</div>
-            <div><strong>Seu Perfil (Role):</strong> {roleNome || 'Desconhecido'}</div>
-            <div><strong>O Botão de Editar foi Liberado?:</strong> <span className={podeEditar ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-red-600 dark:text-red-400 font-bold'}>{podeEditar ? 'SIM' : 'NÃO'}</span></div>
-          </div>
-          <div className="mt-2 pt-2 border-t border-sky-200/50 dark:border-sky-800/50">
-            <strong>O que a API retornou no array `selecionado.permissoes`?</strong>
-            <pre className="mt-2 p-3 bg-slate-900 text-green-400 rounded-lg overflow-x-auto font-mono text-[11px] leading-relaxed">
-              {selecionado?.permissoes 
-                ? JSON.stringify(selecionado.permissoes, null, 2) 
-                : '❌ Array undefined ou inexistente no objeto. (O Backend não fez o JOIN/Include das permissões)'}
-            </pre>
-          </div>
-        </div>
+        )}
         {/* FIM DO ALERTA DE DEBUG */}
 
         {/* Cabeçalho do Procedimento com Botões Extraídos */}
