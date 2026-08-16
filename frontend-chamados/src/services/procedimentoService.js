@@ -47,7 +47,19 @@ export const procedimentoService = {
   async atualizarProcedimento(id, dados) {
     const response = await api.put(`/api/procedimentos/${id}`, dados);
     return response.data;
+  },
+
+  async deletarAnexo(anexoId) {
+    const { data } = await api.delete(`/api/procedimentos/anexos/${anexoId}`);
+    return data;
+  },
+
+  async adicionarAnexo(procedimentoId, formData) {
+    const { data } = await api.post(`/api/procedimentos/${procedimentoId}/anexos`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return data;
   }
-
-
 };
