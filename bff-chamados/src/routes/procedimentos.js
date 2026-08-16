@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/procedimentoController');
+const procedimentoController = require('../controllers/procedimentoController');
 const authMiddleware = require('../middlewares/auth');
 const upload = require('../middlewares/upload');
 const { autenticar, autorizar } = require('../middlewares/authMiddleware');
@@ -43,8 +43,8 @@ const { autenticar, autorizar } = require('../middlewares/authMiddleware');
  *       201:
  *         description: Procedimento criado
  */
-router.get('/', autenticar, controller.listar);
-router.post('/', autenticar, controller.criar);
+router.get('/', autenticar, procedimentoController.listar);
+router.post('/', autenticar, procedimentoController.criar);
 
 /**
  * @openapi
@@ -76,8 +76,8 @@ router.post('/', autenticar, controller.criar);
  *       200:
  *         description: Procedimento excluído com sucesso
  */
-router.get('/:id', autenticar, controller.obterPorId);
-router.delete('/:id', autenticar, (req, res) => controller.deletar(req, res));
+router.get('/:id', autenticar, procedimentoController.obterPorId);
+router.delete('/:id', autenticar, (req, res) => procedimentoController.deletar(req, res));
 
 /**
  * @openapi
@@ -105,7 +105,7 @@ router.delete('/:id', autenticar, (req, res) => controller.deletar(req, res));
  *       201:
  *         description: Anexo enviado com sucesso
  */
-router.post('/:id/anexos', autenticar, upload.single('arquivo'), controller.adicionarAnexo);
+router.post('/:id/anexos', autenticar, upload.single('arquivo'), procedimentoController.adicionarAnexo);
 
 /**
  * @openapi
@@ -150,7 +150,7 @@ router.post('/:id/anexos', autenticar, upload.single('arquivo'), controller.adic
  *       404:
  *         description: Procedimento não encontrado
  */
-router.put('/:id', autenticar, (req, res) => controller.atualizar(req, res));
+router.put('/:id', autenticar, (req, res) => procedimentoController.atualizar(req, res));
 
 /**
  * @swagger
