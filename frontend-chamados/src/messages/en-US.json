@@ -218,6 +218,12 @@
       "textoExclusao": "This action will remove the procedure and all its attachments from the server.",
       "msgConfirmaExclusao": "Yes, delete",
       "msgCancelaExclusao": "Cancel"
+    },
+    "Anexo": {
+      "tituloExclusao": "Remove attachment?",
+      "textoExclusao": "Do you really want to delete this attachment? This action cannot be undone.",
+      "msgConfirmaExclusao": "Yes, delete",
+      "msgCancelaExclusao": "Cancel"
     }
   }
 }

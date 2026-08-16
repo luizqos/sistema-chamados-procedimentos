@@ -8,9 +8,11 @@ import { API_URL } from '../utils/constants';
 import { secureStorage } from '@/src/utils/storage';
 import { procedimentoService } from '@/src/services/procedimentoService';
 import { useUpload } from '../contexts/UploadContext';
+import { dialog } from '../utils/dialogs';
 
 export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anexos = [], podeEditar, onAtualizarAnexos, onUploadConcluido }) {
-  const t = useTranslations('Procedimento');
+  const tProcedimento = useTranslations('Procedimento');
+  const tAlertaAnexo = useTranslations('Alerta.Anexo'); 
   const [mediaExpandida, setMediaExpandida] = useState(null);
   const [excluindoId, setExcluindoId] = useState(null);
 
@@ -27,7 +29,6 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
     const arquivosSelecionados = Array.from(e.target.files);
     if (arquivosSelecionados.length === 0) return;
 
-    // Limpa o input imediatamente para permitir novos envios seguidos
     e.target.value = null;
 
     for (let i = 0; i < arquivosSelecionados.length; i++) {
@@ -35,7 +36,6 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
       const cardId = `card-upload-galeria-${arquivo.name}-${Date.now()}`;
       const nomeProcedimento = tituloProcedimento || 'Anexo Adicional';
 
-      // Registra o início do upload no contexto global
       registrarOuAtualizarUpload(cardId, {
         nome: arquivo.name,
         progresso: 0,
@@ -46,7 +46,6 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
       });
 
       try {
-        // Usa enviarAnexo que suporta o callback de progresso nativamente
         await procedimentoService.enviarAnexo(procedimentoId, arquivo, (progressData) => {
           registrarOuAtualizarUpload(cardId, {
             nome: arquivo.name,
@@ -58,7 +57,6 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
           });
         });
 
-        // Atualiza status global para concluído
         registrarOuAtualizarUpload(cardId, {
           nome: arquivo.name,
           progresso: 100,
@@ -69,7 +67,6 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
         toast.success(`Anexo "${arquivo.name}" enviado com sucesso!`);
         setTimeout(() => removerUpload(cardId), 5000);
 
-        // Dispara callback para o Painel recarregar os anexos do banco
         if (onUploadConcluido) {
           onUploadConcluido();
         }
@@ -89,14 +86,21 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
 
   const handleExcluir = async (anexoId, e) => {
     e.stopPropagation();
-    if (!confirm('Deseja realmente excluir este anexo?')) return;
+    
+    const confirmado = await dialog.confirmarExclusao({
+      titulo: tAlertaAnexo('tituloExclusao'),
+      texto: tAlertaAnexo('textoExclusao'),
+      textoBotaoConfirmar: tAlertaAnexo('simExcluir'),
+      textoBotaoCancelar: tAlertaAnexo('cancelar'),
+    });
+
+    if (!confirmado) return;
 
     setExcluindoId(anexoId);
     try {
       await procedimentoService.deletarAnexo(anexoId);
       toast.success('Anexo excluído com sucesso!');
 
-      // Remove instantaneamente da interface
       if (onAtualizarAnexos) {
         const anexosAtualizados = anexos.filter(a => a.id !== anexoId);
         onAtualizarAnexos(anexosAtualizados);
@@ -112,10 +116,9 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
     <div className="mt-8">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-          {t('anexosLabel') || 'Anexos'} ({anexos?.length || 0})
+          {tProcedimento('anexosLabel') || 'Anexos'} ({anexos?.length || 0})
         </h3>
 
-        {/* Botão de Upload agora usa 'multiple' para enviar vários de uma vez e não trava a tela */}
         {podeEditar && (
           <label className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-semibold transition cursor-pointer">
             <Upload size={14} />

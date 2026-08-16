@@ -220,6 +220,12 @@
       "textoExclusao": "Esta ação removerá o procedimento e todos os seus anexos do servidor.",
       "msgConfirmaExclusao": "Sim, excluir",
       "msgCancelaExclusao": "Cancelar"
+    },
+    "Anexo": {
+      "tituloExclusao": "Excluir Anexo?",
+      "textoExclusao": "Deseja realmente excluir este anexo? Esta ação não poderá ser desfeita.",
+      "msgConfirmaExclusao": "Sim, excluir",
+      "msgCancelaExclusao": "Cancelar"
     }
   }
 }
