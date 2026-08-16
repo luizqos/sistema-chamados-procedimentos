@@ -122,7 +122,7 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
         {podeEditar && (
           <label className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-semibold transition cursor-pointer">
             <Upload size={14} />
-            <span>Adicionar Anexo(s)</span>
+            <span>Adicionar Anexo</span>
             <input
               type="file"
               multiple
