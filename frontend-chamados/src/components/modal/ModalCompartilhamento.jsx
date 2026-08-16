@@ -33,11 +33,17 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId,
         procedimentoPermissaoService.listarPermissoes(procedimentoId)
       ]);
 
+      console.log('resUsuarios', resUsuarios);
+      
+
       const usuariosElegiveis = resUsuarios.data.filter(u => {
         const isAdm = u.role?.nome === 'ADMIN' || u.roleId === 1;
         const isCriador = Number(u.id) === Number(criadorId);
         return !isAdm && !isCriador;
       });
+
+      console.log('elegiveis', usuariosElegiveis);
+      
 
       setUsuariosDisponiveis(usuariosElegiveis);
       setPermissoesAtuais(permissoes);
