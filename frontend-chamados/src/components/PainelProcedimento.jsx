@@ -150,7 +150,8 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             </span>
           </div>
 
-          {podeEditar && !editando && (
+          {/* O Switch agora exige permissão de compartilhamento (Admin ou Criador) */}
+          {podeCompartilhar && !editando && (
             <div className="flex items-center gap-2 shrink-0">
               {carregandoPublico && <Loader2 size={14} className="animate-spin text-sky-500" />}
               <label className="relative inline-flex items-center cursor-pointer">
