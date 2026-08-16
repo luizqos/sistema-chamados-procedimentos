@@ -45,7 +45,8 @@ class ProcedimentoRepository {
         include: {
           usuario: {
             select: { id: true, nome: true, email: true }
-          }
+          },
+          permissoes: true
         }
       }),
       prisma.procedimento.count({ where })
@@ -61,7 +62,8 @@ class ProcedimentoRepository {
         usuario: {
           select: { id: true, nome: true, email: true }
         },
-        anexos: true
+        anexos: true,
+        permissoes: true
       }
     });
   }
@@ -73,7 +75,8 @@ class ProcedimentoRepository {
         usuario: {
           select: { id: true, nome: true, email: true }
         },
-        anexos: true
+        anexos: true,
+        permissoes: true
       }
     });
   }
@@ -103,7 +106,8 @@ class ProcedimentoRepository {
         usuario: {
           select: { id: true, nome: true, email: true }
         },
-        anexos: true
+        anexos: true,
+        permissoes: true
       }
     });
   }
