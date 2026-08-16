@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
-
 import { useAuth } from '../contexts/AuthContext';
 import { useProcedimentos } from '../hooks/useProcedimentos';
 import Sidebar from '../components/Sidebar';
@@ -119,12 +118,14 @@ export default function HomePage() {
             onCopiar={handleCopiarTexto}
             onDeletar={handleDeletar}
             user={user}
+            onAtualizarProcedimento={(procedimentoAtualizado) => {
+              obterDetalhes(procedimentoAtualizado.id);
+            }}
           />
         ) : (
           <EmptyState />
         )}
       </main>
-
       <ModalNovoProcedimento
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

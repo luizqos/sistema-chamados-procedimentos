@@ -41,7 +41,7 @@ export default function GaleriaAnexos({ procedimentoId, anexos = [], podeEditar,
       toast.error(err.response?.data?.error || 'Erro ao enviar o anexo.');
     } finally {
       setEnviando(false);
-      e.target.value = null;
+      e.target.value = null; // Limpa o input file
     }
   };
 
@@ -54,7 +54,7 @@ export default function GaleriaAnexos({ procedimentoId, anexos = [], podeEditar,
       await procedimentoService.deletarAnexo(anexoId);
       toast.success('Anexo excluído com sucesso!');
 
-      // Filtra imediatamente o array removendo o anexo excluído e avisa o PainelProcedimento
+      // Filtra e repassa a nova lista sem o anexo deletado
       if (onAtualizarAnexos) {
         const anexosAtualizados = anexos.filter(a => a.id !== anexoId);
         onAtualizarAnexos(anexosAtualizados);
