@@ -43,7 +43,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
   const isAdmin = roleNome === 'ADMIN';
   const isCriador = selecionado?.usuario_id && user?.id ? selecionado.usuario_id === user.id : false;
-  
+
   const temPermissaoEdicaoCompartilhada = selecionado?.permissoes?.some(
     (p) => p.usuarioId === user?.id && p.nivel === 'EDITAR'
   );
@@ -100,7 +100,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
       });
 
       toast.success('Procedimento atualizado com sucesso!');
-      
+
       setTitulo(procedimentoAtualizado.titulo);
       setDescricao(procedimentoAtualizado.descricao);
       setScriptPassoAPasso(procedimentoAtualizado.script_passo_a_passo);
@@ -164,11 +164,10 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               onChange={(e) => setTitulo(e.target.value)}
               disabled={!editando}
               placeholder="Título do Procedimento"
-              className={`w-full text-2xl font-bold bg-transparent text-slate-900 dark:text-slate-100 transition-all ${
-                editando 
-                  ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none' 
+              className={`w-full text-2xl font-bold bg-transparent text-slate-900 dark:text-slate-100 transition-all ${editando
+                  ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none'
                   : 'border-none cursor-default'
-              }`}
+                }`}
             />
             <input
               type="text"
@@ -176,11 +175,10 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               onChange={(e) => setDescricao(e.target.value)}
               disabled={!editando}
               placeholder="Adicionar uma descrição curta..."
-              className={`w-full text-sm bg-transparent text-slate-600 dark:text-slate-400 transition-all ${
-                editando 
-                  ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none' 
+              className={`w-full text-sm bg-transparent text-slate-600 dark:text-slate-400 transition-all ${editando
+                  ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none'
                   : 'border-none cursor-default'
-              }`}
+                }`}
             />
           </div>
 
@@ -258,7 +256,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
             {tProcedimento('passoAPasso')}
           </h3>
-          
+
           {editando ? (
             <textarea
               value={scriptPassoAPasso}
@@ -273,17 +271,19 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           )}
         </div>
 
-        {/* Galeria de Anexos (Atualiza o estado pai imediatamente ao adicionar ou remover) */}
-        <GaleriaAnexos 
+        {/* Galeria de Anexos */}
+        <GaleriaAnexos
           procedimentoId={selecionado.id}
           anexos={selecionado.anexos || []}
           podeEditar={podeEditar && editando}
           onAtualizarAnexos={(novosAnexos) => {
+            const procedimentoAtualizado = {
+              ...selecionado,
+              anexos: novosAnexos
+            };
+
             if (onAtualizarProcedimento) {
-              onAtualizarProcedimento({
-                ...selecionado,
-                anexos: novosAnexos
-              });
+              onAtualizarProcedimento(procedimentoAtualizado);
             }
           }}
         />
