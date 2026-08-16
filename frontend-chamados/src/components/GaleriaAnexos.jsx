@@ -14,6 +14,7 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
   const tProcedimento = useTranslations('Procedimento');
   const tCommon = useTranslations('Common');
   const tToastProcedimento = useTranslations('Toast.Procedimento');
+  const tAlertaAnexo = useTranslations('Alerta.Anexo');
 
   const [mediaExpandida, setMediaExpandida] = useState(null);
   const [excluindoId, setExcluindoId] = useState(null);
