@@ -41,18 +41,33 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
     }
   }, [selecionado?.id]);
 
+  // =========================================================================
+  // CORREÇÃO DAS PERMISSÕES (BLINDADO CONTRA TIPOS E ESTRUTURAS)
+  // =========================================================================
   const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
-  const isAdmin = roleNome === 'ADMIN';
-  const isCriador = selecionado?.usuario_id && user?.id ? selecionado.usuario_id === user.id : false;
+  const isAdmin = roleNome?.toUpperCase() === 'ADMIN';
   
-  // CORREÇÃO AQUI: Verificando usuario_id e usuarioId, além de garantir o uppercase no nível
-  const temPermissaoEdicaoCompartilhada = selecionado?.permissoes?.some(
-    (p) => (p.usuario_id === user?.id || p.usuarioId === user?.id) && p.nivel?.toUpperCase() === 'EDITAR'
-  );
+  // Converte ambos para String para evitar erro entre (1 === "1")
+  const isCriador = selecionado?.usuario_id && user?.id 
+    ? String(selecionado.usuario_id) === String(user.id) 
+    : false;
+  
+  const temPermissaoEdicaoCompartilhada = selecionado?.permissoes?.some((p) => {
+    // Procura o ID em todas as formas comuns que a API pode retornar
+    const idUsuarioPermissao = p.usuarioId || p.usuario_id || p.usuario?.id;
+    // Pega o nível de acesso (EDITAR, LEITURA)
+    const nivelPermissao = p.nivel || p.permissao; 
+
+    const isMesmoUsuario = String(idUsuarioPermissao) === String(user?.id);
+    const isNivelEdicao = nivelPermissao?.toUpperCase() === 'EDITAR';
+
+    return isMesmoUsuario && isNivelEdicao;
+  });
 
   const podeExcluir = isAdmin || isCriador;
   const podeCompartilhar = isAdmin || isCriador;
   const podeEditar = isAdmin || isCriador || temPermissaoEdicaoCompartilhada;
+  // =========================================================================
 
   const nomeAutor =
     selecionado?.usuario?.nome ||
