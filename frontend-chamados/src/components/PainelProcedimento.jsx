@@ -22,7 +22,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const [isPublico, setIsPublico] = useState(selecionado?.publico || false);
   const [carregandoPublico, setCarregandoPublico] = useState(false);
 
-  // Estados para edição inline transparente
+  // Estados para edição transparente
   const [editando, setEditando] = useState(false);
   const [titulo, setTitulo] = useState(selecionado?.titulo || '');
   const [descricao, setDescricao] = useState(selecionado?.descricao || '');
@@ -152,34 +152,33 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
 
         {/* Cabeçalho do Procedimento */}
         <div className="flex justify-between items-start gap-4 mb-4">
-          <div className="w-full">
-            {editando ? (
-              <div className="space-y-2 mb-2">
-                <input
-                  type="text"
-                  value={titulo}
-                  onChange={(e) => setTitulo(e.target.value)}
-                  placeholder="Título do Procedimento"
-                  className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-sky-500/60 rounded-lg text-2xl font-bold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 transition"
-                />
-                <input
-                  type="text"
-                  value={descricao}
-                  onChange={(e) => setDescricao(e.target.value)}
-                  placeholder="Descrição curta (Opcional)"
-                  className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-sky-500/60 rounded-lg text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-sky-500 transition"
-                />
-              </div>
-            ) : (
-              <div>
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2 transition-colors">
-                  {selecionado.titulo}
-                </h1>
-                <p className="text-sm text-slate-600 dark:text-slate-400 transition-colors">
-                  {selecionado.descricao}
-                </p>
-              </div>
-            )}
+          <div className="w-full space-y-1">
+            {/* Título sem bordas, idêntico à visualização, habilitando foco apenas quando editando */}
+            <input
+              type="text"
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+              disabled={!editando}
+              placeholder="Título do Procedimento"
+              className={`w-full text-2xl font-bold bg-transparent text-slate-900 dark:text-slate-100 transition-all ${
+                editando 
+                  ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none' 
+                  : 'border-none cursor-default'
+              }`}
+            />
+            {/* Descrição sem bordas */}
+            <input
+              type="text"
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              disabled={!editando}
+              placeholder="Adicionar uma descrição curta..."
+              className={`w-full text-sm bg-transparent text-slate-600 dark:text-slate-400 transition-all ${
+                editando 
+                  ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none' 
+                  : 'border-none cursor-default'
+              }`}
+            />
           </div>
 
           <div className="flex gap-2.5 shrink-0">
@@ -221,7 +220,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
                   )}
                 </button>
 
-                {/* Botão Editar (Alterna para modo inline) */}
+                {/* Botão Editar */}
                 {podeEditar && (
                   <button
                     onClick={() => setEditando(true)}
@@ -251,7 +250,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           </div>
         </div>
 
-        {/* Script Passo a Passo (Renderização Limpa vs Textarea Integrada) */}
+        {/* Script Passo a Passo (Alterna perfeitamente entre o visualizador Markdown e a edição limpa) */}
         <div className="mb-8">
           <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
             {tProcedimento('passoAPasso')}
@@ -263,7 +262,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               value={scriptPassoAPasso}
               onChange={(e) => setScriptPassoAPasso(e.target.value)}
               placeholder="Digite o script em Markdown..."
-              className="w-full p-5 rounded-xl bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 text-sm leading-relaxed font-mono border border-sky-500/70 focus:outline-none focus:ring-1 focus:ring-sky-500 resize-none transition-colors shadow-inner"
+              className="w-full h-[400px] p-5 rounded-xl bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 text-sm leading-relaxed font-mono border border-slate-700 dark:border-slate-800 focus:outline-none focus:border-sky-500 resize-none transition-colors"
             />
           ) : (
             <div className="h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed font-mono border border-slate-800 dark:border-slate-800/80 transition-colors duration-200">
