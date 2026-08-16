@@ -1,7 +1,8 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useUpload } from '../contexts/UploadContext';
+import { X, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 
 const formatBytes = (bytes) => {
   if (!bytes || bytes === 0) return '0 B';
@@ -12,13 +13,56 @@ const formatBytes = (bytes) => {
 };
 
 export default function GlobalUploadWidget() {
-  const { uploadsAtivos } = useUpload();
+  const { uploadsAtivos, removerUpload } = useUpload();
   const tCommon = useTranslations('Common');
+
+  const [minimizado, setMinimizado] = useState(false);
+
+  useEffect(() => {
+    if (uploadsAtivos.some(item => item.status === 'erro')) {
+      setMinimizado(false);
+    }
+  }, [uploadsAtivos]);
 
   if (uploadsAtivos.length === 0) return null;
 
+  const emExecucao = uploadsAtivos.some(item => item.status === 'enviando');
+
+  if (minimizado) {
+    return (
+      <div className="fixed bottom-4 right-4 z-50 pointer-events-auto animate-in slide-in-from-bottom-2 fade-in duration-200">
+        <button 
+          onClick={() => setMinimizado(false)}
+          className="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl border border-slate-800 flex items-center gap-3 hover:bg-slate-800 transition cursor-pointer"
+        >
+          {emExecucao && <Loader2 size={16} className="animate-spin text-sky-400" />}
+          <span className="text-xs font-semibold">
+            {tCommon('enviando')} ({uploadsAtivos.length})
+          </span>
+          <ChevronUp size={16} className="text-slate-400" />
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-auto">
+      
+      {/* Botão de Minimizar: Visível apenas se houver uploads rodando */}
+      {emExecucao && (
+        <div className="flex justify-end">
+          <button 
+            onClick={() => setMinimizado(true)}
+            className="flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition shadow-lg cursor-pointer text-xs font-semibold"
+            title={tCommon('minimizar') || "Minimizar"}
+          >
+            <ChevronDown size={14} />
+            {tCommon('minimizar') || "Minimizar"}
+          </button>
+        </div>
+      )}
+
+      {/* Lista de Uploads */}
       {uploadsAtivos.map((item) => (
         <div key={item.id} className="bg-slate-900 text-white p-4 rounded-xl shadow-2xl border border-slate-800 text-xs">
           
@@ -29,14 +73,28 @@ export default function GlobalUploadWidget() {
             </div>
           )}
 
-          <div className="flex justify-between items-center mb-1.5">
-            <span className="font-bold text-sky-400 truncate max-w-[200px]" title={item.nome}>
+          <div className="flex justify-between items-start mb-2 gap-2">
+            <span className={`font-bold truncate flex-1 ${item.status === 'erro' ? 'text-red-400' : 'text-sky-400'}`} title={item.nome}>
               {item.status === 'enviando' ? `${tCommon('enviando')}: ` : item.status === 'concluido' ? `${tCommon('concluido')}: ` : `${tCommon('erro')}: `} 
               {item.nome}
             </span>
-            <span className="font-semibold text-slate-300">
-              {item.status === 'enviando' ? `${item.progresso}%` : item.status === 'concluido' ? tCommon('concluido') : tCommon('erro')}
-            </span>
+            
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="font-semibold text-slate-300">
+                {item.status === 'enviando' ? `${item.progresso}%` : item.status === 'concluido' ? tCommon('concluido') : tCommon('erro')}
+              </span>
+              
+              {/* Botão de Fechar Exclusivo para Erros */}
+              {item.status === 'erro' && (
+                <button 
+                  onClick={() => removerUpload(item.id)}
+                  className="bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 p-1 rounded-md transition cursor-pointer"
+                  title={tCommon('fechar') || "Fechar"}
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
           
           <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
