@@ -22,13 +22,14 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const [isPublico, setIsPublico] = useState(selecionado?.publico || false);
   const [carregandoPublico, setCarregandoPublico] = useState(false);
 
-  // Estados para edição transparente
+  // Estados para edição inline transparente
   const [editando, setEditando] = useState(false);
   const [titulo, setTitulo] = useState(selecionado?.titulo || '');
   const [descricao, setDescricao] = useState(selecionado?.descricao || '');
   const [scriptPassoAPasso, setScriptPassoAPasso] = useState(selecionado?.script_passo_a_passo || '');
   const [salvando, setSalvando] = useState(false);
 
+  // Sincroniza os estados locais quando outro procedimento for selecionado na sidebar
   useEffect(() => {
     if (selecionado) {
       setTitulo(selecionado.titulo || '');
@@ -37,7 +38,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
       setIsPublico(selecionado.publico || false);
       setEditando(false);
     }
-  }, [selecionado]);
+  }, [selecionado?.id]); // Executa apenas quando o ID do procedimento selecionado muda
 
   const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
   const isAdmin = roleNome === 'ADMIN';
@@ -91,6 +92,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const handleSalvarEdicao = async () => {
     setSalvando(true);
     try {
+      // Executa a requisição de atualização no backend
       const procedimentoAtualizado = await procedimentoService.atualizarProcedimento(selecionado.id, {
         titulo,
         descricao,
@@ -99,8 +101,11 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
       });
 
       toast.success('Procedimento atualizado com sucesso!');
+      
+      // Sai do modo de edição instantaneamente sem recarregar a página inteira
       setEditando(false);
 
+      // Atualiza o estado pai de forma reativa (atualiza o painel e a sidebar instantaneamente)
       if (onAtualizarProcedimento) {
         onAtualizarProcedimento(procedimentoAtualizado);
       }
@@ -153,7 +158,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
         {/* Cabeçalho do Procedimento */}
         <div className="flex justify-between items-start gap-4 mb-4">
           <div className="w-full space-y-1">
-            {/* Título sem bordas, idêntico à visualização, habilitando foco apenas quando editando */}
             <input
               type="text"
               value={titulo}
@@ -166,7 +170,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
                   : 'border-none cursor-default'
               }`}
             />
-            {/* Descrição sem bordas */}
             <input
               type="text"
               value={descricao}
@@ -250,7 +253,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           </div>
         </div>
 
-        {/* Script Passo a Passo (Alterna perfeitamente entre o visualizador Markdown e a edição limpa) */}
+        {/* Script Passo a Passo (Markdown vs Textarea) */}
         <div className="mb-8">
           <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
             {tProcedimento('passoAPasso')}
