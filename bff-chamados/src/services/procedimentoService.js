@@ -1,7 +1,8 @@
-const procedimentoRepository = require('../repositories/procedimentoRepository');
-const permissaoRepository = require('../repositories/permissaoRepository');
 const fs = require('fs');
 const path = require('path');
+
+const procedimentoRepository = require('../repositories/procedimentoRepository');
+const permissaoRepository = require('../repositories/permissaoRepository');
 
 class ProcedimentoService {
   async listarProcedimentos(filtros, usuarioLogado) {
