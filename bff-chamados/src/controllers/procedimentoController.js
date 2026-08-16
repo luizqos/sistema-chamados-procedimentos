@@ -1,9 +1,9 @@
-const service = require('../services/procedimentoService');
+const procedimentoService = require('../services/procedimentoService');
 
 exports.listar = async (req, res) => {
   try {
     const { busca, page = 1, limit = 15 } = req.query;
-    const resultado = await service.listarProcedimentos({ busca, page, limit }, req.usuario);
+    const resultado = await procedimentoService.listarProcedimentos({ busca, page, limit }, req.usuario);
     return res.json(resultado);
   } catch (error) {
     const status = error.statusCode || 500;
@@ -13,7 +13,7 @@ exports.listar = async (req, res) => {
 
 exports.obterPorId = async (req, res) => {
   try {
-    const procedimento = await service.obterProcedimentoPorId(req.params.id);
+    const procedimento = await procedimentoService.obterProcedimentoPorId(req.params.id);
     res.json(procedimento);
   } catch (error) {
     const status = error.statusCode || 404;
@@ -23,7 +23,7 @@ exports.obterPorId = async (req, res) => {
 
 exports.criar = async (req, res) => {
   try {
-    const novo = await service.criarProcedimento(req.body, req.usuario);
+    const novo = await procedimentoService.criarProcedimento(req.body, req.usuario);
     res.status(201).json(novo);
   } catch (error) {
     const status = error.statusCode || 400;
@@ -33,7 +33,7 @@ exports.criar = async (req, res) => {
 
 exports.deletar = async (req, res) => {
   try {
-    await service.deletarProcedimento(req.params.id, req.usuario);
+    await procedimentoService.deletarProcedimento(req.params.id, req.usuario);
     res.json({ message: 'Excluído com sucesso' });
   } catch (error) {
     const status = error.statusCode || 400;
@@ -43,7 +43,7 @@ exports.deletar = async (req, res) => {
 
 exports.adicionarAnexo = async (req, res) => {
   try {
-    const anexo = await service.adicionarAnexo(req.params.id, req.file);
+    const anexo = await procedimentoService.adicionarAnexo(req.params.id, req.file, req.usuario);
     res.status(201).json(anexo);
   } catch (error) {
     const status = error.statusCode || 400;
@@ -54,7 +54,7 @@ exports.adicionarAnexo = async (req, res) => {
 exports.atualizar = async (req, res) => {
   try {
     const { id } = req.params;
-    const procedimentoAtualizado = await service.atualizarProcedimento(id, req.body, req.usuario);
+    const procedimentoAtualizado = await procedimentoService.atualizarProcedimento(id, req.body, req.usuario);
     return res.json(procedimentoAtualizado);
   } catch (error) {
     const status = error.statusCode || 500;
@@ -66,8 +66,7 @@ exports.excluirAnexo = async (req, res) => {
   try {
     const { anexoId } = req.params;
     const usuarioLogado = req.usuario;
-
-    await service.excluirAnexo(anexoId, usuarioLogado);
+    await procedimentoService.excluirAnexo(anexoId, usuarioLogado);
     return res.status(204).send();
   } catch (error) {
     const status = error.statusCode || 500;

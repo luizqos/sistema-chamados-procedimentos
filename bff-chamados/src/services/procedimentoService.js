@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-
 const procedimentoRepository = require('../repositories/procedimentoRepository');
 const permissaoRepository = require('../repositories/permissaoRepository');
 
@@ -41,8 +40,9 @@ class ProcedimentoService {
     }
 
     const roleNome = typeof usuarioLogado?.role === 'object' ? usuarioLogado?.role?.nome : usuarioLogado?.role;
-    const isAdmin = roleNome === 'ADMIN';
-    const isCriador = procedimento.usuario_id && procedimento.usuario_id === usuarioLogado?.id;
+    const isAdmin = roleNome?.toUpperCase() === 'ADMIN';
+    const idCriador = procedimento.usuario_id || procedimento.usuarioId;
+    const isCriador = idCriador && String(idCriador) === String(usuarioLogado?.id);
 
     if (!isAdmin && !isCriador) {
       const error = new Error('Acesso negado: Você não tem permissão para excluir este procedimento.');
@@ -54,36 +54,48 @@ class ProcedimentoService {
   }
 
   async excluirProcedimento(id, usuarioLogado) {
-    const idNumerico = Number(id);
-    const procedimento = await procedimentoRepository.buscarPorId(idNumerico);
+    return this.deletarProcedimento(id, usuarioLogado);
+  }
+
+  async adicionarAnexo(procedimentoId, file, usuarioLogado) {
+    if (!file) throw new Error('Nenhum arquivo enviado');
+
+    const idNumerico = Number(procedimentoId);
+    const procedimento = await procedimentoRepository.obterPorId(idNumerico);
 
     if (!procedimento) {
-      const error = new Error('Procedimento não encontrado.');
-      error.statusCode = 404;
-      throw error;
+      throw new Error('Procedimento não encontrado.');
     }
 
     const roleNome = typeof usuarioLogado?.role === 'object' ? usuarioLogado?.role?.nome : usuarioLogado?.role;
-    const isAdmin = roleNome === 'ADMIN';
-    const isCriador = procedimento.usuario_id && procedimento.usuario_id === usuarioLogado?.id;
+    const isAdmin = roleNome?.toUpperCase() === 'ADMIN';
+    const idCriador = procedimento.usuario_id || procedimento.usuarioId;
+    const isCriador = idCriador && String(idCriador) === String(usuarioLogado?.id);
 
+    let temPermissaoEdicao = false;
     if (!isAdmin && !isCriador) {
-      const error = new Error('Acesso negado: Você não tem permissão para excluir este procedimento.');
+      const permissaoCompartilhada = await permissaoRepository.verificarPermissaoUsuario(idNumerico, usuarioLogado?.id);
+      if (permissaoCompartilhada && permissaoCompartilhada.nivel?.toUpperCase() === 'EDITAR') {
+        temPermissaoEdicao = true;
+      }
+    }
+
+    if (!isAdmin && !isCriador && !temPermissaoEdicao) {
+      try {
+        const caminhoCompleto = path.join(__dirname, '../../uploads/', file.filename);
+        if (fs.existsSync(caminhoCompleto)) fs.unlinkSync(caminhoCompleto);
+      } catch (e) {}
+
+      const error = new Error('Acesso negado para adicionar anexo neste procedimento.');
       error.statusCode = 403;
       throw error;
     }
-
-    return await procedimentoRepository.deletar(idNumerico);
-  }
-
-  async adicionarAnexo(procedimentoId, file) {
-    if (!file) throw new Error('Nenhum arquivo enviado');
 
     const tipo = file.mimetype.startsWith('image/') ? 'imagem' : 'video';
     const caminho_arquivo = `/uploads/${file.filename}`;
 
     return await procedimentoRepository.criarAnexo({
-      procedimento_id: Number(procedimentoId),
+      procedimento_id: idNumerico,
       tipo,
       caminho_arquivo,
       nome_original: file.originalname,
@@ -103,14 +115,15 @@ class ProcedimentoService {
     }
 
     const roleNome = typeof usuarioLogado?.role === 'object' ? usuarioLogado?.role?.nome : usuarioLogado?.role;
-    const isAdmin = roleNome === 'ADMIN';
-    const isCriador = procedimento.usuario_id && procedimento.usuario_id === usuarioLogado?.id;
+    const isAdmin = roleNome?.toUpperCase() === 'ADMIN';
+    const idCriador = procedimento.usuario_id || procedimento.usuarioId;
+    const isCriador = idCriador && String(idCriador) === String(usuarioLogado?.id);
 
     let temPermissaoEdicao = false;
 
     if (!isAdmin && !isCriador) {
       const permissaoCompartilhada = await permissaoRepository.verificarPermissaoUsuario(idNumerico, usuarioLogado?.id);
-      if (permissaoCompartilhada && permissaoCompartilhada.nivel === 'EDITAR') {
+      if (permissaoCompartilhada && permissaoCompartilhada.nivel?.toUpperCase() === 'EDITAR') {
         temPermissaoEdicao = true;
       }
     }
@@ -138,17 +151,25 @@ class ProcedimentoService {
       throw error;
     }
 
-    const procedimento = await procedimentoRepository.obterPorId(anexo.procedimento_id);
+    const procId = anexo.procedimento_id || anexo.procedimentoId;
+    
+    if (!procId) {
+      throw new Error('Falha de mapeamento: ID do procedimento atrelado ao anexo não foi encontrado.');
+    }
+
+    const procedimento = await procedimentoRepository.obterPorId(procId);
 
     const roleNome = typeof usuarioLogado?.role === 'object' ? usuarioLogado?.role?.nome : usuarioLogado?.role;
-    const isAdmin = roleNome === 'ADMIN';
-    const isCriador = procedimento?.usuario_id === usuarioLogado?.id;
+    const isAdmin = roleNome?.toUpperCase() === 'ADMIN';
+    
+    const idCriador = procedimento?.usuario_id || procedimento?.usuarioId;
+    const isCriador = idCriador && String(idCriador) === String(usuarioLogado?.id);
 
     let temPermissaoEdicao = false;
 
     if (!isAdmin && !isCriador) {
-      const permissaoCompartilhada = await permissaoRepository.verificarPermissaoUsuario(anexo.procedimento_id, usuarioLogado?.id);
-      if (permissaoCompartilhada && permissaoCompartilhada.nivel === 'EDITAR') {
+      const permissaoCompartilhada = await permissaoRepository.verificarPermissaoUsuario(procId, usuarioLogado?.id);
+      if (permissaoCompartilhada && permissaoCompartilhada.nivel?.toUpperCase() === 'EDITAR') {
         temPermissaoEdicao = true;
       }
     }
@@ -159,10 +180,13 @@ class ProcedimentoService {
       throw error;
     }
 
-    const caminhoCompleto = path.join(__dirname, '../../', anexo.caminho_arquivo);
-
-    if (fs.existsSync(caminhoCompleto)) {
-      fs.unlinkSync(caminhoCompleto);
+    const filePath = anexo.caminho_arquivo || anexo.caminhoArquivo;
+    
+    if (filePath) {
+      const caminhoCompleto = path.join(__dirname, '../../', filePath);
+      if (fs.existsSync(caminhoCompleto)) {
+        fs.unlinkSync(caminhoCompleto);
+      }
     }
 
     return await procedimentoRepository.deletarAnexo(Number(anexoId));
