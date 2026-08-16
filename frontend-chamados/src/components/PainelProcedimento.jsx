@@ -248,7 +248,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           </div>
         </div>
 
-        {/* Script Passo a Passo (Mesmas dimensões exatas e fontes para visualizador e textarea) */}
+        {/* Script Passo a Passo (Transição fluida integrada) */}
         <div className="mb-8">
           <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
             {tProcedimento('passoAPasso')}
@@ -259,7 +259,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               value={scriptPassoAPasso}
               onChange={(e) => setScriptPassoAPasso(e.target.value)}
               placeholder="Digite o script em Markdown..."
-              className="w-full h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed font-mono border border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500 resize-none transition-colors"
+              className="w-full h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed font-mono border border-slate-800 dark:border-slate-800 focus:outline-none focus:ring-0 focus:border-transparent resize-none transition-colors"
             />
           ) : (
             <div className="h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed font-mono border border-slate-800 dark:border-slate-800/80 transition-colors duration-200">
