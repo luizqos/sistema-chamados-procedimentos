@@ -8,6 +8,8 @@ import toast from 'react-hot-toast';
 
 import GaleriaAnexos from './GaleriaAnexos';
 import ModalCompartilhamento from './modal/ModalCompartilhamento';
+import BotaoIcone from './button/BotaoIcone';
+import BotaoAcao from './button/BotaoAcao';
 import { procedimentoService } from '@/src/services/procedimentoService';
 
 export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user, onAtualizarProcedimento }) {
@@ -154,7 +156,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           )}
         </div>
 
-        {/* Cabeçalho do Procedimento com Botões Minimalistas */}
+        {/* Cabeçalho do Procedimento com Botões Extraídos */}
         <div className="flex justify-between items-start gap-4 mb-4">
           <div className="w-full space-y-1">
             <input
@@ -183,71 +185,57 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             />
           </div>
 
-          {/* Grupo de Ações Minimalista */}
+          {/* Grupo de Ações Refatorado */}
           <div className="flex gap-1 shrink-0">
             {editando ? (
               <>
-                <button
-                  onClick={handleSalvarEdicao}
-                  disabled={salvando}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition cursor-pointer disabled:opacity-50 shadow-sm"
-                >
-                  {salvando ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Salvar
-                </button>
-                <button
-                  onClick={handleCancelarEdicao}
-                  disabled={salvando}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-xs transition cursor-pointer shadow-sm"
-                >
-                  <X size={16} /> Cancelar
-                </button>
+                <BotaoAcao 
+                  label="Salvar" 
+                  icon={Save} 
+                  onClick={handleSalvarEdicao} 
+                  loading={salvando} 
+                  variant="primary" 
+                />
+                <BotaoAcao 
+                  label="Cancelar" 
+                  icon={X} 
+                  onClick={handleCancelarEdicao} 
+                  disabled={salvando} 
+                  variant="secondary" 
+                />
               </>
             ) : (
               <>
-                {/* Botão Copiar Minimalista */}
-                <button
-                  onClick={onCopiar}
-                  title={copiado ? tProcedimento('copiado') : tProcedimento('copiarScript')}
-                  className={`p-2 rounded-lg transition cursor-pointer ${
-                    copiado
-                      ? 'text-green-600 bg-green-50 dark:bg-green-900/30'
-                      : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800'
-                  }`}
-                >
-                  {copiado ? <Check size={18} /> : <Copy size={18} />}
-                </button>
-
-                {/* Botão Editar Minimalista */}
+                <BotaoIcone 
+                  icon={copiado ? Check : Copy} 
+                  onClick={onCopiar} 
+                  title={copiado ? tProcedimento('copiado') : tProcedimento('copiarScript')} 
+                  active={copiado} 
+                  color={copiado ? 'greenActive' : 'default'} 
+                />
                 {podeEditar && (
-                  <button
-                    onClick={() => setEditando(true)}
-                    title="Editar Procedimento"
-                    className="p-2 rounded-lg text-slate-500 hover:text-sky-600 dark:text-slate-400 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/30 transition cursor-pointer"
-                  >
-                    <Pencil size={18} />
-                  </button>
+                  <BotaoIcone 
+                    icon={Pencil} 
+                    onClick={() => setEditando(true)} 
+                    title="Editar Procedimento" 
+                    color="sky" 
+                  />
                 )}
-
-                {/* Botão Compartilhar Minimalista */}
                 {podeCompartilhar && (
-                  <button
-                    onClick={() => setModalCompartilharAberto(true)}
-                    title={tCommon('compartilhar') || 'Compartilhar'}
-                    className="p-2 rounded-lg text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition cursor-pointer"
-                  >
-                    <Share2 size={18} />
-                  </button>
+                  <BotaoIcone 
+                    icon={Share2} 
+                    onClick={() => setModalCompartilharAberto(true)} 
+                    title={tCommon('compartilhar') || 'Compartilhar'} 
+                    color="emerald" 
+                  />
                 )}
-
-                {/* Botão Excluir Minimalista */}
                 {podeExcluir && (
-                  <button
-                    onClick={() => onDeletar(selecionado.id)}
-                    title={tCommon('excluir')}
-                    className="p-2 rounded-lg text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition cursor-pointer"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                  <BotaoIcone 
+                    icon={Trash2} 
+                    onClick={() => onDeletar(selecionado.id)} 
+                    title={tCommon('excluir')} 
+                    color="red" 
+                  />
                 )}
               </>
             )}
@@ -274,14 +262,13 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           )}
         </div>
 
-        {/* Galeria de Anexos Integrada com UploadContext */}
+        {/* Galeria de Anexos */}
         <GaleriaAnexos 
           procedimentoId={selecionado.id}
           tituloProcedimento={selecionado.titulo}
           anexos={selecionado.anexos || []}
           podeEditar={podeEditar && editando}
           onAtualizarAnexos={(novosAnexos) => {
-            // Filtro local instantâneo para exclusões
             if (onAtualizarProcedimento) {
               onAtualizarProcedimento({
                 ...selecionado,
@@ -290,7 +277,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             }
           }}
           onUploadConcluido={() => {
-            // Recarrega de forma silenciosa do servidor o procedimento para popular a nova mídia na tela
             if (onAtualizarProcedimento) {
               onAtualizarProcedimento({ id: selecionado.id });
             }
