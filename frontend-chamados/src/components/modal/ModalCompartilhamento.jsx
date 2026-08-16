@@ -27,28 +27,24 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId,
 
   async function carregarDados() {
     setCarregandoDados(true);
+
     try {
-      const [resUsuarios, permissoes] = await Promise.all([
+      const [{ data: { dados } }, permissoes] = await Promise.all([
         api.get('/api/usuarios'),
         procedimentoPermissaoService.listarPermissoes(procedimentoId)
       ]);
 
-      console.log('resUsuarios', resUsuarios);
-      
+      const idCriador = Number(criadorId);
 
-      const usuariosElegiveis = resUsuarios.data.dados.filter(u => {
-        const isAdm = u.role?.nome === 'ADMIN' || u.roleId === 1;
-        const isCriador = Number(u.id) === Number(criadorId);
-        return !isAdm && !isCriador;
-      });
-
-      console.log('elegiveis', usuariosElegiveis);
-      
+      const usuariosElegiveis = dados.filter(u =>
+        u.role?.nome !== 'ADMIN' && u.roleId !== 1 && Number(u.id) !== idCriador
+      );
 
       setUsuariosDisponiveis(usuariosElegiveis);
       setPermissoesAtuais(permissoes);
-      setUsuariosSelecionados([]); 
+      setUsuariosSelecionados([]);
       setTermoBusca('');
+
     } catch (err) {
       toast.error(tToastCompartilhamento('erroCarregar'));
     } finally {
@@ -56,7 +52,8 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId,
     }
   }
 
-  const usuariosFiltrados = usuariosDisponiveis.filter(u => 
+
+  const usuariosFiltrados = usuariosDisponiveis.filter(u =>
     u.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
     u.email.toLowerCase().includes(termoBusca.toLowerCase())
   );
@@ -91,8 +88,8 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId,
     setLoading(true);
     try {
       await procedimentoPermissaoService.salvarPermissaoEmLote(
-        procedimentoId, 
-        usuariosSelecionados.map(Number), 
+        procedimentoId,
+        usuariosSelecionados.map(Number),
         nivelSelecionado
       );
       toast.success(tToastCompartilhamento('sucessoSalvar'));
@@ -122,7 +119,7 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId,
   return (
     <div className="fixed inset-0 bg-slate-900/75 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-colors">
       <div className="bg-white dark:bg-slate-900 rounded-xl w-full max-w-lg p-6 shadow-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 overflow-hidden flex flex-col max-h-[90vh]">
-        
+
         {/* Cabeçalho */}
         <div className="flex justify-between items-center pb-4 border-b border-slate-200 dark:border-slate-800 mb-4 shrink-0">
           <div className="flex items-center gap-2">
@@ -140,7 +137,7 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId,
           </div>
         ) : (
           <div className="overflow-y-auto pr-1 space-y-6 flex-1 custom-scrollbar">
-            
+
             {/* Formulário de Seleção e Busca */}
             <form onSubmit={handleAdicionarPermissao} className="space-y-3">
               <div className="flex justify-between items-center">
@@ -180,11 +177,10 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId,
                     return (
                       <label
                         key={u.id}
-                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition text-xs ${
-                          isChecked 
-                            ? 'bg-sky-50 dark:bg-sky-950/40 text-sky-900 dark:text-sky-200' 
-                            : 'hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300'
-                        }`}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition text-xs ${isChecked
+                          ? 'bg-sky-50 dark:bg-sky-950/40 text-sky-900 dark:text-sky-200'
+                          : 'hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300'
+                          }`}
                       >
                         <div className="flex items-center gap-2.5">
                           <input
