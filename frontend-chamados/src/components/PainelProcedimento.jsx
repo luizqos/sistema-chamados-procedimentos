@@ -15,6 +15,7 @@ import { procedimentoService } from '@/src/services/procedimentoService';
 export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user, onAtualizarProcedimento }) {
   const tProcedimento = useTranslations('Procedimento');
   const tToastCompartilhamento = useTranslations('Toast.Compartilhamento');
+  const tToastProcedimento = useTranslations('Toast.Procedimento'); // <-- Adicionado
   const tCommon = useTranslations('Common');
   const tCompartilhamento = useTranslations('Compartilhamento');
   const format = useFormatter();
@@ -69,7 +70,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
     selecionado?.usuario?.nome ||
     selecionado?.criador?.nome ||
     (isCriador ? user?.nome : null) ||
-    'Sistema';
+    tCommon('sistema');
 
   const dataCriacao = selecionado?.created_at
     ? format.dateTime(new Date(selecionado.created_at), {
@@ -112,7 +113,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
         publico: isPublico
       });
 
-      toast.success('Procedimento atualizado com sucesso!');
+      toast.success(tToastProcedimento('atualizadoSucesso'));
       
       setTitulo(procedimentoAtualizado.titulo);
       setDescricao(procedimentoAtualizado.descricao);
@@ -123,7 +124,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
         onAtualizarProcedimento(procedimentoAtualizado);
       }
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Erro ao atualizar procedimento.');
+      toast.error(err.response?.data?.error || tToastProcedimento('atualizarErro'));
     } finally {
       setSalvando(false);
     }
@@ -202,7 +203,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               disabled={!editando}
-              placeholder="Título do Procedimento"
               className={`w-full text-2xl font-bold bg-transparent text-slate-900 dark:text-slate-100 transition-all ${
                 editando 
                   ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none' 
@@ -214,7 +214,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
               disabled={!editando}
-              placeholder="Adicionar uma descrição curta..."
               className={`w-full text-sm bg-transparent text-slate-600 dark:text-slate-400 transition-all ${
                 editando 
                   ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none' 
@@ -228,14 +227,14 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             {editando ? (
               <>
                 <BotaoAcao 
-                  label="Salvar" 
+                  label={tCommon('salvar')}
                   icon={Save} 
                   onClick={handleSalvarEdicao} 
                   loading={salvando} 
                   variant="primary" 
                 />
                 <BotaoAcao 
-                  label="Cancelar" 
+                  label={tCommon('cancelar')}
                   icon={X} 
                   onClick={handleCancelarEdicao} 
                   disabled={salvando} 
@@ -255,7 +254,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
                   <BotaoIcone 
                     icon={Pencil} 
                     onClick={() => setEditando(true)} 
-                    title="Editar Procedimento" 
+                    title={tCommon('editar')}
                     color="sky" 
                   />
                 )}
@@ -263,7 +262,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
                   <BotaoIcone 
                     icon={Share2} 
                     onClick={() => setModalCompartilharAberto(true)} 
-                    title={tCommon('compartilhar') || 'Compartilhar'} 
+                    title={tCommon('compartilhar')} 
                     color="emerald" 
                   />
                 )}
@@ -290,7 +289,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             <textarea
               value={scriptPassoAPasso}
               onChange={(e) => setScriptPassoAPasso(e.target.value)}
-              placeholder="Digite o script em Markdown..."
               className="w-full h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed font-mono border border-slate-800 dark:border-slate-800 focus:outline-none focus:ring-0 focus:border-transparent resize-none transition-colors"
             />
           ) : (

@@ -1,5 +1,7 @@
 {
   "Common": {
+    "sistema": "System",
+    "editar": "Edit",
     "voltar": "Back",
     "cancelar": "Cancel",
     "anterior": "Previus",
@@ -88,7 +90,9 @@
     "nenhumUsuarioEncontrado": "No users found.",
     "porPagina": "per page",
     "totalRegistros": "Total records:",
-    "paginaDe": "Page {page} of {totalPages}"
+    "paginaDe": "Page {page} of {totalPages}",
+    "adicionarAnexos": "Add Attachment",
+    "nenhumAnexoCadastrado": "No attachments registered for this procedure."
   },
   "Sso": {
     "titulo": "SSO Security",
@@ -182,7 +186,13 @@
       "cadastradoAnexoSucesso": "Procedure and attachments saved successfully!",
       "copiado": "Script copied to the clipboard!",
       "sucessoExclusao": "Procedure deleted successfully!",
-      "erroExclusao": "Error deleting procedure"
+      "erroExclusao": "Error deleting procedure",
+      "atualizadoSucesso": "Procedure updated successfully!",
+      "atualizarErro": "Error updating procedure.",
+      "anexoEnviadoSucesso": "Attachment \"{nome}\" sent successfully!",
+      "anexoEnviarErro": "Error sending \"{nome}\".",
+      "anexoExcluidoSucesso": "Attachment deleted successfully!",
+      "anexoExcluirErro": "Error deleting attachment."
     },
     "Login": {
       "erroSso": "Error processing SSO.",

@@ -12,7 +12,9 @@ import { dialog } from '../utils/dialogs';
 
 export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anexos = [], podeEditar, onAtualizarAnexos, onUploadConcluido }) {
   const tProcedimento = useTranslations('Procedimento');
-  const tAlertaAnexo = useTranslations('Alerta.Anexo'); 
+  const tCommon = useTranslations('Common');
+  const tToastProcedimento = useTranslations('Toast.Procedimento');
+
   const [mediaExpandida, setMediaExpandida] = useState(null);
   const [excluindoId, setExcluindoId] = useState(null);
 
@@ -34,7 +36,7 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
     for (let i = 0; i < arquivosSelecionados.length; i++) {
       const arquivo = arquivosSelecionados[i];
       const cardId = `card-upload-galeria-${arquivo.name}-${Date.now()}`;
-      const nomeProcedimento = tituloProcedimento || 'Anexo Adicional';
+      const nomeProcedimento = tituloProcedimento;
 
       registrarOuAtualizarUpload(cardId, {
         nome: arquivo.name,
@@ -64,7 +66,7 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
           procedimento: nomeProcedimento
         });
 
-        toast.success(`Anexo "${arquivo.name}" enviado com sucesso!`);
+        toast.success(tToastProcedimento('anexoEnviadoSucesso', { nome: arquivo.name }));
         setTimeout(() => removerUpload(cardId), 5000);
 
         if (onUploadConcluido) {
@@ -79,7 +81,7 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
           status: 'erro',
           procedimento: nomeProcedimento
         });
-        toast.error(`Erro ao enviar "${arquivo.name}".`);
+        toast.error(tToastProcedimento('anexoEnviarErro', { nome: arquivo.name }));
       }
     }
   };
@@ -99,14 +101,14 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
     setExcluindoId(anexoId);
     try {
       await procedimentoService.deletarAnexo(anexoId);
-      toast.success('Anexo excluído com sucesso!');
+      toast.success(tToastProcedimento('anexoExcluidoSucesso'));
 
       if (onAtualizarAnexos) {
         const anexosAtualizados = anexos.filter(a => a.id !== anexoId);
         onAtualizarAnexos(anexosAtualizados);
       }
     } catch (err) {
-      toast.error('Erro ao excluir o anexo.');
+      toast.error(tToastProcedimento('anexoExcluirErro'));
     } finally {
       setExcluindoId(null);
     }
@@ -122,7 +124,7 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
         {podeEditar && (
           <label className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-semibold transition cursor-pointer">
             <Upload size={14} />
-            <span>Adicionar Anexo</span>
+            <span>{tProcedimento('adicionarAnexos')}</span> {/* <-- Traduzido */}
             <input
               type="file"
               multiple
@@ -135,7 +137,7 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
       </div>
 
       {(!anexos || anexos.length === 0) ? (
-        <p className="text-xs text-slate-400 italic">Nenhum anexo cadastrado neste procedimento.</p>
+        <p className="text-xs text-slate-400 italic">{tProcedimento('nenhumAnexoCadastrado')}</p> /* <-- Traduzido */
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {anexos.map((anexo) => {
@@ -156,7 +158,7 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
                       onClick={(e) => handleExcluir(anexo.id, e)}
                       disabled={excluindoId === anexo.id}
                       className="p-1 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-slate-800 rounded transition cursor-pointer shrink-0"
-                      title="Excluir Anexo"
+                      title={tCommon('excluir')}
                     >
                       {excluindoId === anexo.id ? <Loader2 size={14} className="animate-spin text-red-500" /> : <Trash2 size={14} />}
                     </button>

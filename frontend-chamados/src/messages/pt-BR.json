@@ -1,5 +1,7 @@
 {
   "Common": {
+    "sistema": "Sistema",
+    "editar": "Editar",
     "voltar": "Voltar",
     "cancelar": "Cancelar",
     "anterior": "Anterior",
@@ -62,7 +64,9 @@
     "textoUploadProcedimento": "Criando Procedimento....",
     "textoUploadEnviadoArquivo": "Enviando arquivo",
     "escolherArquivos": "Selecionar Arquivos",
-    "nenhumArquivoSelecionado": "Nenhum arquivo selecionado"
+    "nenhumArquivoSelecionado": "Nenhum arquivo selecionado",
+    "adicionarAnexos": "Adicionar Anexo",
+    "nenhumAnexoCadastrado": "Nenhum anexo cadastrado neste procedimento."
   },
   "Usuarios": {
     "titulo": "Gestão de Usuários",
@@ -184,7 +188,13 @@
       "cadastradoAnexoSucesso": "Procedimento e anexos salvos com sucesso!",
       "copiado": "Script copiado para a área de transferência!",
       "sucessoExclusao": "Procedimento excluído com sucesso!",
-      "erroExclusao": "Erro ao excluir procedimento"
+      "erroExclusao": "Erro ao excluir procedimento",
+      "atualizadoSucesso": "Procedimento atualizado com sucesso!",
+      "atualizarErro": "Erro ao atualizar procedimento.",
+      "anexoEnviadoSucesso": "Anexo \"{nome}\" enviado com sucesso!",
+      "anexoEnviarErro": "Erro ao enviar \"{nome}\".",
+      "anexoExcluidoSucesso": "Anexo excluído com sucesso!",
+      "anexoExcluirErro": "Erro ao excluir o anexo."
     },
     "Login": {
       "erroSso": "Erro no processamento do SSO.",
