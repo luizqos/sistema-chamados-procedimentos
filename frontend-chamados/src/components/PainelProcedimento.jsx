@@ -22,12 +22,14 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const [isPublico, setIsPublico] = useState(selecionado?.publico || false);
   const [carregandoPublico, setCarregandoPublico] = useState(false);
 
+  // Estados para edição inline transparente
   const [editando, setEditando] = useState(false);
   const [titulo, setTitulo] = useState(selecionado?.titulo || '');
   const [descricao, setDescricao] = useState(selecionado?.descricao || '');
   const [scriptPassoAPasso, setScriptPassoAPasso] = useState(selecionado?.script_passo_a_passo || '');
   const [salvando, setSalvando] = useState(false);
 
+  // Sincroniza APENAS quando o ID do procedimento selecionado mudar
   useEffect(() => {
     if (selecionado) {
       setTitulo(selecionado.titulo || '');
@@ -36,7 +38,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
       setIsPublico(selecionado.publico || false);
       setEditando(false);
     }
-  }, [selecionado]);
+  }, [selecionado?.id]);
 
   const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
   const isAdmin = roleNome === 'ADMIN';
@@ -98,6 +100,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
       });
 
       toast.success('Procedimento atualizado com sucesso!');
+      
       setTitulo(procedimentoAtualizado.titulo);
       setDescricao(procedimentoAtualizado.descricao);
       setScriptPassoAPasso(procedimentoAtualizado.script_passo_a_passo);
@@ -123,6 +126,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   return (
     <div className="max-w-4xl mx-auto flex flex-col justify-between min-h-full">
       <div>
+        {/* Flag de Procedimento Público / Restrito no Topo */}
         <div className="flex items-center justify-between mb-6 p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg text-xs">
           <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
             {isPublico ? <Globe size={16} className="text-sky-500" /> : <Lock size={16} className="text-amber-500" />}
@@ -151,6 +155,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           )}
         </div>
 
+        {/* Cabeçalho do Procedimento */}
         <div className="flex justify-between items-start gap-4 mb-4">
           <div className="w-full space-y-1">
             <input
@@ -199,6 +204,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               </>
             ) : (
               <>
+                {/* Botão Copiar Script */}
                 <button
                   onClick={onCopiar}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-white font-semibold text-sm transition cursor-pointer ${copiado
@@ -217,6 +223,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
                   )}
                 </button>
 
+                {/* Botão Editar */}
                 {podeEditar && (
                   <button
                     onClick={() => setEditando(true)}
@@ -226,10 +233,12 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
                   </button>
                 )}
 
+                {/* Botão Compartilhar */}
                 {podeCompartilhar && (
                   <BotaoCompartilhar onClick={() => setModalCompartilharAberto(true)} />
                 )}
 
+                {/* Botão Excluir */}
                 {podeExcluir && (
                   <button
                     onClick={() => onDeletar(selecionado.id)}
@@ -244,6 +253,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           </div>
         </div>
 
+        {/* Script Passo a Passo */}
         <div className="mb-8">
           <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
             {tProcedimento('passoAPasso')}
@@ -263,6 +273,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           )}
         </div>
 
+        {/* Galeria de Anexos */}
         <GaleriaAnexos 
           procedimentoId={selecionado.id}
           anexos={selecionado.anexos || []}
@@ -278,6 +289,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
         />
       </div>
 
+      {/* Rodapé Informativo */}
       <div className="mt-10 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-500 transition-colors duration-200">
         <div className="flex items-center gap-2">
           <div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400 transition-colors">
