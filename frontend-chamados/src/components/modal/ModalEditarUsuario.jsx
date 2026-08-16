@@ -19,8 +19,8 @@ export default function ModalEditarUsuario({ isOpen, onClose, usuario, onSuccess
 
   useEffect(() => {
     if (usuario) {
-      setNome(usuario.nome || '');
-      setEmail(usuario.email || '');
+      setNome(usuario.nome);
+      setEmail(usuario.email);
       setSenha('');
       setRoleId(usuario.role?.id || 2);
     }

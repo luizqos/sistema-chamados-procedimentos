@@ -24,7 +24,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 && typeof window !== 'undefined') {
-      const urlRequisicao = error.config?.url || '';
+      const urlRequisicao = error.config?.url;
       const ehRotaDeLogin = urlReissuer.includes('/auth/login') || urlRequisicao.includes('/auth/sso/microsoft');
       
       if (!ehRotaDeLogin && window.location.pathname !== '/login') {
