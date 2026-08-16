@@ -273,7 +273,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           )}
         </div>
 
-        {/* Galeria de Anexos (Upload e Exclusão visíveis apenas durante a edição) */}
+        {/* Galeria de Anexos (Atualiza o estado pai imediatamente ao adicionar ou remover) */}
         <GaleriaAnexos 
           procedimentoId={selecionado.id}
           anexos={selecionado.anexos || []}
