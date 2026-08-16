@@ -29,7 +29,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const [scriptPassoAPasso, setScriptPassoAPasso] = useState(selecionado?.script_passo_a_passo || '');
   const [salvando, setSalvando] = useState(false);
 
-  // Sincroniza os estados locais quando outro procedimento for selecionado na sidebar
   useEffect(() => {
     if (selecionado) {
       setTitulo(selecionado.titulo || '');
@@ -38,7 +37,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
       setIsPublico(selecionado.publico || false);
       setEditando(false);
     }
-  }, [selecionado?.id]); // Executa apenas quando o ID do procedimento selecionado muda
+  }, [selecionado?.id]);
 
   const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
   const isAdmin = roleNome === 'ADMIN';
@@ -92,7 +91,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const handleSalvarEdicao = async () => {
     setSalvando(true);
     try {
-      // Executa a requisição de atualização no backend
       const procedimentoAtualizado = await procedimentoService.atualizarProcedimento(selecionado.id, {
         titulo,
         descricao,
@@ -101,11 +99,8 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
       });
 
       toast.success('Procedimento atualizado com sucesso!');
-      
-      // Sai do modo de edição instantaneamente sem recarregar a página inteira
       setEditando(false);
 
-      // Atualiza o estado pai de forma reativa (atualiza o painel e a sidebar instantaneamente)
       if (onAtualizarProcedimento) {
         onAtualizarProcedimento(procedimentoAtualizado);
       }
@@ -253,7 +248,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           </div>
         </div>
 
-        {/* Script Passo a Passo (Markdown vs Textarea) */}
+        {/* Script Passo a Passo (Mesmas dimensões exatas e fontes para visualizador e textarea) */}
         <div className="mb-8">
           <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
             {tProcedimento('passoAPasso')}
@@ -261,11 +256,10 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           
           {editando ? (
             <textarea
-              rows={16}
               value={scriptPassoAPasso}
               onChange={(e) => setScriptPassoAPasso(e.target.value)}
               placeholder="Digite o script em Markdown..."
-              className="w-full h-[400px] p-5 rounded-xl bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 text-sm leading-relaxed font-mono border border-slate-700 dark:border-slate-800 focus:outline-none focus:border-sky-500 resize-none transition-colors"
+              className="w-full h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed font-mono border border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500 resize-none transition-colors"
             />
           ) : (
             <div className="h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed font-mono border border-slate-800 dark:border-slate-800/80 transition-colors duration-200">
