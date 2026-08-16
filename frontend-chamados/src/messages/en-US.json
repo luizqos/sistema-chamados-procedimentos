@@ -64,7 +64,9 @@
     "textoUploadProcedimento": "Creating procedure...",
     "textoUploadEnviadoArquivo": "Sending file",
     "escolherArquivos": "Select Files",
-    "nenhumArquivoSelecionado": "No file selected"
+    "nenhumArquivoSelecionado": "No file selected",
+    "adicionarAnexos": "Add Attachment",
+    "nenhumAnexoCadastrado": "No attachments registered for this procedure."
   },
   "Usuarios": {
     "titulo": "User Management",
@@ -90,9 +92,7 @@
     "nenhumUsuarioEncontrado": "No users found.",
     "porPagina": "per page",
     "totalRegistros": "Total records:",
-    "paginaDe": "Page {page} of {totalPages}",
-    "adicionarAnexos": "Add Attachment",
-    "nenhumAnexoCadastrado": "No attachments registered for this procedure."
+    "paginaDe": "Page {page} of {totalPages}"
   },
   "Sso": {
     "titulo": "SSO Security",
