@@ -61,3 +61,16 @@ exports.atualizar = async (req, res) => {
     return res.status(status).json({ error: error.message || 'Erro ao atualizar procedimento.' });
   }
 };
+
+exports.excluirAnexo = async (req, res) => {
+  try {
+    const { anexoId } = req.params;
+    const usuarioLogado = req.usuario;
+
+    await service.excluirAnexo(anexoId, usuarioLogado);
+    return res.status(204).send();
+  } catch (error) {
+    const status = error.statusCode || 500;
+    return res.status(status).json({ error: error.message });
+  }
+};

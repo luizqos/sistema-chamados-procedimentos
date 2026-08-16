@@ -124,6 +124,34 @@ class ProcedimentoService {
 
     return await repository.atualizar(idNumerico, dados);
   }
+
+  async excluirAnexo(anexoId, usuarioLogado) {
+    const anexo = await repository.obterAnexoPorId(Number(anexoId));
+    if (!anexo) {
+      const error = new Error('Anexo não encontrado.');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const procedimento = await repository.obterPorId(anexo.procedimento_id);
+    const isAdmin = usuarioLogado?.role === 'ADMIN';
+    const isCriador = procedimento?.usuario_id === usuarioLogado?.id;
+
+    if (!isAdmin && !isCriador) {
+      const error = new Error('Acesso negado para excluir este anexo.');
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const fs = require('fs');
+    const path = require('path');
+    const caminhoCompleto = path.join(__dirname, '../../', anexo.caminho_arquivo);
+    if (fs.existsSync(caminhoCompleto)) {
+      fs.unlinkSync(caminhoCompleto);
+    }
+
+    return await repository.deletarAnexo(Number(anexoId));
+  }
 }
 
 module.exports = new ProcedimentoService();

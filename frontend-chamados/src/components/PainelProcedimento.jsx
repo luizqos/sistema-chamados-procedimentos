@@ -29,7 +29,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const [scriptPassoAPasso, setScriptPassoAPasso] = useState(selecionado?.script_passo_a_passo || '');
   const [salvando, setSalvando] = useState(false);
 
-  // Sincroniza sempre que o objeto selecionado mudar (inclusive após o salvamento bem-sucedido)
+  // Sincroniza sempre que o objeto selecionado mudar
   useEffect(() => {
     if (selecionado) {
       setTitulo(selecionado.titulo || '');
@@ -101,7 +101,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
 
       toast.success('Procedimento atualizado com sucesso!');
       
-      // Atualiza os estados locais imediatamente com o retorno do backend
       setTitulo(procedimentoAtualizado.titulo);
       setDescricao(procedimentoAtualizado.descricao);
       setScriptPassoAPasso(procedimentoAtualizado.script_passo_a_passo);
@@ -254,7 +253,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           </div>
         </div>
 
-        {/* Script Passo a Passo (Usa diretamente o estado local scriptPassoAPasso para reatividade imediata) */}
+        {/* Script Passo a Passo */}
         <div className="mb-8">
           <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
             {tProcedimento('passoAPasso')}
@@ -274,8 +273,20 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           )}
         </div>
 
-        {/* Galeria de Anexos */}
-        <GaleriaAnexos anexos={selecionado.anexos} />
+        {/* Galeria de Anexos (Suporta Adição e Exclusão) */}
+        <GaleriaAnexos 
+          procedimentoId={selecionado.id}
+          anexos={selecionado.anexos || []}
+          podeEditar={podeEditar}
+          onAtualizarAnexos={(novosAnexos) => {
+            if (onAtualizarProcedimento) {
+              onAtualizarProcedimento({
+                ...selecionado,
+                anexos: novosAnexos
+              });
+            }
+          }}
+        />
       </div>
 
       {/* Rodapé Informativo (Criador e Data) */}

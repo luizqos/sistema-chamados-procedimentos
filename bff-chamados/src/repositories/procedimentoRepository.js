@@ -107,6 +107,18 @@ class ProcedimentoRepository {
       }
     });
   }
+
+  async obterAnexoPorId(anexoId) {
+    return await prisma.procedimentoAnexo.findUnique({
+      where: { id: Number(anexoId) }
+    });
+  }
+
+  async deletarAnexo(anexoId) {
+    return await prisma.procedimentoAnexo.delete({
+      where: { id: Number(anexoId) }
+    });
+  }
 }
 
 module.exports = new ProcedimentoRepository();

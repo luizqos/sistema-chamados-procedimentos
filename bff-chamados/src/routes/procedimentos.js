@@ -152,4 +152,35 @@ router.post('/:id/anexos', autenticar, upload.single('arquivo'), controller.adic
  */
 router.put('/:id', autenticar, (req, res) => controller.atualizar(req, res));
 
+/**
+ * @swagger
+ * /api/procedimentos/anexos/{anexoId}:
+ *   delete:
+ *     summary: Excluir um anexo de um procedimento
+ *     description: Remove permanentemente um anexo do sistema. Requer autenticação e permissão de Administrador ou de criador do procedimento.
+ *     tags:
+ *       - Procedimentos - Anexos
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: anexoId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID único do anexo a ser excluído
+ *     responses:
+ *       204:
+ *         description: Anexo excluído com sucesso (Nenhum conteúdo retornado)
+ *       401:
+ *         description: Não autorizado (Token inválido ou ausente)
+ *       403:
+ *         description: Acesso negado (Usuário sem permissão para excluir este anexo)
+ *       404:
+ *         description: Anexo não encontrado
+ *       500:
+ *         description: Erro interno do servidor
+ */
+router.delete('/anexos/:anexoId', autenticar, procedimentoController.excluirAnexo);
+
 module.exports = router;
