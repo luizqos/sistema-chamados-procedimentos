@@ -25,17 +25,17 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
 
   // Estados para edição inline transparente
   const [editando, setEditando] = useState(false);
-  const [titulo, setTitulo] = useState(selecionado?.titulo);
-  const [descricao, setDescricao] = useState(selecionado?.descricao);
-  const [scriptPassoAPasso, setScriptPassoAPasso] = useState(selecionado?.script_passo_a_passo);
+  const [titulo, setTitulo] = useState(selecionado?.titulo || '');
+  const [descricao, setDescricao] = useState(selecionado?.descricao || '');
+  const [scriptPassoAPasso, setScriptPassoAPasso] = useState(selecionado?.script_passo_a_passo || '');
   const [salvando, setSalvando] = useState(false);
 
   // Sincroniza os estados locais APENAS quando trocar de procedimento na sidebar
   useEffect(() => {
     if (selecionado) {
-      setTitulo(selecionado.titulo);
-      setDescricao(selecionado.descricao);
-      setScriptPassoAPasso(selecionado.script_passo_a_passo);
+      setTitulo(selecionado.titulo || '');
+      setDescricao(selecionado.descricao || '');
+      setScriptPassoAPasso(selecionado.script_passo_a_passo || '');
       setIsPublico(selecionado.publico || false);
       setEditando(false);
     }
@@ -45,8 +45,9 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const isAdmin = roleNome === 'ADMIN';
   const isCriador = selecionado?.usuario_id && user?.id ? selecionado.usuario_id === user.id : false;
   
+  // CORREÇÃO AQUI: Verificando usuario_id e usuarioId, além de garantir o uppercase no nível
   const temPermissaoEdicaoCompartilhada = selecionado?.permissoes?.some(
-    (p) => p.usuarioId === user?.id && p.nivel === 'EDITAR'
+    (p) => (p.usuario_id === user?.id || p.usuarioId === user?.id) && p.nivel?.toUpperCase() === 'EDITAR'
   );
 
   const podeExcluir = isAdmin || isCriador;
@@ -118,9 +119,9 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   };
 
   const handleCancelarEdicao = () => {
-    setTitulo(selecionado.titulo);
-    setDescricao(selecionado.descricao);
-    setScriptPassoAPasso(selecionado.script_passo_a_passo);
+    setTitulo(selecionado.titulo || '');
+    setDescricao(selecionado.descricao || '');
+    setScriptPassoAPasso(selecionado.script_passo_a_passo || '');
     setEditando(false);
   };
 
