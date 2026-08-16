@@ -1,14 +1,15 @@
-const repository = require('../repositories/procedimentoRepository');
+const procedimentoRepository = require('../repositories/procedimentoRepository');
+const permissaoRepository = require('../repositories/permissaoRepository');
 const fs = require('fs');
 const path = require('path');
 
 class ProcedimentoService {
   async listarProcedimentos(filtros, usuarioLogado) {
-    return await repository.listar({ ...filtros, usuarioLogado });
+    return await procedimentoRepository.listar({ ...filtros, usuarioLogado });
   }
 
   async obterProcedimentoPorId(id) {
-    const procedimento = await repository.obterPorId(id);
+    const procedimento = await procedimentoRepository.obterPorId(id);
     if (!procedimento) throw new Error('Procedimento não encontrado');
     return procedimento;
   }
@@ -25,13 +26,12 @@ class ProcedimentoService {
       usuario_id: usuarioLogado?.id || null,
     };
 
-    return await repository.criar(dadosComAutor);
+    return await procedimentoRepository.criar(dadosComAutor);
   }
 
   async deletarProcedimento(id, usuarioLogado) {
     const idNumerico = Number(id);
-
-    const procedimento = await repository.obterPorId(idNumerico);
+    const procedimento = await procedimentoRepository.obterPorId(idNumerico);
 
     if (!procedimento) {
       const error = new Error('Procedimento não encontrado.');
@@ -39,7 +39,8 @@ class ProcedimentoService {
       throw error;
     }
 
-    const isAdmin = usuarioLogado?.role === 'ADMIN';
+    const roleNome = typeof usuarioLogado?.role === 'object' ? usuarioLogado?.role?.nome : usuarioLogado?.role;
+    const isAdmin = roleNome === 'ADMIN';
     const isCriador = procedimento.usuario_id && procedimento.usuario_id === usuarioLogado?.id;
 
     if (!isAdmin && !isCriador) {
@@ -48,11 +49,12 @@ class ProcedimentoService {
       throw error;
     }
 
-    return await repository.deletar(idNumerico);
+    return await procedimentoRepository.deletar(idNumerico);
   }
 
   async excluirProcedimento(id, usuarioLogado) {
-    const procedimento = await procedimentoRepository.buscarPorId(id);
+    const idNumerico = Number(id);
+    const procedimento = await procedimentoRepository.buscarPorId(idNumerico);
 
     if (!procedimento) {
       const error = new Error('Procedimento não encontrado.');
@@ -60,8 +62,9 @@ class ProcedimentoService {
       throw error;
     }
 
-    const isAdmin = usuarioLogado.role === 'ADMIN';
-    const isCriador = procedimento.usuario_id && procedimento.usuario_id === usuarioLogado.id;
+    const roleNome = typeof usuarioLogado?.role === 'object' ? usuarioLogado?.role?.nome : usuarioLogado?.role;
+    const isAdmin = roleNome === 'ADMIN';
+    const isCriador = procedimento.usuario_id && procedimento.usuario_id === usuarioLogado?.id;
 
     if (!isAdmin && !isCriador) {
       const error = new Error('Acesso negado: Você não tem permissão para excluir este procedimento.');
@@ -69,7 +72,7 @@ class ProcedimentoService {
       throw error;
     }
 
-    return await procedimentoRepository.excluir(id);
+    return await procedimentoRepository.deletar(idNumerico);
   }
 
   async adicionarAnexo(procedimentoId, file) {
@@ -78,7 +81,7 @@ class ProcedimentoService {
     const tipo = file.mimetype.startsWith('image/') ? 'imagem' : 'video';
     const caminho_arquivo = `/uploads/${file.filename}`;
 
-    return await repository.criarAnexo({
+    return await procedimentoRepository.criarAnexo({
       procedimento_id: Number(procedimentoId),
       tipo,
       caminho_arquivo,
@@ -90,7 +93,7 @@ class ProcedimentoService {
 
   async atualizarProcedimento(id, dados, usuarioLogado) {
     const idNumerico = Number(id);
-    const procedimento = await repository.obterPorId(idNumerico);
+    const procedimento = await procedimentoRepository.obterPorId(idNumerico);
 
     if (!procedimento) {
       const error = new Error('Procedimento não encontrado.');
@@ -103,8 +106,9 @@ class ProcedimentoService {
     const isCriador = procedimento.usuario_id && procedimento.usuario_id === usuarioLogado?.id;
 
     let temPermissaoEdicao = false;
+
     if (!isAdmin && !isCriador) {
-      const permissaoCompartilhada = await repository.verificarPermissaoUsuario(idNumerico, usuarioLogado?.id);
+      const permissaoCompartilhada = await permissaoRepository.verificarPermissaoUsuario(idNumerico, usuarioLogado?.id);
       if (permissaoCompartilhada && permissaoCompartilhada.nivel === 'EDITAR') {
         temPermissaoEdicao = true;
       }
@@ -122,35 +126,45 @@ class ProcedimentoService {
       throw error;
     }
 
-    return await repository.atualizar(idNumerico, dados);
+    return await procedimentoRepository.atualizar(idNumerico, dados);
   }
 
   async excluirAnexo(anexoId, usuarioLogado) {
-    const anexo = await repository.obterAnexoPorId(Number(anexoId));
+    const anexo = await procedimentoRepository.obterAnexoPorId(Number(anexoId));
     if (!anexo) {
       const error = new Error('Anexo não encontrado.');
       error.statusCode = 404;
       throw error;
     }
 
-    const procedimento = await repository.obterPorId(anexo.procedimento_id);
-    const isAdmin = usuarioLogado?.role === 'ADMIN';
+    const procedimento = await procedimentoRepository.obterPorId(anexo.procedimento_id);
+
+    const roleNome = typeof usuarioLogado?.role === 'object' ? usuarioLogado?.role?.nome : usuarioLogado?.role;
+    const isAdmin = roleNome === 'ADMIN';
     const isCriador = procedimento?.usuario_id === usuarioLogado?.id;
 
+    let temPermissaoEdicao = false;
+
     if (!isAdmin && !isCriador) {
+      const permissaoCompartilhada = await permissaoRepository.verificarPermissaoUsuario(anexo.procedimento_id, usuarioLogado?.id);
+      if (permissaoCompartilhada && permissaoCompartilhada.nivel === 'EDITAR') {
+        temPermissaoEdicao = true;
+      }
+    }
+
+    if (!isAdmin && !isCriador && !temPermissaoEdicao) {
       const error = new Error('Acesso negado para excluir este anexo.');
       error.statusCode = 403;
       throw error;
     }
 
-    const fs = require('fs');
-    const path = require('path');
     const caminhoCompleto = path.join(__dirname, '../../', anexo.caminho_arquivo);
+
     if (fs.existsSync(caminhoCompleto)) {
       fs.unlinkSync(caminhoCompleto);
     }
 
-    return await repository.deletarAnexo(Number(anexoId));
+    return await procedimentoRepository.deletarAnexo(Number(anexoId));
   }
 }
 
