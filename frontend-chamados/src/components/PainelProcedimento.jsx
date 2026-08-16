@@ -29,6 +29,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
   const [scriptPassoAPasso, setScriptPassoAPasso] = useState(selecionado?.script_passo_a_passo || '');
   const [salvando, setSalvando] = useState(false);
 
+  // Sincroniza sempre que o objeto selecionado mudar (inclusive após o salvamento bem-sucedido)
   useEffect(() => {
     if (selecionado) {
       setTitulo(selecionado.titulo || '');
@@ -37,7 +38,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
       setIsPublico(selecionado.publico || false);
       setEditando(false);
     }
-  }, [selecionado?.id]);
+  }, [selecionado]);
 
   const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
   const isAdmin = roleNome === 'ADMIN';
@@ -99,6 +100,11 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
       });
 
       toast.success('Procedimento atualizado com sucesso!');
+      
+      // Atualiza os estados locais imediatamente com o retorno do backend
+      setTitulo(procedimentoAtualizado.titulo);
+      setDescricao(procedimentoAtualizado.descricao);
+      setScriptPassoAPasso(procedimentoAtualizado.script_passo_a_passo);
       setEditando(false);
 
       if (onAtualizarProcedimento) {
@@ -248,7 +254,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           </div>
         </div>
 
-        {/* Script Passo a Passo (Transição fluida integrada) */}
+        {/* Script Passo a Passo (Usa diretamente o estado local scriptPassoAPasso para reatividade imediata) */}
         <div className="mb-8">
           <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
             {tProcedimento('passoAPasso')}
@@ -263,7 +269,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             />
           ) : (
             <div className="h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed font-mono border border-slate-800 dark:border-slate-800/80 transition-colors duration-200">
-              <ReactMarkdown>{selecionado.script_passo_a_passo}</ReactMarkdown>
+              <ReactMarkdown>{scriptPassoAPasso}</ReactMarkdown>
             </div>
           )}
         </div>
