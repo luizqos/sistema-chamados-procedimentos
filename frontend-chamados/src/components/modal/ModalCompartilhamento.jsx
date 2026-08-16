@@ -36,7 +36,7 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId,
       console.log('resUsuarios', resUsuarios);
       
 
-      const usuariosElegiveis = resUsuarios.data.filter(u => {
+      const usuariosElegiveis = resUsuarios.data.dados.filter(u => {
         const isAdm = u.role?.nome === 'ADMIN' || u.roleId === 1;
         const isCriador = Number(u.id) === Number(criadorId);
         return !isAdm && !isCriador;
