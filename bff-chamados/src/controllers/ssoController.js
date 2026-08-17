@@ -57,7 +57,7 @@ class SsoController {
 
   async criar(req, res) {
     try {
-      const regra = await ssoService.criarRegra(req.body);
+      const regra = await ssoService.criarRegra(req.body, req.usuario);
       res.status(201).json(regra);
     } catch (err) {
       if (err.message.includes('Já existe') || err.message.includes('obrigatórios')) {
@@ -70,7 +70,7 @@ class SsoController {
   async deletar(req, res) {
     try {
       const { id } = req.params;
-      await ssoService.deletarRegra(id);
+      await ssoService.deletarRegra(id, req.usuario);
       res.status(204).send();
     } catch (err) {
       res.status(500).json({ error: 'Erro interno ao deletar a regra de SSO.' });

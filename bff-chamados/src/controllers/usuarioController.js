@@ -3,7 +3,7 @@ const usuarioService = require('../services/usuarioService');
 class UsuarioController {
   async criar(req, res) {
     try {
-      const novoUsuario = await usuarioService.criarUsuario(req.body);
+      const novoUsuario = await usuarioService.criarUsuario(req.body, req.usuario);
       return res.status(201).json(novoUsuario);
     } catch (error) {
       const status = error.statusCode || 500;
@@ -29,7 +29,7 @@ class UsuarioController {
     try {
       const { id } = req.params;
       const { roleId } = req.body;
-      const usuarioAtualizado = await usuarioService.alterarRole(id, roleId);
+      const usuarioAtualizado = await usuarioService.alterarRole(id, roleId, req.usuario);
       return res.json(usuarioAtualizado);
     } catch (error) {
       return res.status(error.statusCode || 500).json({ error: error.message });
@@ -42,7 +42,7 @@ class UsuarioController {
       const { ativo } = req.body;
       const usuarioLogadoId = req.usuario.id;
 
-      const usuario = await usuarioService.alterarStatusUsuario(id, ativo, usuarioLogadoId);
+      const usuario = await usuarioService.alterarStatusUsuario(id, ativo, usuarioLogadoId, req.usuario);
       return res.json(usuario);
     } catch (error) {
       return res.status(error.statusCode || 500).json({ error: error.message });
@@ -52,7 +52,7 @@ class UsuarioController {
   async atualizar(req, res) {
     try {
       const { id } = req.params;
-      const usuarioAtualizado = await usuarioService.atualizar(id, req.body);
+      const usuarioAtualizado = await usuarioService.atualizar(id, req.body, req.usuario);
       return res.json(usuarioAtualizado);
     } catch (error) {
       const status = error.statusCode || 500;
