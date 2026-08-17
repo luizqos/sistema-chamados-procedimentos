@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { ShieldAlert, Loader2, Search, FileJson, ArrowLeft, History } from 'lucide-react';
+import { ShieldAlert, Loader2, Search, FileJson, ArrowLeft, History, Maximize2, Minimize2, X } from 'lucide-react';
 import { WithPermission } from '../components/WithPermission';
 import { auditoriaService } from '../services/auditoriaService';
 import { formatarData } from '../utils/formatters';
@@ -21,6 +21,7 @@ export default function AuditoriaPage() {
   const [busca, setBusca] = useState('');
   
   const [logSelecionado, setLogSelecionado] = useState(null);
+  const [maximizado, setMaximizado] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => carregarLogs(), 400);
@@ -40,6 +41,11 @@ export default function AuditoriaPage() {
       setLoading(false);
     }
   }
+
+  const fecharModal = () => {
+    setLogSelecionado(null);
+    setMaximizado(false);
+  };
 
   const getCorAcao = (acao) => {
     switch (acao) {
@@ -163,12 +169,17 @@ export default function AuditoriaPage() {
           </div>
         )}
 
-        {/* Modal Visualizador de Diff / JSON com Rolagem Dupla */}
+        {/* Modal Visualizador de Diff / JSON com Rolagem Dupla e Maximizar */}
         {logSelecionado && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-900 w-full max-w-5xl h-[90vh] rounded-2xl flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div className={`fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200 transition-all ${maximizado ? 'p-0' : 'p-4'}`}>
+            <div className={`bg-white dark:bg-slate-900 flex flex-col shadow-2xl overflow-hidden transition-all duration-300 ${
+              maximizado 
+                ? 'w-full h-full rounded-none border-0' 
+                : 'w-full max-w-5xl h-[90vh] rounded-2xl border border-slate-200 dark:border-slate-800'
+            }`}>
               
-              <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50 shrink-0">
+              {/* Header do Modal */}
+              <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50 shrink-0 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-lg"><ShieldAlert size={18} /></div>
                   <div>
@@ -176,17 +187,34 @@ export default function AuditoriaPage() {
                     <p className="text-[10px] text-slate-500 font-mono">{logSelecionado.entidade} #{logSelecionado.registro_id} • {logSelecionado.acao}</p>
                   </div>
                 </div>
-                <button onClick={() => setLogSelecionado(null)} className="text-slate-400 hover:text-red-500 transition p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"><ArrowLeft size={18} /></button>
+                
+                <div className="flex items-center gap-1.5">
+                  <button 
+                    onClick={() => setMaximizado(!maximizado)} 
+                    className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"
+                    title={maximizado ? 'Restaurar Tamanho' : 'Tela Cheia'}
+                  >
+                    {maximizado ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+                  </button>
+                  <button 
+                    onClick={fecharModal} 
+                    className="text-slate-400 hover:text-red-500 transition p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"
+                    title="Fechar"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
               </div>
               
-              <div className="p-4 flex-1 flex flex-col md:flex-row gap-4 bg-slate-100/50 dark:bg-black/20 min-h-0">
+              {/* Corpo do Modal */}
+              <div className="p-4 flex-1 flex flex-col md:flex-row gap-4 bg-slate-100/50 dark:bg-black/20 min-h-0 transition-colors">
                 
                 {/* Coluna 1: Dados Antigos */}
                 <div className="flex-1 flex flex-col min-h-0">
                   <h3 className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider flex items-center gap-2 shrink-0">
                     <span className="w-2 h-2 rounded-full bg-red-500"></span> Dados Antigos
                   </h3>
-                  <div className="relative flex-1 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-[#0d1117] overflow-hidden">
+                  <div className="relative flex-1 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-[#0d1117] overflow-hidden transition-colors">
                     <pre className="absolute inset-0 p-4 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-auto custom-scrollbar">
                       {logSelecionado.dados_antigos ? JSON.stringify(logSelecionado.dados_antigos, null, 2) : 'Nenhum dado anterior registrado.'}
                     </pre>
@@ -198,7 +226,7 @@ export default function AuditoriaPage() {
                   <h3 className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider flex items-center gap-2 shrink-0">
                     <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Dados Novos
                   </h3>
-                  <div className="relative flex-1 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-[#0d1117] overflow-hidden">
+                  <div className="relative flex-1 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-[#0d1117] overflow-hidden transition-colors">
                     <pre className="absolute inset-0 p-4 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-auto custom-scrollbar">
                       {logSelecionado.dados_novos ? JSON.stringify(logSelecionado.dados_novos, null, 2) : 'Nenhum dado novo registrado.'}
                     </pre>
