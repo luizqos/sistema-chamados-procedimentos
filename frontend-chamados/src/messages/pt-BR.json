@@ -38,7 +38,8 @@
     "novo": "Novo",
     "segurancaSSO": "Segurança SSO",
     "gestaoUsuarios": "Gestão de Usuários",
-    "por": "Por:"
+    "por": "Por:",
+    "auditoria": "Auditoria"
   },
   "Procedimento": {
     "passoAPasso": "Passo a Passo / Script",

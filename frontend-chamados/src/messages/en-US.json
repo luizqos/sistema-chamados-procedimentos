@@ -38,7 +38,8 @@
     "novo": "New",
     "segurancaSSO": "SSO Security",
     "gestaoUsuarios": "User Management",
-    "por": "By:"
+    "por": "By:",
+    "auditoria": "Audit"
   },
   "Procedimento": {
     "passoAPasso": "Step-by-Step / Script",
