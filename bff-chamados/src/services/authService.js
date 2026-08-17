@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const usuarioRepository = require('../repositories/usuarioRepository');
+const auditoriaService = require('./auditoriaService');
 
 class AuthService {
   async autenticar({ email, senha }) {
@@ -124,12 +125,16 @@ class AuthService {
 
     const senhaHash = await bcrypt.hash(senha, 10);
 
-    return await usuarioRepository.criar({
+    const novoAdmin = await usuarioRepository.criar({
       nome,
       email,
       senha: senhaHash,
       roleId: roleAdmin.id
     });
+
+    await auditoriaService.registrarLog(novoAdmin, 'CREATE', 'Usuario', novoAdmin.id, null, novoAdmin);
+
+    return novoAdmin;
   }
 
   gerarTokenInterno(usuario) {

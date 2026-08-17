@@ -1,5 +1,6 @@
 const ssoRepository = require('../repositories/ssoRepository');
 const jwt = require('jsonwebtoken');
+const auditoriaService = require('./auditoriaService');
 
 class SsoService {
   async autenticarMicrosoft(tokenMicrosoft) {
@@ -40,7 +41,9 @@ class SsoService {
     if (!usuario) {
       usuario = await ssoRepository.buscarPorEmail(email);
       if (usuario) {
+        const usuarioAntigo = { ...usuario };
         usuario = await ssoRepository.vincularSsoId(usuario.id, ssoId);
+        await auditoriaService.registrarLog(usuario, 'UPDATE', 'Usuario', usuario.id, usuarioAntigo, usuario);
       }
     }
 
@@ -57,12 +60,16 @@ class SsoService {
       throw new Error('Role padrão OPERADOR não encontrada no banco de dados.');
     }
 
-    return await ssoRepository.criarUsuarioSso({
+    const novoUsuarioSso = await ssoRepository.criarUsuarioSso({
       nome,
       email,
       ssoId,
       roleId: rolePadrao.id
     });
+
+    await auditoriaService.registrarLog(novoUsuarioSso, 'CREATE', 'Usuario', novoUsuarioSso.id, null, novoUsuarioSso);
+
+    return novoUsuarioSso;
   }
 
   async validarTokenMicrosoft(token) {
@@ -79,7 +86,7 @@ class SsoService {
     return await ssoRepository.listarRegras();
   }
 
-  async criarRegra(dados) {
+  async criarRegra(dados, usuarioLogado) {
     const { tipo, valor, acao } = dados;
 
     if (!tipo || !valor || !acao) {
@@ -89,11 +96,15 @@ class SsoService {
     try {
       const valorNormalizado = valor.toLowerCase().trim();
 
-      return await ssoRepository.criarRegra({
+      const novaRegra = await ssoRepository.criarRegra({
         tipo,
         valor: valorNormalizado,
         acao
       });
+
+      await auditoriaService.registrarLog(usuarioLogado, 'CREATE', 'SsoRegra', novaRegra.id, null, novaRegra);
+
+      return novaRegra;
     } catch (err) {
       if (err.code === 'P2002') {
         throw new Error('Já existe uma regra cadastrada para este valor.');
@@ -102,9 +113,17 @@ class SsoService {
     }
   }
 
-  async deletarRegra(id) {
+  async deletarRegra(id, usuarioLogado) {
     if (!id) throw new Error('O ID da regra é obrigatório.');
-    return await ssoRepository.deletarRegra(id);
+
+    const regras = await ssoRepository.listarRegras();
+    const regraAntiga = regras.find(r => Number(r.id) === Number(id));
+
+    const resultado = await ssoRepository.deletarRegra(id);
+
+    await auditoriaService.registrarLog(usuarioLogado, 'DELETE', 'SsoRegra', id, regraAntiga, null);
+
+    return resultado;
   }
 
   async listarRegrasPaginadas(page = 1, limit = 10, busca = '') {
