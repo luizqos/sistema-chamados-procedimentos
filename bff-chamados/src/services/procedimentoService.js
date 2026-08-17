@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const procedimentoRepository = require('../repositories/procedimentoRepository');
 const permissaoRepository = require('../repositories/permissaoRepository');
+const auditoriaService = require('./auditoriaService');
 
 class ProcedimentoService {
   async listarProcedimentos(filtros, usuarioLogado) {
@@ -26,7 +27,11 @@ class ProcedimentoService {
       usuario_id: usuarioLogado?.id || null,
     };
 
-    return await procedimentoRepository.criar(dadosComAutor);
+    const novoProcedimento = await procedimentoRepository.criar(dadosComAutor);
+
+    await auditoriaService.registrarLog(usuarioLogado, 'CREATE', 'Procedimento', novoProcedimento.id, null, novoProcedimento);
+
+    return novoProcedimento;
   }
 
   async deletarProcedimento(id, usuarioLogado) {
@@ -50,7 +55,11 @@ class ProcedimentoService {
       throw error;
     }
 
-    return await procedimentoRepository.deletar(idNumerico);
+    const resultadoDeletado = await procedimentoRepository.deletar(idNumerico);
+
+    await auditoriaService.registrarLog(usuarioLogado, 'DELETE', 'Procedimento', idNumerico, procedimento, null);
+
+    return resultadoDeletado;
   }
 
   async excluirProcedimento(id, usuarioLogado) {
@@ -94,7 +103,7 @@ class ProcedimentoService {
     const tipo = file.mimetype.startsWith('image/') ? 'imagem' : 'video';
     const caminho_arquivo = `/uploads/${file.filename}`;
 
-    return await procedimentoRepository.criarAnexo({
+    const novoAnexo = await procedimentoRepository.criarAnexo({
       procedimento_id: idNumerico,
       tipo,
       caminho_arquivo,
@@ -102,13 +111,18 @@ class ProcedimentoService {
       mime_type: file.mimetype,
       tamanho_bytes: file.size
     });
+
+    await auditoriaService.registrarLog(usuarioLogado, 'CREATE', 'ProcedimentoAnexo', novoAnexo.id, null, novoAnexo);
+
+    return novoAnexo;
   }
 
   async atualizarProcedimento(id, dados, usuarioLogado) {
     const idNumerico = Number(id);
-    const procedimento = await procedimentoRepository.obterPorId(idNumerico);
+    
+    const procedimentoAntigo = await procedimentoRepository.obterPorId(idNumerico);
 
-    if (!procedimento) {
+    if (!procedimentoAntigo) {
       const error = new Error('Procedimento não encontrado.');
       error.statusCode = 404;
       throw error;
@@ -116,7 +130,7 @@ class ProcedimentoService {
 
     const roleNome = typeof usuarioLogado?.role === 'object' ? usuarioLogado?.role?.nome : usuarioLogado?.role;
     const isAdmin = roleNome?.toUpperCase() === 'ADMIN';
-    const idCriador = procedimento.usuario_id || procedimento.usuarioId;
+    const idCriador = procedimentoAntigo.usuario_id || procedimentoAntigo.usuarioId;
     const isCriador = idCriador && String(idCriador) === String(usuarioLogado?.id);
 
     let temPermissaoEdicao = false;
@@ -140,7 +154,11 @@ class ProcedimentoService {
       throw error;
     }
 
-    return await procedimentoRepository.atualizar(idNumerico, dados);
+    const procedimentoAtualizado = await procedimentoRepository.atualizar(idNumerico, dados);
+
+    await auditoriaService.registrarLog(usuarioLogado, 'UPDATE', 'Procedimento', idNumerico, procedimentoAntigo, procedimentoAtualizado);
+
+    return procedimentoAtualizado;
   }
 
   async excluirAnexo(anexoId, usuarioLogado) {
@@ -189,7 +207,11 @@ class ProcedimentoService {
       }
     }
 
-    return await procedimentoRepository.deletarAnexo(Number(anexoId));
+    const resultadoExclusaoAnexo = await procedimentoRepository.deletarAnexo(Number(anexoId));
+
+    await auditoriaService.registrarLog(usuarioLogado, 'DELETE', 'ProcedimentoAnexo', anexoId, anexo, null);
+
+    return resultadoExclusaoAnexo;
   }
 }
 

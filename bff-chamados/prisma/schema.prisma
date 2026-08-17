@@ -20,6 +20,7 @@ model Usuario {
   permissoes    ProcedimentoPermissao[]
   created_at    DateTime       @default(now())
   ultimo_login  DateTime?
+  auditoriaLogs   AuditoriaLog[]
 
   @@map("usuarios")
 }
@@ -115,4 +116,18 @@ model SsoRegra {
   @@unique([tipo, valor])
   
   @@map("sso_regras")
+}
+
+model AuditoriaLog {
+  id            Int      @id @default(autoincrement())
+  usuario_id    Int?
+  usuario       Usuario? @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
+  acao          String 
+  entidade      String
+  registro_id   String
+  dados_antigos Json?
+  dados_novos   Json?
+  created_at    DateTime @default(now())
+
+  @@map("auditoria_logs")
 }

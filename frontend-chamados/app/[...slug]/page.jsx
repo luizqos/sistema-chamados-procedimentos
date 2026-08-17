@@ -7,12 +7,14 @@ import LoginPage from '@/src/views/LoginPage';
 import SetupPage from '@/src/views/SetupPage';
 import UsuariosPage from '@/src/views/UsuariosPage';
 import SsoRegrasPage from '@/src/views/SsoRegrasPage';
+import AuditoriaPage from '@/src/views/AuditoriaPage';
 
 const MAPA_PAGINAS = {
   login: LoginPage,
   setup: SetupPage,
   usuarios: UsuariosPage,
   sso: SsoRegrasPage,
+  auditora: AuditoriaPage
 };
 
 export default function DynamicRouter({ params }) {
