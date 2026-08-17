@@ -105,7 +105,6 @@ export default function AuditoriaPage() {
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-100/80 dark:bg-slate-950/60 text-slate-600 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
                   <tr>
-                    {/* ID Movidio para a primeira coluna */}
                     <th className="p-4">ID Reg.</th>
                     <th className="p-4">Data/Hora</th>
                     <th className="p-4">Usuário</th>
@@ -120,7 +119,6 @@ export default function AuditoriaPage() {
                   ) : (
                     logs.map((log) => (
                       <tr key={log.id} className="transition hover:bg-slate-50 dark:hover:bg-slate-800/30">
-                        {/* ID da entidade movido para a primeira coluna */}
                         <td className="p-4 font-mono font-bold text-slate-700 dark:text-slate-300">#{log.registro_id}</td>
                         <td className="p-4 font-mono text-[11px] text-slate-500">{formatarData(log.created_at)}</td>
                         <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">{log.usuario?.nome || 'Sistema'}</td>
@@ -168,7 +166,8 @@ export default function AuditoriaPage() {
         {/* Modal Visualizador de Diff / JSON com Rolagem Dupla */}
         {logSelecionado && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-900 w-full max-w-5xl max-h-[90vh] rounded-2xl flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 w-full max-w-5xl h-[90vh] rounded-2xl flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+              
               <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50 shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-lg"><ShieldAlert size={18} /></div>
@@ -180,25 +179,32 @@ export default function AuditoriaPage() {
                 <button onClick={() => setLogSelecionado(null)} className="text-slate-400 hover:text-red-500 transition p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"><ArrowLeft size={18} /></button>
               </div>
               
-              <div className="p-4 flex-1 flex flex-col md:flex-row gap-4 bg-slate-100/50 dark:bg-black/20 overflow-hidden">
+              <div className="p-4 flex-1 flex flex-col md:flex-row gap-4 bg-slate-100/50 dark:bg-black/20 min-h-0">
+                
+                {/* Coluna 1: Dados Antigos */}
                 <div className="flex-1 flex flex-col min-h-0">
                   <h3 className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider flex items-center gap-2 shrink-0">
                     <span className="w-2 h-2 rounded-full bg-red-500"></span> Dados Antigos
                   </h3>
-                  {/* overflow-auto permite scroll horizontal e vertical. max-h-[60vh] garante que role em vez de vazar a tela */}
-                  <pre className="bg-white dark:bg-[#0d1117] p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-auto max-h-[60vh] flex-1 shadow-inner">
-                    {logSelecionado.dados_antigos ? JSON.stringify(logSelecionado.dados_antigos, null, 2) : 'Nenhum dado anterior registrado.'}
-                  </pre>
+                  <div className="relative flex-1 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-[#0d1117] overflow-hidden">
+                    <pre className="absolute inset-0 p-4 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-auto custom-scrollbar">
+                      {logSelecionado.dados_antigos ? JSON.stringify(logSelecionado.dados_antigos, null, 2) : 'Nenhum dado anterior registrado.'}
+                    </pre>
+                  </div>
                 </div>
+
+                {/* Coluna 2: Dados Novos */}
                 <div className="flex-1 flex flex-col min-h-0">
                   <h3 className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider flex items-center gap-2 shrink-0">
                     <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Dados Novos
                   </h3>
-                  {/* overflow-auto permite scroll horizontal e vertical. max-h-[60vh] garante que role em vez de vazar a tela */}
-                  <pre className="bg-white dark:bg-[#0d1117] p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-auto max-h-[60vh] flex-1 shadow-inner">
-                    {logSelecionado.dados_novos ? JSON.stringify(logSelecionado.dados_novos, null, 2) : 'Nenhum dado novo registrado.'}
-                  </pre>
+                  <div className="relative flex-1 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-[#0d1117] overflow-hidden">
+                    <pre className="absolute inset-0 p-4 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-auto custom-scrollbar">
+                      {logSelecionado.dados_novos ? JSON.stringify(logSelecionado.dados_novos, null, 2) : 'Nenhum dado novo registrado.'}
+                    </pre>
+                  </div>
                 </div>
+
               </div>
             </div>
           </div>
