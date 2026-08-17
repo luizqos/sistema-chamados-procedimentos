@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { procedimentoService } from '../../services/procedimentoService';
 import { useUpload } from '../../contexts/UploadContext';
-import { X, Upload, AlertCircle, Loader2 } from 'lucide-react';
+import { X, Upload, AlertCircle, Loader2, Maximize2, Minimize2 } from 'lucide-react';
 import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../utils/constants';
 
 export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
@@ -21,6 +21,8 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [progressoAtual, setProgressoAtual] = useState(0);
   const [statusTexto, setStatusTexto] = useState('');
+  
+  const [maximizado, setMaximizado] = useState(false);
 
   const uploadContextRef = useRef(null);
   const { registrarOuAtualizarUpload, removerUpload } = useUpload();
@@ -72,6 +74,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
     setLoading(false);
     setProgressoAtual(0);
     setStatusTexto('');
+    setMaximizado(false);
   };
 
   const handleCloseModal = () => {
@@ -181,24 +184,47 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/75 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-colors">
-      <div className="bg-white dark:bg-slate-900 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 transition-colors duration-200">
+    <div className={`fixed inset-0 bg-slate-900/75 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-200 ${maximizado ? 'p-0' : 'p-4'}`}>
+      
+      {/* Container Principal do Modal com responsividade de tamanho */}
+      <div className={`bg-white dark:bg-slate-900 flex flex-col shadow-2xl text-slate-900 dark:text-slate-100 transition-all duration-300 w-full overflow-hidden ${
+        maximizado 
+          ? 'h-full max-w-full rounded-none border-0' 
+          : 'max-h-[90vh] max-w-2xl rounded-xl border border-slate-200 dark:border-slate-800'
+      }`}>
 
-        <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 transition-colors">
+        {/* Header do Modal */}
+        <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 shrink-0 transition-colors">
           <div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{tProcedimento('novoProcedimento')}</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{tProcedimento('subtituloNovo')}</p>
           </div>
-          <button
-            type="button"
-            onClick={handleCloseModal}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition p-1 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800 cursor-pointer"
-          >
-            <X size={20} />
-          </button>
+          
+          <div className="flex items-center gap-1.5">
+            {/* Botão de Maximizar / Restaurar */}
+            <button
+              type="button"
+              onClick={() => setMaximizado(!maximizado)}
+              className="text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 transition p-1.5 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800 cursor-pointer"
+              title={maximizado ? 'Restaurar Tamanho' : 'Tela Cheia'}
+            >
+              {maximizado ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+            </button>
+            
+            {/* Botão de Fechar */}
+            <button
+              type="button"
+              onClick={handleCloseModal}
+              className="text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition p-1.5 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800 cursor-pointer"
+              title="Fechar"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
+        {/* Corpo do Formulário */}
+        <form onSubmit={handleSubmit} className="p-6 flex flex-col flex-1 overflow-y-auto custom-scrollbar">
           <div className="mb-4">
             <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{tProcedimento('tituloLabel')}</label>
             <input
@@ -224,16 +250,15 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
             />
           </div>
 
-          <div className="mb-4">
+          <div className={`mb-4 flex flex-col ${maximizado ? 'flex-1' : ''}`}>
             <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{tProcedimento('scriptLabel')}</label>
             <textarea
               required
-              rows={6}
               value={script}
               onChange={e => setScript(e.target.value)}
               disabled={loading}
               placeholder={tProcedimento('placeholderInstrucoes')}
-              className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-900 dark:bg-black text-slate-100 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
+              className={`w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-900 dark:bg-black text-slate-100 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors custom-scrollbar resize-none ${maximizado ? 'flex-1 min-h-[350px]' : 'h-40'}`}
             />
           </div>
 
@@ -248,11 +273,9 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
             <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-sky-500 dark:hover:border-sky-500 rounded-lg p-4 bg-slate-50 dark:bg-slate-950/50 transition">
               <Upload size={24} className="mx-auto mb-2 text-sky-600 dark:text-sky-500" />
 
-              {/* Alterado para justify-start para colar na margem esquerda */}
               <div className="flex flex-col sm:flex-row items-center sm:items-center justify-start gap-3">
                 <label className="px-4 py-2 bg-sky-50 dark:bg-slate-800 text-sky-700 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-slate-700 text-xs font-semibold rounded-lg shadow-sm transition cursor-pointer inline-flex items-center gap-2">
                   <span>{tProcedimento('escolherArquivos')}</span>
-
                   <input
                     type="file"
                     multiple
@@ -295,7 +318,8 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
             )}
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800 transition-colors">
+          {/* Botões do Rodapé (Ficam sempre no final) */}
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800 transition-colors mt-auto shrink-0">
             <button
               type="button"
               onClick={handleCloseModal}
