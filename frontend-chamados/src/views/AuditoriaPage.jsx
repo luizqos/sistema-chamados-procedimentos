@@ -50,6 +50,15 @@ export default function AuditoriaPage() {
     }
   };
 
+  const getCorEntidade = (entidade) => {
+    switch (entidade) {
+      case 'Procedimento': return 'bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300 border-sky-200';
+      case 'Usuario': return 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border-amber-200';
+      case 'SsoRegra': return 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300 border-indigo-200';
+      default: return 'bg-slate-50 text-slate-700 dark:bg-slate-800/50 dark:text-slate-300 border-slate-200 dark:border-slate-700';
+    }
+  };
+
   return (
     <WithPermission role="ADMIN">
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 md:p-10 space-y-6 transition-colors duration-200">
@@ -96,11 +105,12 @@ export default function AuditoriaPage() {
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-100/80 dark:bg-slate-950/60 text-slate-600 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
                   <tr>
+                    {/* ID Movidio para a primeira coluna */}
+                    <th className="p-4">ID Reg.</th>
                     <th className="p-4">Data/Hora</th>
                     <th className="p-4">Usuário</th>
                     <th className="p-4">Ação</th>
                     <th className="p-4">Entidade</th>
-                    <th className="p-4">ID Reg.</th>
                     <th className="p-4 text-right">Detalhes</th>
                   </tr>
                 </thead>
@@ -110,6 +120,8 @@ export default function AuditoriaPage() {
                   ) : (
                     logs.map((log) => (
                       <tr key={log.id} className="transition hover:bg-slate-50 dark:hover:bg-slate-800/30">
+                        {/* ID da entidade movido para a primeira coluna */}
+                        <td className="p-4 font-mono font-bold text-slate-700 dark:text-slate-300">#{log.registro_id}</td>
                         <td className="p-4 font-mono text-[11px] text-slate-500">{formatarData(log.created_at)}</td>
                         <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">{log.usuario?.nome || 'Sistema'}</td>
                         <td className="p-4">
@@ -117,8 +129,11 @@ export default function AuditoriaPage() {
                             {log.acao}
                           </span>
                         </td>
-                        <td className="p-4 text-slate-600 dark:text-slate-400 font-medium">{log.entidade}</td>
-                        <td className="p-4 font-mono text-slate-500">#{log.registro_id}</td>
+                        <td className="p-4">
+                          <span className={`inline-flex items-center px-2 py-1 rounded text-[10px] font-semibold border ${getCorEntidade(log.entidade)}`}>
+                            {log.entidade}
+                          </span>
+                        </td>
                         <td className="p-4 text-right">
                           <button onClick={() => setLogSelecionado(log)} className="p-1.5 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition" title="Ver JSON">
                             <FileJson size={18} />
@@ -150,11 +165,11 @@ export default function AuditoriaPage() {
           </div>
         )}
 
-        {/* Modal Visualizador de Diff / JSON */}
+        {/* Modal Visualizador de Diff / JSON com Rolagem Dupla */}
         {logSelecionado && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
             <div className="bg-white dark:bg-slate-900 w-full max-w-5xl max-h-[90vh] rounded-2xl flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-              <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50">
+              <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50 shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-lg"><ShieldAlert size={18} /></div>
                   <div>
@@ -165,16 +180,22 @@ export default function AuditoriaPage() {
                 <button onClick={() => setLogSelecionado(null)} className="text-slate-400 hover:text-red-500 transition p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"><ArrowLeft size={18} /></button>
               </div>
               
-              <div className="p-4 overflow-y-auto custom-scrollbar flex-1 flex flex-col md:flex-row gap-4 bg-slate-100/50 dark:bg-black/20">
-                <div className="flex-1 flex flex-col">
-                  <h3 className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500"></span> Dados Antigos</h3>
-                  <pre className="bg-white dark:bg-[#0d1117] p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-x-auto flex-1 shadow-inner">
+              <div className="p-4 flex-1 flex flex-col md:flex-row gap-4 bg-slate-100/50 dark:bg-black/20 overflow-hidden">
+                <div className="flex-1 flex flex-col min-h-0">
+                  <h3 className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider flex items-center gap-2 shrink-0">
+                    <span className="w-2 h-2 rounded-full bg-red-500"></span> Dados Antigos
+                  </h3>
+                  {/* overflow-auto permite scroll horizontal e vertical. max-h-[60vh] garante que role em vez de vazar a tela */}
+                  <pre className="bg-white dark:bg-[#0d1117] p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-auto max-h-[60vh] flex-1 shadow-inner">
                     {logSelecionado.dados_antigos ? JSON.stringify(logSelecionado.dados_antigos, null, 2) : 'Nenhum dado anterior registrado.'}
                   </pre>
                 </div>
-                <div className="flex-1 flex flex-col">
-                  <h3 className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Dados Novos</h3>
-                  <pre className="bg-white dark:bg-[#0d1117] p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-x-auto flex-1 shadow-inner">
+                <div className="flex-1 flex flex-col min-h-0">
+                  <h3 className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider flex items-center gap-2 shrink-0">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Dados Novos
+                  </h3>
+                  {/* overflow-auto permite scroll horizontal e vertical. max-h-[60vh] garante que role em vez de vazar a tela */}
+                  <pre className="bg-white dark:bg-[#0d1117] p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-auto max-h-[60vh] flex-1 shadow-inner">
                     {logSelecionado.dados_novos ? JSON.stringify(logSelecionado.dados_novos, null, 2) : 'Nenhum dado novo registrado.'}
                   </pre>
                 </div>

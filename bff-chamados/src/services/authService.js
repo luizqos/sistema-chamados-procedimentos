@@ -132,7 +132,6 @@ class AuthService {
       roleId: roleAdmin.id
     });
 
-    //await auditoriaService.registrarLog(novoAdmin, 'CREATE', 'Usuario', novoAdmin.id, null, novoAdmin);
     await auditoriaService.registrarLog(usuario, 'LOGIN', 'Sessao', usuario.id, null, { ip: 'Login efetuado com sucesso via senha' });
 
     return novoAdmin;
