@@ -14,7 +14,7 @@ const MAPA_PAGINAS = {
   setup: SetupPage,
   usuarios: UsuariosPage,
   sso: SsoRegrasPage,
-  auditora: AuditoriaPage
+  auditoria: AuditoriaPage
 };
 
 export default function DynamicRouter({ params }) {
