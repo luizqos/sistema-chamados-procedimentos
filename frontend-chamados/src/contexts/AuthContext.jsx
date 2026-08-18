@@ -3,8 +3,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMsal } from '@azure/msal-react';
+
 import api from '../services/api';
+import { authService } from '../services/authService';
 import { secureStorage } from '../utils/storage';
+import { checkIsAdmin } from '../utils/permissions';
 
 const AuthContext = createContext({});
 
@@ -21,8 +24,8 @@ export function AuthProvider({ children }) {
       if (token) {
         try {
           api.defaults.headers.Authorization = `Bearer ${token}`;
-          // TODO: passar para service
-          const { data } = await api.get('/api/auth/me');
+          
+          const data = await authService.obterUsuarioAtual();
           setUser(data);
         } catch (error) {
           secureStorage.removeItem('@chamados:token');
@@ -36,8 +39,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, senha) => {
-    // TODO: PASSAR PARA SERVICE
-    const { data } = await api.post('/api/auth/login', { email, senha });
+    const data = await authService.loginCredenciais(email, senha);
     
     secureStorage.setItem('@chamados:token', data.token);
     secureStorage.setItem('@chamados:user', data.usuario);
@@ -84,7 +86,9 @@ export function AuthProvider({ children }) {
 
   const hasPermission = (permissionKey) => {
     if (!user) return false;
-    if (user.role?.nome === 'ADMIN') return true;
+    
+    if (checkIsAdmin(user.role)) return true;
+    
     return user.permissoes?.includes(permissionKey) ?? false;
   };
 

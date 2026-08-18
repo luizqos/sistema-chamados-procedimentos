@@ -14,5 +14,15 @@ export const authService = {
   async setupInicial(dados) {
     const { data } = await api.post('/api/auth/setup-inicial', dados);
     return data;
-  }
+  },
+
+  async loginCredenciais(email, senha) {
+    const { data } = await api.post('/api/auth/login', { email, senha });
+    return data;
+  },
+
+  async obterUsuarioAtual() {
+    const { data } = await api.get('/api/auth/me');
+    return data;
+  },
 };
