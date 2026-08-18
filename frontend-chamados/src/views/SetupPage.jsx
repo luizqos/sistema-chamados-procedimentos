@@ -6,8 +6,9 @@ import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { ShieldAlert, User, Mail, Lock, ArrowRight, Loader2, Building2 } from 'lucide-react';
 
-import api from '../services/api';
 import BotaoIdiomaLogin from '../components/button/BotaoIdiomaLogin';
+import { authService } from '../services/authService';
+import { getApiError } from '../utils/errorHandler';
 
 export default function SetupPage() {
   const tSetup = useTranslations('Setup');
@@ -25,8 +26,8 @@ export default function SetupPage() {
   useEffect(() => {
     async function checarPermissaoSetup() {
       try {
-        // TODO: PASSAR PARA SERVICE
-        const { data } = await api.get('/api/auth/setup-status');
+        const data = await authService.verificarSetupStatus();
+        
         if (!data?.precisaSetupInicial) {
           toast.error(tToastSetup('usuarioCadastradoErro'));
           router.push('/login');
@@ -39,20 +40,19 @@ export default function SetupPage() {
       }
     }
     checarPermissaoSetup();
-  }, [router]);
+  }, [router, tToastSetup]);
 
   const handleSetup = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // TODO: PASSAR PARA SERVICE
-      await api.post('/api/auth/setup-inicial', { nome, email, senha });
+      await authService.setupInicial({ nome, email, senha });
+      
       toast.success(tToastSetup('cadastradoSucesso'));
       router.push('/login');
     } catch (err) {
-      const msg = err.response?.data?.error || `${tToastSetup('erroConfigInicial')}`;
-      toast.error(msg);
+      toast.error(getApiError(err, tToastSetup('erroConfigInicial')));
     } finally {
       setLoading(false);
     }
