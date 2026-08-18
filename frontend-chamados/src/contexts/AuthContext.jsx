@@ -21,6 +21,7 @@ export function AuthProvider({ children }) {
       if (token) {
         try {
           api.defaults.headers.Authorization = `Bearer ${token}`;
+          // TODO: passar para service
           const { data } = await api.get('/api/auth/me');
           setUser(data);
         } catch (error) {
@@ -35,6 +36,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, senha) => {
+    // TODO: PASSAR PARA SERVICE
     const { data } = await api.post('/api/auth/login', { email, senha });
     
     secureStorage.setItem('@chamados:token', data.token);

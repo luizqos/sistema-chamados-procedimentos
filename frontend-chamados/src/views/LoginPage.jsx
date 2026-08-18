@@ -38,12 +38,14 @@ export default function LoginPage() {
           setLoading(true);
           window.history.replaceState({}, document.title, window.location.pathname);
           const tokenMicrosoft = response.idToken;
+          // TODO: PASSAR PARA SERVICE
           const { data } = await api.post('/api/auth/sso/microsoft', { tokenMicrosoft });
           if (data?.token && data?.usuario) {
             loginComToken(data.token, data.usuario);
             return;
           }
         }
+        // TODO: PASSAR PARA SERVICE
         const { data: statusData } = await api.get('/api/auth/setup-status');
         if (statusData?.precisaSetupInicial) {
           router.push('/setup');
@@ -54,6 +56,7 @@ export default function LoginPage() {
         window.history.replaceState({}, document.title, window.location.pathname);
         
         if (err.message === 'Network Error' || !err.response) {
+        // TODO: CRIAR INTL
           toast.error('Não foi possível conectar ao servidor backend. Verifique se a API está online.');
         } else {
           toast.error(err.response?.data?.error || err.message || `${tToastLogin('erroSso')}`);

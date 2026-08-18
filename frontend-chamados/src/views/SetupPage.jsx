@@ -25,6 +25,7 @@ export default function SetupPage() {
   useEffect(() => {
     async function checarPermissaoSetup() {
       try {
+        // TODO: PASSAR PARA SERVICE
         const { data } = await api.get('/api/auth/setup-status');
         if (!data?.precisaSetupInicial) {
           toast.error(tToastSetup('usuarioCadastradoErro'));
@@ -45,6 +46,7 @@ export default function SetupPage() {
     setLoading(true);
 
     try {
+      // TODO: PASSAR PARA SERVICE
       await api.post('/api/auth/setup-inicial', { nome, email, senha });
       toast.success(tToastSetup('cadastradoSucesso'));
       router.push('/login');

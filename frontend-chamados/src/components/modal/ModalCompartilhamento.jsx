@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { Share2, Trash2, UserPlus, X, Loader2, Search } from 'lucide-react';
-import api from '../../services/api';
+
+// Serviços centralizados
 import { procedimentoPermissaoService } from '../../services/procedimentoPermissaoService';
+import { usuarioService } from '../../services/usuarioService';
 
 export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId, criadorId }) {
   const tCompartilhamento = useTranslations('Compartilhamento');
@@ -29,14 +31,16 @@ export default function ModalCompartilhamento({ isOpen, onClose, procedimentoId,
     setCarregandoDados(true);
 
     try {
-      const [{ data: { dados } }, permissoes] = await Promise.all([
-        api.get('/api/usuarios'),
+      const [usuariosResponse, permissoes] = await Promise.all([
+        usuarioService.listar({ limit: 100 }),
         procedimentoPermissaoService.listarPermissoes(procedimentoId)
       ]);
 
+      const listaUsuarios = Array.isArray(usuariosResponse) ? usuariosResponse : (usuariosResponse.dados || []);
+
       const idCriador = Number(criadorId);
 
-      const usuariosElegiveis = dados.filter(u =>
+      const usuariosElegiveis = listaUsuarios.filter(u =>
         u.role?.nome !== 'ADMIN' && u.roleId !== 1 && Number(u.id) !== idCriador
       );
 
