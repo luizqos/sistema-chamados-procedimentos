@@ -117,6 +117,32 @@
     "salvarRegra": "Save Rule",
     "buscarPlaceholder": "Search by domain or email..."
   },
+  "Auditoria": {
+    "titulo": "Audit Trail",
+    "subtitulo": "Monitoring of system changes, creations, and deletions.",
+    "buscarPlaceholder": "Search by entity, action, or ID...",
+    "colunas": {
+      "idReg": "ID",
+      "dataHora": "Date/Time",
+      "usuario": "User",
+      "acao": "Action",
+      "entidade": "Entity",
+      "detalhes": "Details"
+    },
+    "nenhumLog": "No logs found.",
+    "verJson": "View JSON",
+    "total": "Total:",
+    "porPagina": "per page",
+    "paginaDe": "Page {page} of {totalPages}",
+    "modalTitulo": "Change Details",
+    "restaurarTamanho": "Restore Size",
+    "telaCheia": "Full Screen",
+    "fechar": "Close",
+    "dadosAntigos": "Old Data",
+    "dadosNovos": "New Data",
+    "nenhumDadoAnterior": "No previous data registered.",
+    "nenhumDadoNovo": "No new data registered."
+  },
   "Auth": {
     "verificandoSetup": "Checking system initialization...",
     "subtituloSistema": "Support Procedure System",
@@ -195,6 +221,9 @@
       "anexoEnviarErro": "Error sending \"{nome}\".",
       "anexoExcluidoSucesso": "Attachment deleted successfully!",
       "anexoExcluirErro": "Error deleting attachment."
+    },
+    "Auditoria": {
+      "erroCarregar": "Error loading logs."
     },
     "Login": {
       "erroSso": "Error processing SSO.",

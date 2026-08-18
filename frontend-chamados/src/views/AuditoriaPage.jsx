@@ -12,6 +12,9 @@ import BotaoConfiguracao from '../components/button/BotaoConfiguracao';
 
 export default function AuditoriaPage() {
   const tCommon = useTranslations('Common');
+  const tAuditoria = useTranslations('Auditoria');
+  const tToastAuditoria = useTranslations('Toast.Auditoria');
+
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -36,7 +39,7 @@ export default function AuditoriaPage() {
       setTotalPages(response.totalPages || 1);
       setTotalRegistros(response.total || 0);
     } catch (err) {
-      toast.error('Erro ao carregar logs.');
+      toast.error(tToastAuditoria('erroCarregar'));
     } finally {
       setLoading(false);
     }
@@ -80,8 +83,8 @@ export default function AuditoriaPage() {
               <History size={22} />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-white">Trilha de Auditoria</h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Monitoramento de alterações, criações e deleções do sistema.</p>
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white">{tAuditoria('titulo')}</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{tAuditoria('subtitulo')}</p>
             </div>
           </div>
         </div>
@@ -94,7 +97,7 @@ export default function AuditoriaPage() {
               type="text"
               value={busca}
               onChange={(e) => { setBusca(e.target.value); setPage(1); }}
-              placeholder="Buscar por entidade, ação ou ID..."
+              placeholder={tAuditoria('buscarPlaceholder')}
               className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition shadow-sm"
             />
           </div>
@@ -111,23 +114,23 @@ export default function AuditoriaPage() {
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-100/80 dark:bg-slate-950/60 text-slate-600 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
                   <tr>
-                    <th className="p-4">ID Reg.</th>
-                    <th className="p-4">Data/Hora</th>
-                    <th className="p-4">Usuário</th>
-                    <th className="p-4">Ação</th>
-                    <th className="p-4">Entidade</th>
-                    <th className="p-4 text-right">Detalhes</th>
+                    <th className="p-4">{tAuditoria('colunas.idReg')}</th>
+                    <th className="p-4">{tAuditoria('colunas.dataHora')}</th>
+                    <th className="p-4">{tAuditoria('colunas.usuario')}</th>
+                    <th className="p-4">{tAuditoria('colunas.acao')}</th>
+                    <th className="p-4">{tAuditoria('colunas.entidade')}</th>
+                    <th className="p-4 text-right">{tAuditoria('colunas.detalhes')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60">
                   {logs.length === 0 ? (
-                    <tr><td colSpan="6" className="p-8 text-center text-slate-400">Nenhum log encontrado.</td></tr>
+                    <tr><td colSpan="6" className="p-8 text-center text-slate-400">{tAuditoria('nenhumLog')}</td></tr>
                   ) : (
                     logs.map((log) => (
                       <tr key={log.id} className="transition hover:bg-slate-50 dark:hover:bg-slate-800/30">
                         <td className="p-4 font-mono font-bold text-slate-700 dark:text-slate-300">#{log.registro_id}</td>
                         <td className="p-4 font-mono text-[11px] text-slate-500">{formatarData(log.created_at)}</td>
-                        <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">{log.usuario?.nome || 'Sistema'}</td>
+                        <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">{log.usuario?.nome || tCommon('sistema')}</td>
                         <td className="p-4">
                           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border ${getCorAcao(log.acao)}`}>
                             {log.acao}
@@ -139,7 +142,7 @@ export default function AuditoriaPage() {
                           </span>
                         </td>
                         <td className="p-4 text-right">
-                          <button onClick={() => setLogSelecionado(log)} className="p-1.5 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition" title="Ver JSON">
+                          <button onClick={() => setLogSelecionado(log)} className="p-1.5 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition" title={tAuditoria('verJson')}>
                             <FileJson size={18} />
                           </button>
                         </td>
@@ -153,23 +156,23 @@ export default function AuditoriaPage() {
             {/* Paginação */}
             <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 gap-3">
               <div className="flex items-center gap-3">
-                <span className="text-xs text-slate-500">Total: <strong className="text-slate-700 dark:text-slate-300">{totalRegistros}</strong></span>
+                <span className="text-xs text-slate-500">{tAuditoria('total')} <strong className="text-slate-700 dark:text-slate-300">{totalRegistros}</strong></span>
                 <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }} className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-indigo-500">
-                  <option value={15}>15 por pág</option>
-                  <option value={30}>30 por pág</option>
-                  <option value={50}>50 por pág</option>
+                  <option value={15}>15 {tAuditoria('porPagina')}</option>
+                  <option value={30}>30 {tAuditoria('porPagina')}</option>
+                  <option value={50}>50 {tAuditoria('porPagina')}</option>
                 </select>
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">Anterior</button>
-                <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">Pág {page} de {totalPages || 1}</span>
-                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">Próxima</button>
+                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">{tCommon('anterior')}</button>
+                <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">{tAuditoria('paginaDe', { page, totalPages: totalPages || 1 })}</span>
+                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">{tCommon('proxima')}</button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Modal Visualizador de Diff / JSON com Rolagem Dupla e Maximizar */}
+        {/* Modal Visualizador de Diff / JSON */}
         {logSelecionado && (
           <div className={`fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200 transition-all ${maximizado ? 'p-0' : 'p-4'}`}>
             <div className={`bg-white dark:bg-slate-900 flex flex-col shadow-2xl overflow-hidden transition-all duration-300 ${
@@ -183,7 +186,7 @@ export default function AuditoriaPage() {
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-lg"><ShieldAlert size={18} /></div>
                   <div>
-                    <h2 className="text-sm font-bold text-slate-900 dark:text-white">Detalhes da Alteração</h2>
+                    <h2 className="text-sm font-bold text-slate-900 dark:text-white">{tAuditoria('modalTitulo')}</h2>
                     <p className="text-[10px] text-slate-500 font-mono">{logSelecionado.entidade} #{logSelecionado.registro_id} • {logSelecionado.acao}</p>
                   </div>
                 </div>
@@ -192,14 +195,14 @@ export default function AuditoriaPage() {
                   <button 
                     onClick={() => setMaximizado(!maximizado)} 
                     className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"
-                    title={maximizado ? 'Restaurar Tamanho' : 'Tela Cheia'}
+                    title={maximizado ? tAuditoria('restaurarTamanho') : tAuditoria('telaCheia')}
                   >
                     {maximizado ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
                   </button>
                   <button 
                     onClick={fecharModal} 
                     className="text-slate-400 hover:text-red-500 transition p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"
-                    title="Fechar"
+                    title={tAuditoria('fechar')}
                   >
                     <X size={18} />
                   </button>
@@ -212,11 +215,11 @@ export default function AuditoriaPage() {
                 {/* Coluna 1: Dados Antigos */}
                 <div className="flex-1 flex flex-col min-h-0">
                   <h3 className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider flex items-center gap-2 shrink-0">
-                    <span className="w-2 h-2 rounded-full bg-red-500"></span> Dados Antigos
+                    <span className="w-2 h-2 rounded-full bg-red-500"></span> {tAuditoria('dadosAntigos')}
                   </h3>
                   <div className="relative flex-1 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-[#0d1117] overflow-hidden transition-colors">
                     <pre className="absolute inset-0 p-4 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-auto custom-scrollbar">
-                      {logSelecionado.dados_antigos ? JSON.stringify(logSelecionado.dados_antigos, null, 2) : 'Nenhum dado anterior registrado.'}
+                      {logSelecionado.dados_antigos ? JSON.stringify(logSelecionado.dados_antigos, null, 2) : tAuditoria('nenhumDadoAnterior')}
                     </pre>
                   </div>
                 </div>
@@ -224,11 +227,11 @@ export default function AuditoriaPage() {
                 {/* Coluna 2: Dados Novos */}
                 <div className="flex-1 flex flex-col min-h-0">
                   <h3 className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider flex items-center gap-2 shrink-0">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Dados Novos
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span> {tAuditoria('dadosNovos')}
                   </h3>
                   <div className="relative flex-1 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-[#0d1117] overflow-hidden transition-colors">
                     <pre className="absolute inset-0 p-4 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-auto custom-scrollbar">
-                      {logSelecionado.dados_novos ? JSON.stringify(logSelecionado.dados_novos, null, 2) : 'Nenhum dado novo registrado.'}
+                      {logSelecionado.dados_novos ? JSON.stringify(logSelecionado.dados_novos, null, 2) : tAuditoria('nenhumDadoNovo')}
                     </pre>
                   </div>
                 </div>

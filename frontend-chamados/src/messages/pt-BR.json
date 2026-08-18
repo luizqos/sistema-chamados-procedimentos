@@ -5,7 +5,7 @@
     "voltar": "Voltar",
     "cancelar": "Cancelar",
     "anterior": "Anterior",
-    "proxima": "Proxima",
+    "proxima": "Próxima",
     "salvar": "Salvar",
     "excluir": "Excluir",
     "simExcluir": "Sim, excluir",
@@ -117,6 +117,32 @@
     "salvarRegra": "Salvar Regra",
     "buscarPlaceholder": "Buscar por domínio ou e-mail..."
   },
+  "Auditoria": {
+    "titulo": "Trilha de Auditoria",
+    "subtitulo": "Monitoramento de alterações, criações e deleções do sistema.",
+    "buscarPlaceholder": "Buscar por entidade, ação ou ID...",
+    "colunas": {
+      "idReg": "ID",
+      "dataHora": "Data/Hora",
+      "usuario": "Usuário",
+      "acao": "Ação",
+      "entidade": "Entidade",
+      "detalhes": "Detalhes"
+    },
+    "nenhumLog": "Nenhum log encontrado.",
+    "verJson": "Ver JSON",
+    "total": "Total:",
+    "porPagina": "por pág",
+    "paginaDe": "Pág {page} de {totalPages}",
+    "modalTitulo": "Detalhes da Alteração",
+    "restaurarTamanho": "Restaurar Tamanho",
+    "telaCheia": "Tela Cheia",
+    "fechar": "Fechar",
+    "dadosAntigos": "Dados Antigos",
+    "dadosNovos": "Dados Novos",
+    "nenhumDadoAnterior": "Nenhum dado anterior registrado.",
+    "nenhumDadoNovo": "Nenhum dado novo registrado."
+  },
   "Auth": {
     "verificandoSetup": "Verificando inicialização do sistema...",
     "subtituloSistema": "Sistema de Procedimentos de Chamados",
@@ -197,6 +223,9 @@
       "anexoEnviarErro": "Erro ao enviar \"{nome}\".",
       "anexoExcluidoSucesso": "Anexo excluído com sucesso!",
       "anexoExcluirErro": "Erro ao excluir o anexo."
+    },
+    "Auditoria": {
+      "erroCarregar": "Erro ao carregar logs."
     },
     "Login": {
       "erroSso": "Erro no processamento do SSO.",
