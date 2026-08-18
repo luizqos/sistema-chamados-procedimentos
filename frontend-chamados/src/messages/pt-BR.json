@@ -230,7 +230,8 @@
     "Login": {
       "erroSso": "Erro no processamento do SSO.",
       "erroConexao": "Erro ao conectar com a Microsoft.",
-      "falhaAutenticacao": "Falha na autenticação."
+      "falhaAutenticacao": "Falha na autenticação.",
+      "erroRede": "Ocorreu um erro de Comunicação."
     },
     "Setup": {
       "usuarioCadastradoErro": "O sistema já possui usuários cadastrados.",

@@ -7,10 +7,12 @@ import toast from 'react-hot-toast';
 import { useMsal } from '@azure/msal-react';
 import { Lock, Mail, Loader2, ShieldCheck, ArrowRight, Building2 } from 'lucide-react';
 
-import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { loginRequest, msalInstance } from '@/src/config/msalConfig';
 import BotaoIdiomaLogin from '../components/button/BotaoIdiomaLogin';
+
+import { authService } from '../services/authService';
+import { getApiError } from '../utils/errorHandler';
 
 export default function LoginPage() {
   const tAuth = useTranslations('Auth');
@@ -30,23 +32,28 @@ export default function LoginPage() {
   useEffect(() => {
     async function processarSSOERetorno() {
       if (isProcessingRef.current) return;
+      
       try {
         await msalInstance.initialize();
         const response = await instance.handleRedirectPromise();
+        
         if (response?.idToken) {
           isProcessingRef.current = true;
           setLoading(true);
           window.history.replaceState({}, document.title, window.location.pathname);
+          
           const tokenMicrosoft = response.idToken;
-          // TODO: PASSAR PARA SERVICE
-          const { data } = await api.post('/api/auth/sso/microsoft', { tokenMicrosoft });
+          
+          const data = await authService.loginSsoMicrosoft(tokenMicrosoft);
+          
           if (data?.token && data?.usuario) {
             loginComToken(data.token, data.usuario);
             return;
           }
         }
-        // TODO: PASSAR PARA SERVICE
-        const { data: statusData } = await api.get('/api/auth/setup-status');
+
+        const statusData = await authService.verificarSetupStatus();
+        
         if (statusData?.precisaSetupInicial) {
           router.push('/setup');
           return;
@@ -56,18 +63,18 @@ export default function LoginPage() {
         window.history.replaceState({}, document.title, window.location.pathname);
         
         if (err.message === 'Network Error' || !err.response) {
-        // TODO: CRIAR INTL
-          toast.error('Não foi possível conectar ao servidor backend. Verifique se a API está online.');
+          toast.error(tToastLogin('erroRede'));
         } else {
-          toast.error(err.response?.data?.error || err.message || `${tToastLogin('erroSso')}`);
+          toast.error(getApiError(err, tToastLogin('erroSso')));
         }
       } finally {
         setChecandoSetup(false);
         setLoading(false);
       }
     }
+    
     processarSSOERetorno();
-  }, [instance, router]);
+  }, [instance, router, loginComToken, tToastLogin]);
 
   const handleLoginMicrosoft = async () => {
     setLoading(true);
@@ -76,7 +83,7 @@ export default function LoginPage() {
       await instance.loginRedirect(loginRequest);
     } catch (err) {
       console.error('Erro ao redirecionar SSO:', err);
-      toast.error(`${tToastLogin('erroConexao')}`);
+      toast.error(tToastLogin('erroConexao'));
       setLoading(false);
     }
   };
@@ -87,7 +94,7 @@ export default function LoginPage() {
     try {
       await login(email, senha);
     } catch (err) {
-      toast.error(err.response?.data?.error || `${tToastLogin('falhaAutenticacao')}`);
+      toast.error(getApiError(err, tToastLogin('falhaAutenticacao')));
     } finally {
       setLoading(false);
     }
@@ -129,7 +136,7 @@ export default function LoginPage() {
           </p>
         </div>
         <div className="relative z-10 text-xs text-slate-500">
-          {new Date().getFullYear()} SPC. Todos os direitos reservados.
+          © {new Date().getFullYear()} SPC. Todos os direitos reservados.
         </div>
       </div>
 

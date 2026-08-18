@@ -228,7 +228,8 @@
     "Login": {
       "erroSso": "Error processing SSO.",
       "erroConexao": "Error connecting to Microsoft.",
-      "falhaAutenticacao": "Authentication failed."
+      "falhaAutenticacao": "Authentication failed.",
+      "erroRede": "A communication error occurred."
     },
     "Setup": {
       "usuarioCadastradoErro": "The system already has registered users.",
