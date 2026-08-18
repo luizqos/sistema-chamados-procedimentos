@@ -22,7 +22,7 @@ export default function AuditoriaPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalRegistros, setTotalRegistros] = useState(0);
   const [busca, setBusca] = useState('');
-  
+
   const [logSelecionado, setLogSelecionado] = useState(null);
   const [maximizado, setMaximizado] = useState(false);
 
@@ -71,7 +71,7 @@ export default function AuditoriaPage() {
   return (
     <WithPermission role="ADMIN">
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 md:p-10 space-y-6 transition-colors duration-200">
-        
+
         {/* Cabeçalho */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6 transition-colors">
           <div className="flex items-center gap-3">
@@ -87,8 +87,10 @@ export default function AuditoriaPage() {
               <p className="text-xs text-slate-500 dark:text-slate-400">{tAuditoria('subtitulo')}</p>
             </div>
           </div>
+          <div className="flex items-center gap-2">
+            {isAdmin && <BotaoConfiguracao />}
+          </div>
         </div>
-
         {/* Busca */}
         <div className="flex items-center justify-between gap-4">
           <div className="relative w-full max-w-sm">
@@ -152,7 +154,7 @@ export default function AuditoriaPage() {
                 </tbody>
               </table>
             </div>
-            
+
             {/* Paginação */}
             <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 gap-3">
               <div className="flex items-center gap-3">
@@ -175,12 +177,11 @@ export default function AuditoriaPage() {
         {/* Modal Visualizador de Diff / JSON */}
         {logSelecionado && (
           <div className={`fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200 transition-all ${maximizado ? 'p-0' : 'p-4'}`}>
-            <div className={`bg-white dark:bg-slate-900 flex flex-col shadow-2xl overflow-hidden transition-all duration-300 ${
-              maximizado 
-                ? 'w-full h-full rounded-none border-0' 
+            <div className={`bg-white dark:bg-slate-900 flex flex-col shadow-2xl overflow-hidden transition-all duration-300 ${maximizado
+                ? 'w-full h-full rounded-none border-0'
                 : 'w-full max-w-5xl h-[90vh] rounded-2xl border border-slate-200 dark:border-slate-800'
-            }`}>
-              
+              }`}>
+
               {/* Header do Modal */}
               <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50 shrink-0 transition-colors">
                 <div className="flex items-center gap-3">
@@ -190,17 +191,17 @@ export default function AuditoriaPage() {
                     <p className="text-[10px] text-slate-500 font-mono">{logSelecionado.entidade} #{logSelecionado.registro_id} • {logSelecionado.acao}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-1.5">
-                  <button 
-                    onClick={() => setMaximizado(!maximizado)} 
+                  <button
+                    onClick={() => setMaximizado(!maximizado)}
                     className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"
                     title={maximizado ? tAuditoria('restaurarTamanho') : tAuditoria('telaCheia')}
                   >
                     {maximizado ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
                   </button>
-                  <button 
-                    onClick={fecharModal} 
+                  <button
+                    onClick={fecharModal}
                     className="text-slate-400 hover:text-red-500 transition p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"
                     title={tAuditoria('fechar')}
                   >
@@ -208,10 +209,10 @@ export default function AuditoriaPage() {
                   </button>
                 </div>
               </div>
-              
+
               {/* Corpo do Modal */}
               <div className="p-4 flex-1 flex flex-col md:flex-row gap-4 bg-slate-100/50 dark:bg-black/20 min-h-0 transition-colors">
-                
+
                 {/* Coluna 1: Dados Antigos */}
                 <div className="flex-1 flex flex-col min-h-0">
                   <h3 className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider flex items-center gap-2 shrink-0">

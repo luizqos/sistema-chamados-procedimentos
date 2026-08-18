@@ -95,7 +95,6 @@ export default function SsoRegrasPage() {
             >
               <ArrowLeft size={20} />
             </Link>
-            {isAdmin && <BotaoConfiguracao />}
             <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 rounded-xl">
               <Shield size={22} />
             </div>
@@ -104,8 +103,8 @@ export default function SsoRegrasPage() {
               <p className="text-xs text-slate-500 dark:text-slate-400">{tSso('subtitulo')}</p>
             </div>
           </div>
-
           <div className="flex items-center gap-2">
+            {isAdmin && <BotaoConfiguracao />}
             <button
               onClick={() => setIsModalOpen(true)}
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20 cursor-pointer"
@@ -176,8 +175,8 @@ export default function SsoRegrasPage() {
                         <td className="p-4 font-mono font-semibold text-slate-800 dark:text-slate-200">{r.valor}</td>
                         <td className="p-4">
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${r.acao === 'PERMITIR'
-                              ? 'bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
-                              : 'bg-red-100 dark:bg-red-950/60 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
+                            ? 'bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
+                            : 'bg-red-100 dark:bg-red-950/60 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
                             }`}>
                             {r.acao === 'PERMITIR' ? <CheckCircle size={12} /> : <XCircle size={12} />}
                             {r.acao === 'PERMITIR' ? `${tCommon('permitir')}` : `${tCommon('negar')}`}

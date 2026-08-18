@@ -90,7 +90,6 @@ export default function GestaoUsuariosPage() {
             >
               <ArrowLeft size={20} />
             </Link>
-            {isAdmin && <BotaoConfiguracao />}
             <div className="p-2.5 bg-sky-500/10 border border-sky-500/20 text-sky-600 dark:text-sky-400 rounded-xl">
               <Users size={22} />
             </div>
@@ -99,8 +98,8 @@ export default function GestaoUsuariosPage() {
               <p className="text-xs text-slate-500 dark:text-slate-400">{tUsuarios('subtitulo')}</p>
             </div>
           </div>
-
           <div className="flex items-center gap-2">
+            {isAdmin && <BotaoConfiguracao />}
             <button
               onClick={() => setIsModalOpen(true)}
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-sky-600/20 cursor-pointer"
@@ -164,8 +163,8 @@ export default function GestaoUsuariosPage() {
                         <tr
                           key={u.id}
                           className={`transition ${u.ativo
-                              ? 'hover:bg-slate-50 dark:hover:bg-slate-800/30'
-                              : 'bg-slate-100/50 dark:bg-slate-950/40 opacity-60'
+                            ? 'hover:bg-slate-50 dark:hover:bg-slate-800/30'
+                            : 'bg-slate-100/50 dark:bg-slate-950/40 opacity-60'
                             }`}
                         >
                           <td className="p-4 text-slate-400 dark:text-slate-500 font-mono">#{u.id}</td>
@@ -175,8 +174,8 @@ export default function GestaoUsuariosPage() {
                           <td className="p-4">
                             <span
                               className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${u.ativo
-                                  ? 'bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
-                                  : 'bg-red-100 dark:bg-red-950/60 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
+                                ? 'bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
+                                : 'bg-red-100 dark:bg-red-950/60 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
                                 }`}
                             >
                               {u.ativo ? <CheckCircle size={12} /> : <XCircle size={12} />}
@@ -187,8 +186,8 @@ export default function GestaoUsuariosPage() {
                           <td className="p-4">
                             <span
                               className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold border ${isUserAdmin
-                                  ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-300 dark:border-amber-500/30 text-amber-700 dark:text-amber-400'
-                                  : 'bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-sky-700 dark:text-sky-400'
+                                ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-300 dark:border-amber-500/30 text-amber-700 dark:text-amber-400'
+                                : 'bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-sky-700 dark:text-sky-400'
                                 }`}
                             >
                               <Shield size={12} />
