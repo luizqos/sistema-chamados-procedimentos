@@ -87,10 +87,8 @@ export default function AuditoriaPage() {
               <p className="text-xs text-slate-500 dark:text-slate-400">{tAuditoria('subtitulo')}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            {isAdmin && <BotaoConfiguracao />}
-          </div>
         </div>
+
         {/* Busca */}
         <div className="flex items-center justify-between gap-4">
           <div className="relative w-full max-w-sm">
