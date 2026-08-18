@@ -7,7 +7,7 @@ import { Search, Loader2, ArrowLeft, History } from 'lucide-react';
 import { WithPermission } from '../components/WithPermission';
 import { auditoriaService } from '../services/auditoriaService';
 import BotaoConfiguracao from '../components/button/BotaoConfiguracao';
-import TabelaAuditoria from '../components/TabelaAuditoria';
+import TabelaAuditoria from '../components/table/TabelaAuditoria';
 import ModalDetalhesAuditoria from '../components/modal/ModalDetalhesAuditoria';
 
 export default function AuditoriaPage() {

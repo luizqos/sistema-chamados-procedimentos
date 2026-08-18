@@ -11,7 +11,7 @@ import { usuarioService } from '../services/usuarioService';
 import { useAuth } from '../contexts/AuthContext';
 import ModalNovoUsuario from '../components/modal/ModalNovoUsuario';
 import ModalEditarUsuario from '../components/modal/ModalEditarUsuario';
-import TabelaUsuarios from '../components/TabelaUsuarios';
+import TabelaUsuarios from '../components/Table/TabelaUsuarios';
 import BotaoConfiguracao from '../components/button/BotaoConfiguracao';
 
 export default function GestaoUsuariosPage() {

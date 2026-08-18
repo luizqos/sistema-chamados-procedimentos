@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { FileJson } from 'lucide-react';
-import { formatarData } from '../utils/formatters';
+import { formatarData } from '../../utils/formatters';
 
 export default function TabelaAuditoria({ logs, loading, tAuditoria, tCommon, onVerDetalhes }) {
   const getCorAcao = (acao) => {

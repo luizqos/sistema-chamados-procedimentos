@@ -10,7 +10,7 @@ import { WithPermission } from '../components/WithPermission';
 import { ssoRegrasService } from '../services/ssoRegrasService';
 import { dialog } from '../utils/dialogs';
 import ModalNovaRegraSso from '../components/modal/ModalNovaRegraSso';
-import TabelaRegrasSso from '../components/TabelaRegrasSso';
+import TabelaRegrasSso from '../components/table/TabelaRegrasSso';
 import { useAuth } from '../contexts/AuthContext';
 import BotaoConfiguracao from '../components/button/BotaoConfiguracao';
 

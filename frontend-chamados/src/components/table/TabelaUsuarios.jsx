@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Shield, CheckCircle, XCircle, Pencil, Power } from 'lucide-react';
-import { formatarData } from '../utils/formatters';
+import { formatarData } from '../../utils/formatters';
 
 export default function TabelaUsuarios({ usuarios, usuarioLogado, tUsuarios, tCommon, onEditar, onAlternarStatus }) {
   return (

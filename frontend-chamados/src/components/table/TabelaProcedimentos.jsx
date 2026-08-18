@@ -1,4 +1,4 @@
-import { Can } from '../components/Can';
+import { Can } from '../../components/Can';
 import { Plus, Trash2 } from 'lucide-react';
 
 export function TabelaProcedimentos({ lista, onDelete }) {
