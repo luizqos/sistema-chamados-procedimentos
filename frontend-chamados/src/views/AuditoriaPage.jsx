@@ -74,11 +74,12 @@ export default function AuditoriaPage() {
 
         {/* Cabeçalho */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6 transition-colors">
+          
+          {/* Lado Esquerdo do Cabeçalho */}
           <div className="flex items-center gap-3">
-            <Link href="/" className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl transition shadow-sm">
+            <Link href="/" className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl transition shadow-sm hover:scale-105 active:scale-95 duration-150">
               <ArrowLeft size={20} />
             </Link>
-            <BotaoConfiguracao />
             <div className="p-2.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-xl">
               <History size={22} />
             </div>
@@ -87,6 +88,12 @@ export default function AuditoriaPage() {
               <p className="text-xs text-slate-500 dark:text-slate-400">{tAuditoria('subtitulo')}</p>
             </div>
           </div>
+
+          {/* Lado Direito do Cabeçalho - Botão de Configuração Totalmente à Direita */}
+          <div className="flex items-center justify-end">
+            <BotaoConfiguracao />
+          </div>
+          
         </div>
 
         {/* Busca */}
@@ -142,8 +149,13 @@ export default function AuditoriaPage() {
                           </span>
                         </td>
                         <td className="p-4 text-right">
-                          <button onClick={() => setLogSelecionado(log)} className="p-1.5 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition" title={tAuditoria('verJson')}>
-                            <FileJson size={18} />
+                          {/* Botão Reestilizado: Efeito de hover suave, borda leve e feedback de clique */}
+                          <button 
+                            onClick={() => setLogSelecionado(log)} 
+                            className="p-2 text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/40 rounded-xl transition-all duration-200 active:scale-90 inline-flex items-center justify-center cursor-pointer shadow-sm hover:shadow" 
+                            title={tAuditoria('verJson')}
+                          >
+                            <FileJson size={16} />
                           </button>
                         </td>
                       </tr>
@@ -164,9 +176,9 @@ export default function AuditoriaPage() {
                 </select>
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">{tCommon('anterior')}</button>
+                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95 duration-100 cursor-pointer">{tCommon('anterior')}</button>
                 <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">{tAuditoria('paginaDe', { page, totalPages: totalPages || 1 })}</span>
-                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">{tCommon('proxima')}</button>
+                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95 duration-100 cursor-pointer">{tCommon('proxima')}</button>
               </div>
             </div>
           </div>
@@ -193,17 +205,17 @@ export default function AuditoriaPage() {
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => setMaximizado(!maximizado)}
-                    className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"
+                    className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all p-2 bg-slate-100 hover:bg-indigo-50 dark:bg-slate-800 dark:hover:bg-indigo-950/40 border border-slate-200 hover:border-indigo-100 dark:border-slate-700 dark:hover:border-indigo-900/40 rounded-xl active:scale-90 duration-150 cursor-pointer shadow-sm"
                     title={maximizado ? tAuditoria('restaurarTamanho') : tAuditoria('telaCheia')}
                   >
-                    {maximizado ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+                    {maximizado ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
                   </button>
                   <button
                     onClick={fecharModal}
-                    className="text-slate-400 hover:text-red-500 transition p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"
+                    className="text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-all p-2 bg-slate-100 hover:bg-red-500/10 dark:bg-slate-800 dark:hover:bg-red-500/10 border border-slate-200 hover:border-red-200 dark:border-slate-700 dark:hover:border-red-900/30 rounded-xl active:scale-90 duration-150 cursor-pointer shadow-sm"
                     title={tAuditoria('fechar')}
                   >
-                    <X size={18} />
+                    <X size={15} />
                   </button>
                 </div>
               </div>
