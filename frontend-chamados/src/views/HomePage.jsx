@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
+
 import { useAuth } from '../contexts/AuthContext';
 import { useProcedimentos } from '../hooks/useProcedimentos';
 import Sidebar from '../components/layout/Sidebar';
@@ -13,12 +14,16 @@ import EmptyState from '../components/feedback/EmptyState';
 import { dialog } from '../utils/dialogs';
 import { useTranslations } from 'next-intl';
 
+import { copyToClipboard } from '../utils/clipboard';
+import { getApiError } from '../utils/errorHandler';
+
 export default function HomePage() {
   const router = useRouter();
   const { user, signed, loading: authLoading, logout } = useAuth();
   const [busca, setBusca] = useState('');
   const [copiado, setCopiado] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const tCommon = useTranslations('Common');
   const tToastProcedimento = useTranslations('Toast.Procedimento');
   const tAlertaProcedimento = useTranslations('Alerta.Procedimento');
@@ -49,12 +54,16 @@ export default function HomePage() {
     }
   }, [busca, carregarProcedimentos, signed]);
 
-  const handleCopiarTexto = () => {
-    if (!selecionado) return;
-    navigator.clipboard.writeText(selecionado.script_passo_a_passo);
-    setCopiado(true);
-    toast.success(tToastProcedimento('copiado'));
-    setTimeout(() => setCopiado(false), 2000);
+  const handleCopiarTexto = async () => {
+    if (!selecionado?.script_passo_a_passo) return;
+    
+    const sucesso = await copyToClipboard(selecionado.script_passo_a_passo);
+    
+    if (sucesso) {
+      setCopiado(true);
+      toast.success(tToastProcedimento('copiado'));
+      setTimeout(() => setCopiado(false), 2000);
+    }
   };
 
   const handleDeletar = async (id) => {
@@ -71,8 +80,7 @@ export default function HomePage() {
         toast.success(tToastProcedimento('sucessoExclusao'));
         carregarProcedimentos({ busca, page: 1, limit: 15 }, true);
       } catch (err) {
-        const mensagemErro = err?.message || `${tToastProcedimento('erroExclusao')}`;
-        toast.error(mensagemErro);
+        toast.error(getApiError(err, tToastProcedimento('erroExclusao')));
       }
     }
   };
@@ -110,6 +118,7 @@ export default function HomePage() {
         user={user}
         onLogout={logout}
       />
+
       <main className="flex-1 p-8 overflow-y-auto bg-white dark:bg-slate-950 transition-colors duration-200">
         {procedimentoComAutor ? (
           <PainelProcedimento
@@ -126,6 +135,7 @@ export default function HomePage() {
           <EmptyState />
         )}
       </main>
+
       <ModalNovoProcedimento
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
