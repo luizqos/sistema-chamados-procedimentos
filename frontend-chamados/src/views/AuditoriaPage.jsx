@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Search, Loader2, ArrowLeft, History } from 'lucide-react';
-import { WithPermission } from '../components/WithPermission';
+import { WithPermission } from '../components/auth/WithPermission';
 import { auditoriaService } from '../services/auditoriaService';
 import BotaoConfiguracao from '../components/button/BotaoConfiguracao';
 import TabelaAuditoria from '../components/table/TabelaAuditoria';

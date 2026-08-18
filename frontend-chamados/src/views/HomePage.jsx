@@ -6,10 +6,10 @@ import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useProcedimentos } from '../hooks/useProcedimentos';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../components/layout/Sidebar';
 import ModalNovoProcedimento from '../components/modal/ModalNovoProcedimento';
 import PainelProcedimento from '../components/PainelProcedimento';
-import EmptyState from '../components/EmptyState';
+import EmptyState from '../components/feedback/EmptyState';
 import { dialog } from '../utils/dialogs';
 import { useTranslations } from 'next-intl';
 

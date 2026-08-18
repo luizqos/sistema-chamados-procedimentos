@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { Shield, Loader2, ArrowLeft, Plus, CheckCircle, Search } from 'lucide-react';
 
-import { WithPermission } from '../components/WithPermission';
+import { WithPermission } from '../components/auth/WithPermission';
 import { ssoRegrasService } from '../services/ssoRegrasService';
 import { dialog } from '../utils/dialogs';
 import ModalNovaRegraSso from '../components/modal/ModalNovaRegraSso';

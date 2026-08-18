@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { Users, Loader2, ArrowLeft, UserPlus, Search } from 'lucide-react';
 
-import { WithPermission } from '../components/WithPermission';
+import { WithPermission } from '../components/auth/WithPermission';
 import { usuarioService } from '../services/usuarioService';
 import { useAuth } from '../contexts/AuthContext';
 import ModalNovoUsuario from '../components/modal/ModalNovoUsuario';
