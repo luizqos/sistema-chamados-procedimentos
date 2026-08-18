@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Search, Loader2, ArrowLeft, History } from 'lucide-react';
+
 import { WithPermission } from '../components/auth/WithPermission';
 import { auditoriaService } from '../services/auditoriaService';
 import BotaoConfiguracao from '../components/button/BotaoConfiguracao';
@@ -41,6 +42,10 @@ export default function AuditoriaPage() {
       setLoading(false);
     }
   }
+  
+  const fecharModal = () => {
+    setLogSelecionado(null);
+  };
 
   return (
     <WithPermission role="ADMIN">
@@ -52,12 +57,14 @@ export default function AuditoriaPage() {
             <Link href="/" className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl transition shadow-sm hover:scale-105 duration-150">
               <ArrowLeft size={20} />
             </Link>
-            <BotaoConfiguracao />
             <div className="p-2.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-xl"><History size={22} /></div>
             <div>
               <h1 className="text-xl font-bold text-slate-900 dark:text-white">{tAuditoria('titulo')}</h1>
               <p className="text-xs text-slate-500 dark:text-slate-400">{tAuditoria('subtitulo')}</p>
             </div>
+          </div>
+          <div className="flex items-center justify-end">
+            <BotaoConfiguracao />
           </div>
         </div>
 
@@ -69,7 +76,7 @@ export default function AuditoriaPage() {
             value={busca}
             onChange={(e) => { setBusca(e.target.value); setPage(1); }}
             placeholder={tAuditoria('buscarPlaceholder')}
-            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs"
+            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:border-indigo-500 transition shadow-sm"
           />
         </div>
 
@@ -90,19 +97,18 @@ export default function AuditoriaPage() {
             <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 gap-3">
               <div className="flex items-center gap-3">
                 <span className="text-xs text-slate-500">{tAuditoria('total')} <strong className="text-slate-700 dark:text-slate-300">{totalRegistros}</strong></span>
-                <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }} className="bg-white dark:bg-slate-900 border border-slate-300 text-xs rounded-lg px-2 py-1">
+                <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }} className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-indigo-500">
                   <option value={15}>15 {tAuditoria('porPagina')}</option>
                   <option value={30}>30 {tAuditoria('porPagina')}</option>
                   <option value={50}>50 {tAuditoria('porPagina')}</option>
                 </select>
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 border rounded-lg text-xs font-semibold disabled:opacity-40">{tCommon('anterior')}</button>
-                <span className="text-xs font-mono">{tAuditoria('paginaDe', { page, totalPages: totalPages || 1 })}</span>
-                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-3 py-1.5 border rounded-lg text-xs font-semibold disabled:opacity-40">{tCommon('proxima')}</button>
+                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95 duration-100 cursor-pointer">{tCommon('anterior')}</button>
+                <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">{tAuditoria('paginaDe', { page, totalPages: totalPages || 1 })}</span>
+                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95 duration-100 cursor-pointer">{tCommon('proxima')}</button>
               </div>
             </div>
-
           </div>
         )}
 

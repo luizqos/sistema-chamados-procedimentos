@@ -125,7 +125,7 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
         {podeEditar && (
           <label className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-semibold transition cursor-pointer">
             <Upload size={14} />
-            <span>{tProcedimento('adicionarAnexos')}</span> {/* <-- Traduzido */}
+            <span>{tProcedimento('adicionarAnexos')}</span>
             <input
               type="file"
               multiple
@@ -138,7 +138,7 @@ export default function GaleriaAnexos({ procedimentoId, tituloProcedimento, anex
       </div>
 
       {(!anexos || anexos.length === 0) ? (
-        <p className="text-xs text-slate-400 italic">{tProcedimento('nenhumAnexoCadastrado')}</p> /* <-- Traduzido */
+        <p className="text-xs text-slate-400 italic">{tProcedimento('nenhumAnexoCadastrado')}</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {anexos.map((anexo) => {
