@@ -15,7 +15,7 @@ import { procedimentoService } from '@/src/services/procedimentoService';
 export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user, onAtualizarProcedimento }) {
   const tProcedimento = useTranslations('Procedimento');
   const tToastCompartilhamento = useTranslations('Toast.Compartilhamento');
-  const tToastProcedimento = useTranslations('Toast.Procedimento'); // <-- Adicionado
+  const tToastProcedimento = useTranslations('Toast.Procedimento');
   const tCommon = useTranslations('Common');
   const tCompartilhamento = useTranslations('Compartilhamento');
   const format = useFormatter();
