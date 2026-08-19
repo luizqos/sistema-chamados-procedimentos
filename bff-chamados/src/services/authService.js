@@ -66,7 +66,7 @@ class AuthService {
     );
 
     usuarioRepository.atualizarDataUltimoLogin(usuario.id);
-    
+
     return {
       token,
       usuario: this._formatarRetornoUsuario(usuario),
@@ -124,7 +124,6 @@ class AuthService {
     }
 
     const senhaHash = await bcrypt.hash(senha, 10);
-
     const novoAdmin = await usuarioRepository.criar({
       nome,
       email,
@@ -132,7 +131,7 @@ class AuthService {
       roleId: roleAdmin.id
     });
 
-    await auditoriaService.registrarLog(usuario, 'LOGIN', 'Sessao', usuario.id, null, { ip: 'Login efetuado com sucesso via senha' });
+    await auditoriaService.registrarLog(novoAdmin, 'CREATE', 'Usuario', novoAdmin.id, null, novoAdmin);
 
     return novoAdmin;
   }

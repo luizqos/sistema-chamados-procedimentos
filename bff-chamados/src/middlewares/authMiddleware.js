@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const prisma = require('../config/prisma');
 
 function autenticar(req, res, next) {
   let token = null;

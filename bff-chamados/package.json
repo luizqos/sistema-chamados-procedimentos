@@ -11,7 +11,8 @@
     "prisma:generate:sqlite": "prisma generate --schema=prisma/schema.sqlite.prisma",
     "db:push:sqlite": "prisma db push --schema=prisma/schema.sqlite.prisma",
     "db:push:pg": "prisma db push --schema=prisma/schema.prisma",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cross-env NODE_ENV=test jest --runInBand",
+    "test:cov": "cross-env NODE_ENV=test jest --coverage --runInBand"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
@@ -20,8 +21,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "cross-env": "^10.1.0",
+    "jest": "^30.4.2",
+    "jest-mock-extended": "^4.0.1",
     "nodemon": "^3.1.14",
-    "prisma": "^6.19.3"
+    "prisma": "^6.19.3",
+    "supertest": "^7.2.2"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
