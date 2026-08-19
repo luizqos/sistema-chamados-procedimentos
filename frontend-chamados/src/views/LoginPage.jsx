@@ -23,7 +23,7 @@ export default function LoginPage() {
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
   const [checandoSetup, setChecandoSetup] = useState(true);
-  
+
   const { instance } = useMsal();
   const { login, loginComToken } = useAuth();
   const router = useRouter();
@@ -32,20 +32,20 @@ export default function LoginPage() {
   useEffect(() => {
     async function processarSSOERetorno() {
       if (isProcessingRef.current) return;
-      
+
       try {
         await msalInstance.initialize();
         const response = await instance.handleRedirectPromise();
-        
+
         if (response?.idToken) {
           isProcessingRef.current = true;
           setLoading(true);
           window.history.replaceState({}, document.title, window.location.pathname);
-          
+
           const tokenMicrosoft = response.idToken;
-          
+
           const data = await authService.loginSsoMicrosoft(tokenMicrosoft);
-          
+
           if (data?.token && data?.usuario) {
             loginComToken(data.token, data.usuario);
             return;
@@ -53,7 +53,7 @@ export default function LoginPage() {
         }
 
         const statusData = await authService.verificarSetupStatus();
-        
+
         if (statusData?.precisaSetupInicial) {
           router.push('/setup');
           return;
@@ -61,7 +61,7 @@ export default function LoginPage() {
       } catch (err) {
         console.error('Erro ao processar SSO:', err);
         window.history.replaceState({}, document.title, window.location.pathname);
-        
+
         if (err.message === 'Network Error' || !err.response) {
           toast.error(tToastLogin('erroRede'));
         } else {
@@ -72,7 +72,7 @@ export default function LoginPage() {
         setLoading(false);
       }
     }
-    
+
     processarSSOERetorno();
   }, [instance, router, loginComToken, tToastLogin]);
 
@@ -137,6 +137,9 @@ export default function LoginPage() {
         </div>
         <div className="relative z-10 text-xs text-slate-500">
           © {new Date().getFullYear()} SPC. Todos os direitos reservados.
+          <span className="font-mono font-medium px-2 py-0.5 rounded-md bg-slate-800/50 border border-slate-700/50">
+            v{process.env.NEXT_PUBLIC_APP_VERSION}
+          </span>
         </div>
       </div>
 
