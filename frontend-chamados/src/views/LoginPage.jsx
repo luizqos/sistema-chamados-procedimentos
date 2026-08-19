@@ -135,12 +135,17 @@ export default function LoginPage() {
             {tAuth('bannerDescricao')}
           </p>
         </div>
-        <div className="relative z-10 text-xs text-slate-500">
-          © {new Date().getFullYear()} SPC. Todos os direitos reservados.
-          <span className="font-mono font-medium px-2 py-0.5 rounded-md bg-slate-800/50 border border-slate-700/50">
-            v{process.env.NEXT_PUBLIC_APP_VERSION}
-          </span>
+        
+        {/* RODAPÉ ATUALIZADO COM A QUEBRA DE LINHA */}
+        <div className="relative z-10 flex flex-col gap-2 mt-auto text-xs text-slate-500">
+          <span>© {new Date().getFullYear()} SPC. Todos os direitos reservados.</span>
+          <div>
+            <span className="font-mono font-medium px-2 py-0.5 rounded-md bg-slate-800/50 border border-slate-700/50">
+              v{process.env.NEXT_PUBLIC_APP_VERSION}
+            </span>
+          </div>
         </div>
+
       </div>
 
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-slate-900 lg:bg-slate-950">
