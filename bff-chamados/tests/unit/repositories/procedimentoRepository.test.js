@@ -82,4 +82,11 @@ describe('Procedimento Repository', () => {
       expect(prisma.procedimento.findUnique).toHaveBeenCalled();
     });
   });
+
+  it('deve listar usando os parametros default (sem args de paginacao)', async () => {
+    prisma.procedimento.findMany.mockResolvedValue([]);
+    prisma.procedimento.count.mockResolvedValue(0);
+    await procedimentoRepository.listar({ usuarioLogado: { role: 'ADMIN' } });
+    expect(prisma.procedimento.findMany).toHaveBeenCalled();
+  });
 });

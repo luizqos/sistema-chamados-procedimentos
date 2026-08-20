@@ -138,4 +138,42 @@ describe('Procedimento Service', () => {
         .rejects.toThrow('Procedimento não encontrado');
     });
   });
+  
+  describe('Testes de Permissão e Validação Extra (Branches Faltantes)', () => {
+    const mockUsuarioComum = { id: 2, role: 'OPERADOR' };
+
+    it('atualizarProcedimento deve lançar erro se não achar procedimento', async () => {
+      procedimentoRepository.obterPorId.mockResolvedValue(null);
+      await expect(procedimentoService.atualizarProcedimento(99, { titulo: 'A' }, mockUsuarioComum))
+        .rejects.toThrow();
+    });
+
+    it('atualizarProcedimento deve lançar erro se usuário não for dono nem admin', async () => {
+      procedimentoRepository.obterPorId.mockResolvedValue({ id: 1, usuario_id: 3 }); 
+      permissaoRepository.verificarPermissaoUsuario.mockResolvedValue(null); 
+      await expect(procedimentoService.atualizarProcedimento(1, { titulo: 'A' }, mockUsuarioComum))
+        .rejects.toThrow();
+    });
+
+    it('adicionarAnexo deve lançar erro se procedimento não existir', async () => {
+      procedimentoRepository.obterPorId.mockResolvedValue(null);
+      await expect(procedimentoService.adicionarAnexo(99, {}, mockUsuarioComum))
+        .rejects.toThrow();
+    });
+
+    it('excluirAnexo deve lançar erro se anexo não existir', async () => {
+      procedimentoRepository.obterAnexoPorId.mockResolvedValue(null);
+      await expect(procedimentoService.excluirAnexo(99, mockUsuarioComum))
+        .rejects.toThrow();
+    });
+
+    it('excluirAnexo deve lançar erro se usuário não tiver permissão', async () => {
+      procedimentoRepository.obterAnexoPorId.mockResolvedValue({ id: 1, procedimento_id: 1 });
+      procedimentoRepository.obterPorId.mockResolvedValue({ id: 1, usuario_id: 3 }); 
+      permissaoRepository.verificarPermissaoUsuario.mockResolvedValue(null);
+      
+      await expect(procedimentoService.excluirAnexo(1, mockUsuarioComum))
+        .rejects.toThrow();
+    });
+  });
 });

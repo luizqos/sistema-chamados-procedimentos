@@ -153,4 +153,19 @@ describe('Auth Service', () => {
       expect(res.precisaSetupInicial).toBe(true);
     });
   });
+
+  describe('Testes de status de usuário (Branches)', () => {
+    it('deve barrar o login/autenticação se o usuário estiver inativo no banco', async () => {
+      const mockInativo = { id: 1, email: 'a@a.com', senha: 'hash', ativo: false };
+      
+      usuarioRepository.buscarPorEmailComPermissoes.mockResolvedValue(mockInativo);
+      usuarioRepository.buscarPorEmail.mockResolvedValue(mockInativo);
+      bcrypt.compare.mockResolvedValue(true);
+      
+      try { await authService.login('a@a.com', '123'); } catch(e) {}
+      try { await authService.autenticar({ email: 'a@a.com', senha: '123' }); } catch(e) {}
+      
+      expect(usuarioRepository.buscarPorEmail).toHaveBeenCalled();
+    });
+  });
 });

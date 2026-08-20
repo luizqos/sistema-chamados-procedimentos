@@ -106,4 +106,11 @@ describe('Usuario Repository', () => {
       }
     }));
   });
+
+  it('deve listarPaginado usando os parametros default (sem argumentos)', async () => {
+    prisma.usuario.findMany.mockResolvedValue([]);
+    prisma.usuario.count.mockResolvedValue(0);
+    await usuarioRepository.listarPaginado(); // Chama sem os args page, limit e busca
+    expect(prisma.usuario.findMany).toHaveBeenCalled();
+  });
 });

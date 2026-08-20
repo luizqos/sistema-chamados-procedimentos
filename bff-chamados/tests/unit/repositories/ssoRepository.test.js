@@ -48,4 +48,42 @@ describe('SSO Repository', () => {
     const res = await ssoRepository.listarPaginado(1, 10, '');
     expect(res.dados.length).toBe(1);
   });
+
+  it('deve listarPaginado usando os parametros default (sem argumentos)', async () => {
+    prisma.ssoRegra.findMany.mockResolvedValue([]);
+    prisma.ssoRegra.count.mockResolvedValue(0);
+    await ssoRepository.listarPaginado();
+    expect(prisma.ssoRegra.findMany).toHaveBeenCalled();
+  });
+
+  describe('Testes de Filtro e Exceções Faltantes', () => {
+    it('deve listarPaginado COM termo de busca no campo valor', async () => {
+      prisma.ssoRegra.findMany.mockResolvedValue([]);
+      prisma.ssoRegra.count.mockResolvedValue(0);
+
+      await ssoRepository.listarPaginado(1, 10, 'gmail');
+
+      // Valida a busca exata que a sua regra de negócio implementa
+      expect(prisma.ssoRegra.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            valor: { contains: 'gmail', mode: 'insensitive' }
+          }
+        })
+      );
+    });
+
+    it('deve repassar erro ao falhar em buscarPorSsoId (linha 26)', async () => {
+      prisma.usuario.findUnique.mockRejectedValue(new Error('Falha de Conexão'));
+      await expect(ssoRepository.buscarPorSsoId('123')).rejects.toThrow('Falha de Conexão');
+    });
+
+    it('deve repassar erro ao falhar em criarUsuarioSso (linha 54)', async () => {
+      prisma.usuario.create.mockRejectedValue(new Error('Falha de Conexão'));
+
+      const payloadFake = { nome: 'A', email: 'a@a.com', ssoId: '1', roleId: 1 };
+
+      await expect(ssoRepository.criarUsuarioSso(payloadFake)).rejects.toThrow('Falha de Conexão');
+    });
+  });
 });
