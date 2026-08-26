@@ -35,6 +35,7 @@ services:
       MS_CLIENT_ID: ${NEXT_PUBLIC_MS_CLIENT_ID}
       MS_TENANT_ID: ${NEXT_PUBLIC_MS_TENANT_ID}
       SSO_MICROSOFT_ATIVO: ${NEXT_PUBLIC_SSO_MICROSOFT_ATIVO}
+      EXPIRED_TOKEN: ${EXPIRED_TOKEN}
     volumes:
       - ./bff-chamados/uploads:/app/uploads
     depends_on:

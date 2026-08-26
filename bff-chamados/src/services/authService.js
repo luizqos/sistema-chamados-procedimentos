@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const usuarioRepository = require('../repositories/usuarioRepository');
 const auditoriaService = require('./auditoriaService');
+const expiresIn = process.env.EXPIRED_TOKEN;
+const secret = process.env.JWT_SECRET;
 
 class AuthService {
   async autenticar({ email, senha }) {
@@ -18,7 +20,7 @@ class AuthService {
       throw error;
     }
 
-    const senhaValida = await bcrypt.compare(senha, usuario.senha);
+    const senhaValida = bcrypt.compare(senha, usuario.senha);
     if (!senhaValida) {
       const error = new Error('Credenciais inválidas.');
       error.statusCode = 401;
@@ -27,7 +29,6 @@ class AuthService {
 
     usuarioRepository.atualizarDataUltimoLogin(usuario.id);
 
-    const secret = process.env.JWT_SECRET;
     const token = jwt.sign(
       {
         id: usuario.id,
@@ -36,7 +37,7 @@ class AuthService {
         nome: usuario.nome,
       },
       secret,
-      { expiresIn: '8h' }
+      { expiresIn }
     );
 
     return {
@@ -53,7 +54,7 @@ class AuthService {
   async login(email, senha) {
     const usuario = await usuarioRepository.buscarPorEmailComPermissoes(email);
 
-    if (!usuario || !(await bcrypt.compare(senha, usuario.senha))) {
+    if (!usuario || !bcrypt.compare(senha, usuario.senha)) {
       const error = new Error('Credenciais inválidas.');
       error.statusCode = 401;
       throw error;
@@ -61,8 +62,8 @@ class AuthService {
 
     const token = jwt.sign(
       { id: usuario.id, role: usuario.role.nome },
-      process.env.JWT_SECRET,
-      { expiresIn: '8h' }
+      secret,
+      { expiresIn }
     );
 
     usuarioRepository.atualizarDataUltimoLogin(usuario.id);
@@ -144,12 +145,10 @@ class AuthService {
       role: usuario.role?.nome || usuario.role || 'OPERADOR',
     };
 
-    const secret = process.env.JWT_SECRET;
-
     usuarioRepository.atualizarDataUltimoLogin(usuario.id);
 
     return jwt.sign(payload, secret, {
-      expiresIn: '8h',
+      expiresIn,
     });
   }
 
