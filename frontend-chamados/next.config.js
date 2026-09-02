@@ -6,7 +6,8 @@ const allowedOrigins = process.env.ALLOWED_DEV_ORIGINS
    : [];
 
 const nextConfig = {
-  allowedDevOrigins: allowedOrigins,
+basePath: '/spc',  
+allowedDevOrigins: allowedOrigins,
   typescript: {
      ignoreBuildErrors: true,
   },
