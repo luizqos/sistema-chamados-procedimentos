@@ -11,11 +11,18 @@ import { checkIsAdmin } from '../utils/permissions';
 
 const AuthContext = createContext({});
 
+const getBasePath = () => {
+  const envPath = process.env.NEXT_PUBLIC_PATH ? process.env.NEXT_PUBLIC_PATH.toLowerCase() : '';
+  return envPath ? (envPath.startsWith('/') ? envPath : `/${envPath}`) : '';
+};
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { instance } = useMsal();
+  
+  const basePath = getBasePath();
 
   useEffect(() => {
     async function carregarSessao() {
@@ -72,7 +79,7 @@ export function AuthProvider({ children }) {
 
         await instance.logoutRedirect({
           account: accounts[0],
-          postLogoutRedirectUri: `${window.location.origin}/login`,
+          postLogoutRedirectUri: `${window.location.origin}${basePath}/login`,
           onRedirectNavigate: () => false
         });
         return;
@@ -81,7 +88,7 @@ export function AuthProvider({ children }) {
       }
     }
 
-    window.location.href = '/login';
+    window.location.href = `${basePath}/login`;
   };
 
   const hasPermission = (permissionKey) => {
