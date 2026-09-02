@@ -79,7 +79,7 @@ export function AuthProvider({ children }) {
 
         await instance.logoutRedirect({
           account: accounts[0],
-          postLogoutRedirectUri: `${window.location.origin}${basePath}/login`,
+          postLogoutRedirectUri: `${window.location.origin}${basePath}`,
           onRedirectNavigate: () => false
         });
         return;
@@ -88,7 +88,7 @@ export function AuthProvider({ children }) {
       }
     }
 
-    window.location.href = `${basePath}/login`;
+    window.location.href = `${basePath}`;
   };
 
   const hasPermission = (permissionKey) => {
