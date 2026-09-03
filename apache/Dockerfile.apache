@@ -1,0 +1,18 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get install -y apache2 && \
+    apt-get clean
+
+RUN a2enmod proxy proxy_http ssl rewrite headers
+
+COPY spc.conf /etc/apache2/sites-available/spc.conf
+
+RUN a2dissite 000-default.conf && \
+    a2ensite spc.conf
+
+EXPOSE 80 443
+
+CMD ["apache2ctl", "-D", "FOREGROUND"]

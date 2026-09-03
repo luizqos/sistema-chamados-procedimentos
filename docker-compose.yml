@@ -1,4 +1,37 @@
 services:
+
+  proxy-apache:
+    profiles: ["apache"]
+    build:
+      context: ./apache
+      dockerfile: Dockerfile.apache
+    container_name: proxy_spc_apache
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./certs:/certs:ro
+    depends_on:
+      - bff
+      - frontend
+
+  proxy-nginx:
+    profiles: ["nginx"]
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.nginx
+    container_name: proxy_spc_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./certs:/certs:ro
+    depends_on:
+      - bff
+      - frontend
+
   postgres:
     image: postgres:16-alpine
     container_name: bff_postgres
@@ -23,8 +56,8 @@ services:
       dockerfile: Dockerfile
     container_name: bff_backend
     restart: always
-    ports:
-      - "${BFF_PORT}:3001"
+    expose:
+      - "3001"
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public"
       PORT: ${BFF_PORT}
@@ -58,8 +91,8 @@ services:
         ALLOWED_DEV_ORIGINS: ${ALLOWED_DEV_ORIGINS}
     container_name: frontend_app
     restart: always
-    ports:
-      - "${FRONTEND_PORT}:3000"
+    expose:
+      - "3000"
     depends_on:
       - bff
 
