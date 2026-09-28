@@ -17,8 +17,17 @@ export const authService = {
   },
 
   async loginCredenciais(email, senha) {
-    const { data } = await api.post('/api/auth/login', { email, senha });
-    return data;
+    try {
+      const { data } = await api.post('/api/auth/login', { email, senha });
+      return data;
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        const mensagemErro = error.response.data.error || 'Credenciais inválidas.';
+        
+        throw new Error(mensagemErro);
+      }
+      throw new Error('Ocorreu um erro inesperado. Tente novamente mais tarde.');
+    }
   },
 
   async obterUsuarioAtual() {
