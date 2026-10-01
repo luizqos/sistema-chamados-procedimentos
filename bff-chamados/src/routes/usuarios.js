@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const usuarioController = require('../controllers/usuarioController');
 const { autenticar, autorizar } = require('../middlewares/authMiddleware');
+const { validar, schemaAtualizacaoUsuario, schemaCriacaoUsuario } = require('../middlewares/validacaoMiddleware');
 
 /**
  * @swagger
@@ -97,7 +98,7 @@ const { autenticar, autorizar } = require('../middlewares/authMiddleware');
  *         description: Erro interno no servidor
  */
 router.get('/', autenticar, autorizar(['ADMIN', 'OPERADOR']), (req, res) => usuarioController.listar(req, res));
-router.post('/', autenticar, autorizar(['ADMIN']), (req, res) => usuarioController.criar(req, res));
+router.post('/', autenticar, autorizar(['ADMIN']), validar(schemaCriacaoUsuario), (req, res) => usuarioController.criar(req, res));
 
 /**
  * @swagger
@@ -149,7 +150,7 @@ router.post('/', autenticar, autorizar(['ADMIN']), (req, res) => usuarioControll
  *       404:
  *         description: Usuário não encontrado
  */
-router.put('/:id', autenticar, autorizar(['ADMIN']), (req, res) => usuarioController.atualizar(req, res));
+router.put('/:id', autenticar, autorizar(['ADMIN']), validar(schemaAtualizacaoUsuario), (req, res) => usuarioController.atualizar(req, res));
 
 /**
  * @swagger
