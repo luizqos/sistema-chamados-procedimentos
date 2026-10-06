@@ -54,7 +54,9 @@ class AuthService {
   async login(email, senha) {
     const usuario = await usuarioRepository.buscarPorEmailComPermissoes(email);
 
-    if (!usuario || !bcrypt.compare(senha, usuario.senha)) {
+    const senhaValida = usuario ? await bcrypt.compare(senha, usuario.senha) : false;
+
+    if (!usuario || !senhaValida) {
       const error = new Error('Credenciais inválidas.');
       error.statusCode = 401;
       throw error;
@@ -66,7 +68,7 @@ class AuthService {
       { expiresIn }
     );
 
-    usuarioRepository.atualizarDataUltimoLogin(usuario.id);
+    await usuarioRepository.atualizarDataUltimoLogin(usuario.id);
 
     return {
       token,
