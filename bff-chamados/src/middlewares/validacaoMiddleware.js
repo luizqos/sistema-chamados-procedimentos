@@ -27,7 +27,7 @@ const schemaAtualizacaoUsuario = Joi.object({
   email: Joi.string().email().optional().messages({
     'string.email': 'Informe um e-mail válido.'
   }),
-  senha: Joi.string().pattern(REGEX_SENHA_FORTE).optional().messages({
+  senha: Joi.string().pattern(REGEX_SENHA_FORTE).allow('', null).optional().messages({
     'string.pattern.base': MENSAGEM_ERRO_SENHA
   }),
   ativo: Joi.boolean().optional(),
@@ -36,17 +36,17 @@ const schemaAtualizacaoUsuario = Joi.object({
 
 const validar = (schema) => {
   return (req, res, next) => {
-    const { error } = schema.validate(req.body, { abortEarly: false });
-    
+    const { error, value } = schema.validate(req.body, { abortEarly: false, stripUnknown: true });
+
     if (error) {
       const mensagens = error.details.map(detail => detail.message);
       return res.status(400).json({ error: mensagens.join(', ') });
     }
-    
+
+    req.body = value;
     next();
   };
 };
-
 module.exports = {
   validar,
   schemaCriacaoUsuario,

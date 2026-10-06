@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const usuarioRepository = require('../repositories/usuarioRepository');
-const auditoriaService = require('./auditoriaService'); 
+const auditoriaService = require('./auditoriaService');
 
 class UsuarioService {
   async criarUsuario({ nome, email, senha, roleId, ssoId }, usuarioLogado) {
@@ -65,7 +65,7 @@ class UsuarioService {
 
     const { senha: _, ...dadosAntigosSeguros } = usuarioAntigo;
     const { senha: __, ...dadosNovosSeguros } = usuarioAtualizado;
-    
+
     await auditoriaService.registrarLog(usuarioLogado, 'UPDATE', 'Usuario', usuarioId, dadosAntigosSeguros, dadosNovosSeguros);
 
     return usuarioAtualizado;
@@ -126,8 +126,10 @@ class UsuarioService {
       roleId: dados.roleId ? Number(dados.roleId) : undefined,
     };
 
-    if (dados.senha && dados.senha.trim() !== '') {
-      dadosParaAtualizar.senha = await bcrypt.hash(dados.senha, 10);
+    const senhaInformada = dados.senha || dados.password || dados.novaSenha;
+
+    if (senhaInformada && typeof senhaInformada === 'string' && senhaInformada.trim() !== '') {
+      dadosParaAtualizar.senha = await bcrypt.hash(senhaInformada.trim(), 10);
     }
 
     const usuarioAtualizado = await usuarioRepository.atualizarUsuario(idNum, dadosParaAtualizar);
