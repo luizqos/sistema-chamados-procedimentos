@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const procedimentoController = require('../controllers/procedimentoController');
-const authMiddleware = require('../middlewares/auth');
 const upload = require('../middlewares/upload');
-const { autenticar, autorizar } = require('../middlewares/authMiddleware');
+const { autenticar } = require('../middlewares/authMiddleware');
 
 /**
  * @openapi
@@ -43,8 +42,8 @@ const { autenticar, autorizar } = require('../middlewares/authMiddleware');
  *       201:
  *         description: Procedimento criado
  */
-router.get('/', autenticar, procedimentoController.listar);
-router.post('/', autenticar, procedimentoController.criar);
+router.get('/', autenticar, (req, res) => procedimentoController.listar(req, res));
+router.post('/', autenticar, (req, res) => procedimentoController.criar(req, res));
 
 /**
  * @openapi
@@ -76,7 +75,7 @@ router.post('/', autenticar, procedimentoController.criar);
  *       200:
  *         description: Procedimento excluído com sucesso
  */
-router.get('/:id', autenticar, procedimentoController.obterPorId);
+router.get('/:id', autenticar, (req, res) => procedimentoController.obterPorId(req, res));
 router.delete('/:id', autenticar, (req, res) => procedimentoController.deletar(req, res));
 
 /**
@@ -105,7 +104,7 @@ router.delete('/:id', autenticar, (req, res) => procedimentoController.deletar(r
  *       201:
  *         description: Anexo enviado com sucesso
  */
-router.post('/:id/anexos', autenticar, upload.single('arquivo'), procedimentoController.adicionarAnexo);
+router.post('/:id/anexos', autenticar, upload.single('arquivo'), (req, res) => procedimentoController.adicionarAnexo(req, res));
 
 /**
  * @openapi
@@ -181,6 +180,6 @@ router.put('/:id', autenticar, (req, res) => procedimentoController.atualizar(re
  *       500:
  *         description: Erro interno do servidor
  */
-router.delete('/anexos/:anexoId', autenticar, procedimentoController.excluirAnexo);
+router.delete('/anexos/:anexoId', autenticar, (req, res) => procedimentoController.excluirAnexo(req, res));
 
 module.exports = router;
