@@ -7,6 +7,7 @@ import { procedimentoService } from '../../services/procedimentoService';
 import { useUpload } from '../../contexts/UploadContext';
 import { X, Upload, AlertCircle, Loader2, Maximize2, Minimize2 } from 'lucide-react';
 import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../utils/constants';
+import MDEditor from '@uiw/react-md-editor';
 
 export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   const tProcedimento = useTranslations('Procedimento');
@@ -21,7 +22,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [progressoAtual, setProgressoAtual] = useState(0);
   const [statusTexto, setStatusTexto] = useState('');
-  
+
   const [maximizado, setMaximizado] = useState(false);
 
   const uploadContextRef = useRef(null);
@@ -185,13 +186,12 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
   return (
     <div className={`fixed inset-0 bg-slate-900/75 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-200 ${maximizado ? 'p-0' : 'p-4'}`}>
-      
+
       {/* Container Principal do Modal com responsividade de tamanho */}
-      <div className={`bg-white dark:bg-slate-900 flex flex-col shadow-2xl text-slate-900 dark:text-slate-100 transition-all duration-300 w-full overflow-hidden ${
-        maximizado 
-          ? 'h-full max-w-full rounded-none border-0' 
+      <div className={`bg-white dark:bg-slate-900 flex flex-col shadow-2xl text-slate-900 dark:text-slate-100 transition-all duration-300 w-full overflow-hidden ${maximizado
+          ? 'h-full max-w-full rounded-none border-0'
           : 'max-h-[90vh] max-w-2xl rounded-xl border border-slate-200 dark:border-slate-800'
-      }`}>
+        }`}>
 
         {/* Header do Modal */}
         <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 shrink-0 transition-colors">
@@ -199,7 +199,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
             <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{tProcedimento('novoProcedimento')}</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{tProcedimento('subtituloNovo')}</p>
           </div>
-          
+
           <div className="flex items-center gap-1.5">
             {/* Botão de Maximizar / Restaurar */}
             <button
@@ -210,7 +210,7 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
             >
               {maximizado ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
             </button>
-            
+
             {/* Botão de Fechar */}
             <button
               type="button"
@@ -252,14 +252,20 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
 
           <div className={`mb-4 flex flex-col ${maximizado ? 'flex-1' : ''}`}>
             <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{tProcedimento('scriptLabel')}</label>
-            <textarea
+            <MDEditor
+              value={script}
+              onChange={setScript}
+              height={maximizado ? 400 : 250}
+              preview="edit"
+            />
+            {/* <textarea
               required
               value={script}
               onChange={e => setScript(e.target.value)}
               disabled={loading}
               placeholder={tProcedimento('placeholderInstrucoes')}
               className={`w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-900 dark:bg-black text-slate-100 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors custom-scrollbar resize-none ${maximizado ? 'flex-1 min-h-[350px]' : 'h-40'}`}
-            />
+            /> */}
           </div>
 
           <div className="mb-6">
