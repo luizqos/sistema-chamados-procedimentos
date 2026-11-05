@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import ReactMarkdown from 'react-markdown';
 import { Copy, Check, Trash2, User, Calendar, Globe, Lock, Loader2, Pencil, Save, X, Share2, Info } from 'lucide-react';
 import { useTranslations, useFormatter } from 'next-intl';
@@ -11,6 +12,8 @@ import ModalCompartilhamento from './modal/ModalCompartilhamento';
 import BotaoIcone from './button/BotaoIcone';
 import BotaoAcao from './button/BotaoAcao';
 import { procedimentoService } from '@/src/services/procedimentoService';
+
+const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
 
 export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user, onAtualizarProcedimento }) {
   const tProcedimento = useTranslations('Procedimento');
@@ -222,7 +225,6 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             />
           </div>
 
-          {/* Grupo de Ações Refatorado */}
           <div className="flex gap-1 shrink-0">
             {editando ? (
               <>
@@ -279,18 +281,21 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           </div>
         </div>
 
-        {/* Script Passo a Passo */}
-        <div className="mb-8">
+        {/* Script Passo a Passo com MDEditor */}
+        <div className="mb-8" data-color-mode="dark">
           <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
             {tProcedimento('passoAPasso')}
           </h3>
           
           {editando ? (
-            <textarea
-              value={scriptPassoAPasso}
-              onChange={(e) => setScriptPassoAPasso(e.target.value)}
-              className="w-full h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed font-mono border border-slate-800 dark:border-slate-800 focus:outline-none focus:ring-0 focus:border-transparent resize-none transition-colors"
-            />
+            <div className="rounded-xl overflow-hidden border border-slate-800">
+              <MDEditor
+                value={scriptPassoAPasso}
+                onChange={(val) => setScriptPassoAPasso(val || '')}
+                height={400}
+                preview="edit"
+              />
+            </div>
           ) : (
             <div className="h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed font-mono border border-slate-800 dark:border-slate-800/80 transition-colors duration-200">
               <ReactMarkdown>{scriptPassoAPasso}</ReactMarkdown>
@@ -320,7 +325,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
         />
       </div>
 
-      {/* Rodapé Informativo (Criador e Data) */}
+      {/* Rodapé Informativo */}
       <div className="mt-10 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-500 transition-colors duration-200">
         <div className="flex items-center gap-2">
           <div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400 transition-colors">

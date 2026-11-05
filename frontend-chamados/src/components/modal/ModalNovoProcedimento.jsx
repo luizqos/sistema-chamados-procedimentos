@@ -1,13 +1,15 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { procedimentoService } from '../../services/procedimentoService';
 import { useUpload } from '../../contexts/UploadContext';
 import { X, Upload, AlertCircle, Loader2, Maximize2, Minimize2 } from 'lucide-react';
 import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../utils/constants';
-import MDEditor from '@uiw/react-md-editor';
+
+const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
 
 export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
   const tProcedimento = useTranslations('Procedimento');
@@ -250,22 +252,16 @@ export default function ModalNovoProcedimento({ isOpen, onClose, onSuccess }) {
             />
           </div>
 
-          <div className={`mb-4 flex flex-col ${maximizado ? 'flex-1' : ''}`}>
+          <div className={`mb-4 flex flex-col ${maximizado ? 'flex-1' : ''}`} data-color-mode="dark">
             <label className="block font-semibold text-xs text-slate-700 dark:text-slate-300 mb-1.5">{tProcedimento('scriptLabel')}</label>
-            <MDEditor
-              value={script}
-              onChange={setScript}
-              height={maximizado ? 400 : 250}
-              preview="edit"
-            />
-            {/* <textarea
-              required
-              value={script}
-              onChange={e => setScript(e.target.value)}
-              disabled={loading}
-              placeholder={tProcedimento('placeholderInstrucoes')}
-              className={`w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-900 dark:bg-black text-slate-100 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors custom-scrollbar resize-none ${maximizado ? 'flex-1 min-h-[350px]' : 'h-40'}`}
-            /> */}
+            <div className="rounded-lg overflow-hidden border border-slate-700">
+              <MDEditor
+                value={script}
+                onChange={(val) => setScript(val || '')}
+                height={maximizado ? 400 : 250}
+                preview="edit"
+              />
+            </div>
           </div>
 
           <div className="mb-6">
