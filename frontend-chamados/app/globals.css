@@ -62,3 +62,21 @@ body {
 .custom-scrollbar-light::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Aumenta a altura da barra de ferramentas do MDEditor */
+.w-md-editor-toolbar {
+  padding: 8px 12px !important;
+  height: auto !important;
+  min-height: 48px !important;
+}
+
+/* Aumenta os botões e os ícones internos da barra */
+.w-md-editor-toolbar li > button {
+  height: 32px !important;
+  width: 32px !important;
+}
+
+.w-md-editor-toolbar li > button svg {
+  width: 20px !important;
+  height: 20px !important;
+}
