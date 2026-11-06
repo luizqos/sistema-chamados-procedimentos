@@ -15,6 +15,11 @@ import { procedimentoService } from '@/src/services/procedimentoService';
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
 
+const MDViewer = dynamic(
+  () => import('@uiw/react-md-editor').then((mod) => mod.default.Markdown),
+  { ssr: false }
+);
+
 export default function PainelProcedimento({ selecionado, copiado, onCopiar, onDeletar, user, onAtualizarProcedimento }) {
   const tProcedimento = useTranslations('Procedimento');
   const tToastCompartilhamento = useTranslations('Toast.Compartilhamento');
@@ -207,8 +212,8 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               onChange={(e) => setTitulo(e.target.value)}
               disabled={!editando}
               className={`w-full text-2xl font-bold bg-transparent text-slate-900 dark:text-slate-100 transition-all ${editando
-                  ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none'
-                  : 'border-none cursor-default'
+                ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none'
+                : 'border-none cursor-default'
                 }`}
             />
             <input
@@ -217,8 +222,8 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               onChange={(e) => setDescricao(e.target.value)}
               disabled={!editando}
               className={`w-full text-sm bg-transparent text-slate-600 dark:text-slate-400 transition-all ${editando
-                  ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none'
-                  : 'border-none cursor-default'
+                ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none'
+                : 'border-none cursor-default'
                 }`}
             />
           </div>
@@ -296,7 +301,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             </div>
           ) : (
             <div className="h-[400px] overflow-y-auto custom-scrollbar bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed border border-slate-800 dark:border-slate-800/80 transition-colors duration-200">
-              <MDEditor.Markdown
+              <MDViewer
                 source={scriptPassoAPasso}
                 style={{ backgroundColor: 'transparent', color: 'inherit' }}
               />
