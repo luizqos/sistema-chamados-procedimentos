@@ -50,14 +50,14 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
 
   const roleNome = typeof user?.role === 'object' ? user?.role?.nome : user?.role;
   const isAdmin = roleNome?.toUpperCase() === 'ADMIN';
-  
-  const isCriador = selecionado?.usuario_id && user?.id 
-    ? String(selecionado.usuario_id) === String(user.id) 
+
+  const isCriador = selecionado?.usuario_id && user?.id
+    ? String(selecionado.usuario_id) === String(user.id)
     : false;
-  
+
   const temPermissaoEdicaoCompartilhada = selecionado?.permissoes?.some((p) => {
     const idUsuarioPermissao = p.usuarioId || p.usuario_id || p.usuario?.id;
-    const nivelPermissao = p.nivel || p.permissao; 
+    const nivelPermissao = p.nivel || p.permissao;
 
     const isMesmoUsuario = String(idUsuarioPermissao) === String(user?.id);
     const isNivelEdicao = nivelPermissao?.toUpperCase() === 'EDITAR';
@@ -117,7 +117,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
       });
 
       toast.success(tToastProcedimento('atualizadoSucesso'));
-      
+
       setTitulo(procedimentoAtualizado.titulo);
       setDescricao(procedimentoAtualizado.descricao);
       setScriptPassoAPasso(procedimentoAtualizado.script_passo_a_passo);
@@ -177,7 +177,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
         {DEBUG_MODE && (
           <div className="mb-6 p-4 bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/60 rounded-xl text-xs text-sky-800 dark:text-sky-300 space-y-2">
             <div className="flex items-center gap-2 font-bold text-sm">
-              <Info size={18} /> 
+              <Info size={18} />
               <span>Auditoria de Permissões (Modo Debug)</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 font-mono bg-white/50 dark:bg-black/20 p-3 rounded-lg">
@@ -189,8 +189,8 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
             <div className="mt-2 pt-2 border-t border-sky-200/50 dark:border-sky-800/50">
               <strong>O que a API retornou no array `selecionado.permissoes`?</strong>
               <pre className="mt-2 p-3 bg-slate-900 text-green-400 rounded-lg overflow-x-auto font-mono text-[11px] leading-relaxed">
-                {selecionado?.permissoes 
-                  ? JSON.stringify(selecionado.permissoes, null, 2) 
+                {selecionado?.permissoes
+                  ? JSON.stringify(selecionado.permissoes, null, 2)
                   : '❌ Array undefined ou inexistente no objeto. (O Backend não fez o JOIN/Include das permissões)'}
               </pre>
             </div>
@@ -206,74 +206,72 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               disabled={!editando}
-              className={`w-full text-2xl font-bold bg-transparent text-slate-900 dark:text-slate-100 transition-all ${
-                editando 
-                  ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none' 
+              className={`w-full text-2xl font-bold bg-transparent text-slate-900 dark:text-slate-100 transition-all ${editando
+                  ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none'
                   : 'border-none cursor-default'
-              }`}
+                }`}
             />
             <input
               type="text"
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
               disabled={!editando}
-              className={`w-full text-sm bg-transparent text-slate-600 dark:text-slate-400 transition-all ${
-                editando 
-                  ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none' 
+              className={`w-full text-sm bg-transparent text-slate-600 dark:text-slate-400 transition-all ${editando
+                  ? 'border-b border-sky-500/50 pb-1 focus:outline-none focus:border-sky-500 rounded-none'
                   : 'border-none cursor-default'
-              }`}
+                }`}
             />
           </div>
 
           <div className="flex gap-1 shrink-0">
             {editando ? (
               <>
-                <BotaoAcao 
+                <BotaoAcao
                   label={tCommon('salvar')}
-                  icon={Save} 
-                  onClick={handleSalvarEdicao} 
-                  loading={salvando} 
-                  variant="primary" 
+                  icon={Save}
+                  onClick={handleSalvarEdicao}
+                  loading={salvando}
+                  variant="primary"
                 />
-                <BotaoAcao 
+                <BotaoAcao
                   label={tCommon('cancelar')}
-                  icon={X} 
-                  onClick={handleCancelarEdicao} 
-                  disabled={salvando} 
-                  variant="secondary" 
+                  icon={X}
+                  onClick={handleCancelarEdicao}
+                  disabled={salvando}
+                  variant="secondary"
                 />
               </>
             ) : (
               <>
-                <BotaoIcone 
-                  icon={copiado ? Check : Copy} 
-                  onClick={onCopiar} 
-                  title={copiado ? tProcedimento('copiado') : tProcedimento('copiarScript')} 
-                  active={copiado} 
-                  color={copiado ? 'greenActive' : 'default'} 
+                <BotaoIcone
+                  icon={copiado ? Check : Copy}
+                  onClick={onCopiar}
+                  title={copiado ? tProcedimento('copiado') : tProcedimento('copiarScript')}
+                  active={copiado}
+                  color={copiado ? 'greenActive' : 'default'}
                 />
                 {podeEditar && (
-                  <BotaoIcone 
-                    icon={Pencil} 
-                    onClick={() => setEditando(true)} 
+                  <BotaoIcone
+                    icon={Pencil}
+                    onClick={() => setEditando(true)}
                     title={tCommon('editar')}
-                    color="sky" 
+                    color="sky"
                   />
                 )}
                 {podeCompartilhar && (
-                  <BotaoIcone 
-                    icon={Share2} 
-                    onClick={() => setModalCompartilharAberto(true)} 
-                    title={tCommon('compartilhar')} 
-                    color="emerald" 
+                  <BotaoIcone
+                    icon={Share2}
+                    onClick={() => setModalCompartilharAberto(true)}
+                    title={tCommon('compartilhar')}
+                    color="emerald"
                   />
                 )}
                 {podeExcluir && (
-                  <BotaoIcone 
-                    icon={Trash2} 
-                    onClick={() => onDeletar(selecionado.id)} 
-                    title={tCommon('excluir')} 
-                    color="red" 
+                  <BotaoIcone
+                    icon={Trash2}
+                    onClick={() => onDeletar(selecionado.id)}
+                    title={tCommon('excluir')}
+                    color="red"
                   />
                 )}
               </>
@@ -286,7 +284,7 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
           <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
             {tProcedimento('passoAPasso')}
           </h3>
-          
+
           {editando ? (
             <div className="rounded-xl overflow-hidden border border-slate-800">
               <MDEditor
@@ -297,14 +295,17 @@ export default function PainelProcedimento({ selecionado, copiado, onCopiar, onD
               />
             </div>
           ) : (
-            <div className="h-[400px] overflow-y-auto custom-scrollbar whitespace-pre-wrap bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed font-mono border border-slate-800 dark:border-slate-800/80 transition-colors duration-200">
-              <ReactMarkdown>{scriptPassoAPasso}</ReactMarkdown>
+            <div className="h-[400px] overflow-y-auto custom-scrollbar bg-slate-900 dark:bg-black text-slate-50 dark:text-slate-300 p-5 rounded-xl text-sm leading-relaxed border border-slate-800 dark:border-slate-800/80 transition-colors duration-200">
+              <MDEditor.Markdown
+                source={scriptPassoAPasso}
+                style={{ backgroundColor: 'transparent', color: 'inherit' }}
+              />
             </div>
           )}
         </div>
 
         {/* Galeria de Anexos */}
-        <GaleriaAnexos 
+        <GaleriaAnexos
           procedimentoId={selecionado.id}
           tituloProcedimento={selecionado.titulo}
           anexos={selecionado.anexos || []}
